@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Panel de Usuarios{% endblock %}
+{% block content %}
+<h2>Gestión de Usuarios</h2>
+
+<table class="table table-bordered table-striped">
+  <thead class="table-dark">
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Correo</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for u in usuarios %}
+    <tr>
+      <td>{{ u[0] }}</td>
+      <td>{{ u[1] }}</td>
+      <td>{{ u[2] }}</td>
+      <td>
+        <a href="{{ url_for('admin_modificar', id_usuario=u[0]) }}" class="btn btn-sm btn-warning">✏️ Editar</a>
+        <a href="{{ url_for('admin_eliminar', id_usuario=u[0]) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas eliminar este usuario?')">🗑 Eliminar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

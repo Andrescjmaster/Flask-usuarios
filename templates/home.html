@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Página Fitness{% endblock %}
+
+{% block content %}
+    <h1>Bienvenido {{ usuario }} 💪</h1>
+    <p>Aquí encontrarás herramientas, calculadoras y recursos para mejorar tu estilo de vida.</p>
+
+    <section>
+        <h2>Explora:</h2>
+        <div class="menu-opciones">
+            <a href="{{ url_for('calculadora') }}">🧮 Ir a la Calculadora</a>
+            <!-- Botón de Recomendaciones deshabilitado temporalmente -->
+            <a href="#" style="pointer-events:none; opacity:0.5; cursor:not-allowed;">💡 Ver Recomendaciones (deshabilitado)</a>
+        </div>
+    </section>
+
+    <section>
+        <h2>Contenido Destacado</h2>
+        <p>Pronto agregaremos rutinas de entrenamiento, recetas saludables y más 🚀</p>
+    </section>
+{% endblock %}

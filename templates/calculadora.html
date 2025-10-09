@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Indice Masa Corporal</title>
+<style>
+  body{font-family:Arial, sans-serif;background:#f4f6f8;padding:20px;display:flex;justify-content:center;align-items:center;height:100vh}
+  .card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.08);width:360px}
+  h2{text-align:center;margin:0 0 12px}
+  input, button{width:100%;box-sizing:border-box;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #d1d5db;font-size:15px}
+  .altura{display:flex;gap:8px}
+  .altura input{width:50%}
+  button{background:#2f9e44;color:#fff;border:none;cursor:pointer}
+  #resultado{margin-top:12px;font-weight:600;text-align:center}
+  .error{color:#a20b0b;background:#fee; padding:8px;border-radius:6px}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h2>Calculadora indice masa corporal</h2>
+    <form id="formIMC">
+      <input type="number" id="edad" placeholder="Edad (años)" min="1" required>
+      <label style="font-size:0.9em;margin-top:6px">Altura</label>
+      <div class="altura">
+        <input type="number" id="metros" placeholder="Metros (ej. 1)" min="0" step="1" required>
+        <input type="number" id="centimetros" placeholder="Centímetros (ej. 60)" min="0" max="99" step="1" value="0">
+      </div>
+      <input type="number" id="peso" placeholder="Peso (kg)" min="1" step="0.1" required>
+      <button type="submit">Calcular y ver recomendaciones</button>
+    </form>
+
+    <div id="resultado" aria-live="polite"></div>
+  </div>
+
+<script>
+document.getElementById('formIMC').addEventListener('submit', function(e){
+  e.preventDefault();
+  const edad = Number(document.getElementById('edad').value);
+  const metros = Number(document.getElementById('metros').value);
+  const centimetros = Number(document.getElementById('centimetros').value) || 0;
+  const peso = Number(document.getElementById('peso').value);
+
+  const resultadoEl = document.getElementById('resultado');
+  resultadoEl.className = '';
+  resultadoEl.textContent = '';
+
+  if (!edad || edad <= 0) {
+    resultadoEl.className = 'error';
+    resultadoEl.textContent = 'Ingresa una edad válida.';
+    return;
+  }
+  if ((!metros && metros !== 0) || metros < 0) {
+    resultadoEl.className = 'error';
+    resultadoEl.textContent = 'Ingresa los metros correctamente.';
+    return;
+  }
+  if (centimetros < 0 || centimetros > 99) {
+    resultadoEl.className = 'error';
+    resultadoEl.textContent = 'Los centímetros deben estar entre 0 y 99.';
+    return;
+  }
+  const alturaM = metros + (centimetros / 100);
+  if (!alturaM || alturaM <= 0) {
+    resultadoEl.className = 'error';
+    resultadoEl.textContent = 'Altura inválida. Verifica metros y centímetros.';
+    return;
+  }
+  if (!peso || peso <= 0) {
+    resultadoEl.className = 'error';
+    resultadoEl.textContent = 'Ingresa un peso válido.';
+    return;
+  }
+
+  const imc = (peso / (alturaM * alturaM)).toFixed(2);
+
+  const params = new URLSearchParams({
+    edad: String(edad),
+    metros: String(metros),
+    centimetros: String(centimetros),
+    peso: String(peso),
+    imc: String(imc)
+  });
+
+  resultadoEl.innerHTML = `Tu IMC aproximado es <strong>${imc}</strong>. Redirigiendo...`;
+
+  // Ahora redirige a la ruta de Flask en vez de archivo estático
+  setTimeout(()=> window.location.href = `/recomendaciones?${params.toString()}`, 600);
+});
+</script>
+</body>
+</html>

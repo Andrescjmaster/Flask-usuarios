@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Recomendaciones - IMC</title>
+<style>
+  body{font-family:Arial, sans-serif;background:#eef2f6;padding:20px;display:flex;justify-content:center;align-items:center;min-height:100vh}
+  .card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06);width:520px}
+  h2{text-align:center;margin:0 0 10px}
+  .info{font-weight:600;text-align:center;margin-bottom:8px}
+  .imc{font-size:1.2em;text-align:center;margin-bottom:12px}
+  .reco{background:#f8fafc;padding:12px;border-radius:8px;border:1px solid #e6eef6}
+  .reco ul{margin:8px 0 0;padding-left:18px}
+  .note{margin-top:10px;font-size:0.9em;color:#555}
+  .botones{display:flex;justify-content:space-between;margin-top:15px}
+  a.button{display:inline-block;padding:10px 14px;background:#2f9e44;color:#fff;border-radius:8px;text-decoration:none;text-align:center;flex:1;margin:0 4px}
+  a.button:hover{opacity:0.9}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h2>Resultados y Recomendaciones</h2>
+    <div id="mensaje" class="info">Cargando...</div>
+    <div id="resultado" class="imc"></div>
+    <div id="recomendaciones" class="reco"></div>
+    <div class="note" id="nota"></div>
+    
+    <!-- 🔹 Botones corregidos -->
+    <div class="botones">
+      <a href="/calculadora" class="button">Calcular de nuevo</a>
+      <a href="/home" class="button" style="background:#1d72b8">Inicio</a>
+    </div>
+  </div>
+
+<script>
+function getParam(name){
+  const p = new URLSearchParams(window.location.search);
+  return p.get(name);
+}
+
+const edad = Number(getParam('edad'));
+const metros = Number(getParam('metros'));
+const centimetros = Number(getParam('centimetros')) || 0;
+const peso = Number(getParam('peso'));
+
+const mensajeEl = document.getElementById('mensaje');
+const resultadoEl = document.getElementById('resultado');
+const recoEl = document.getElementById('recomendaciones');
+const notaEl = document.getElementById('nota');
+
+if (!edad || (!metros && metros !== 0) || !peso) {
+  mensajeEl.textContent = 'No se encontraron datos completos. Por favor calcula tu IMC primero.';
+  resultadoEl.textContent = '';
+  recoEl.innerHTML = '';
+  notaEl.textContent = '';
+} else {
+  const alturaM = metros + (centimetros / 100);
+  const imc = Number((peso / (alturaM * alturaM)).toFixed(2));
+
+  mensajeEl.textContent = `Edad: ${edad} años — Altura: ${metros} m ${centimetros} cm — Peso: ${peso} kg`;
+  resultadoEl.textContent = `Tu IMC es ${imc}`;
+
+  let clasif = '';
+  if (imc < 18.5) clasif = 'Bajo peso';
+  else if (imc < 25) clasif = 'Peso saludable';
+  else if (imc < 30) clasif = 'Sobrepeso';
+  else clasif = 'Obesidad';
+
+  let baseReco = '';
+  if (clasif === 'Bajo peso') {
+    baseReco = `<p>Clasificación: <strong>${clasif}</strong></p>
+      <ul>
+        <li>Aumenta ligeramente la ingesta calórica con alimentos nutritivos (proteínas y grasas saludables).</li>
+        <li>Entrenamiento de fuerza 2–3 veces por semana para ganar masa muscular.</li>
+        <li>Evita saltarte comidas; consulta a un profesional si es necesario.</li>
+      </ul>`;
+  } else if (clasif === 'Peso saludable') {
+    baseReco = `<p>Clasificación: <strong>${clasif}</strong></p>
+      <ul>
+        <li>Mantén una dieta balanceada y actividad física regular (150 min/semana moderada).</li>
+        <li>Controla tu alimentación y peso periódicamente.</li>
+        <li>Combina cardio y fuerza para salud general.</li>
+      </ul>`;
+  } else if (clasif === 'Sobrepeso') {
+    baseReco = `<p>Clasificación: <strong>${clasif}</strong></p>
+      <ul>
+        <li>Reduce alimentos ultraprocesados y bebidas azucaradas.</li>
+        <li>Aumenta actividad física gradual (ej. caminar, bicicleta, 150–300 min/semana según tolerancia).</li>
+        <li>Controla porciones y come con más frutas, verduras y proteínas magras.</li>
+      </ul>`;
+  } else {
+    baseReco = `<p>Clasificación: <strong>${clasif}</strong></p>
+      <ul>
+        <li>Consulta con un profesional (nutricionista/médico) para plan personalizado.</li>
+        <li>Prioriza ejercicios de bajo impacto y seguimiento médico.</li>
+        <li>Trabaja en cambios graduales y sostenibles en la dieta y actividad física.</li>
+      </ul>`;
+  }
+
+  let ajusteEdad = '';
+  if (edad < 18) {
+    ajusteEdad = '<p><strong>Nota (menor de edad):</strong> sigue estas recomendaciones bajo supervisión de un adulto o profesional de la salud.</p>';
+  } else if (edad >= 50) {
+    ajusteEdad = '<p><strong>Consejo (50+ años):</strong> prioriza ejercicios de bajo impacto (caminar, natación), fuerza ligera y revisiones médicas periódicas.</p>';
+  }
+
+  recoEl.innerHTML = baseReco;
+  notaEl.innerHTML = ajusteEdad + `<p style="margin-top:8px">Interpretación rápida: <strong>${clasif}</strong></p>`;
+}
+</script>
+</body>
+</html>
