@@ -5,7 +5,6 @@ app = Flask(__name__)
 app.secret_key = "clave_super_segura"
 
 # ----------------- CONFIGURACIÓN BASE DE DATOS -----------------
-# Se asegura de que la base esté dentro de 'instance', compatible con Render
 os.makedirs(app.instance_path, exist_ok=True)
 DB_PATH = os.path.join(app.instance_path, "usuarios.db")
 
@@ -33,7 +32,7 @@ def agregar_usuario(nombre, correo, contraseña):
         conn.commit()
     except sqlite3.IntegrityError:
         conn.close()
-        return False  # Correo duplicado
+        return False
     conn.close()
     return True
 
@@ -99,9 +98,9 @@ def login():
         correo = request.form['correo']
         contraseña = request.form['contraseña']
         usuario = obtener_usuario(correo)
-        if usuario and usuario[3] == contraseña:  # usuario[3] = contraseña
-            session['usuario'] = usuario[1]       # usuario[1] = nombre
-            session['correo'] = usuario[2]        # usuario[2] = correo
+        if usuario and usuario[3] == contraseña:
+            session['usuario'] = usuario[1]
+            session['correo'] = usuario[2]
             return redirect(url_for('home'))
         else:
             return "❌ Usuario o contraseña incorrectos. <a href='/login'>Intentar de nuevo</a>"
@@ -128,7 +127,25 @@ def calculadora():
         return redirect(url_for('login'))
     return render_template("calculadora.html", usuario=session['usuario'])
 
-# ----------------- PANEL ADMIN (SOLO PARA TI) -----------------
+# ----------------- RECOMENDACIONES -----------------
+@app.route('/recomendaciones', methods=['GET', 'POST'])
+def recomendaciones():
+    if "usuario" not in session:
+        return redirect(url_for('login'))
+
+    calorias = request.args.get('calorias')
+    proteinas = request.args.get('proteinas')
+    grasas = request.args.get('grasas')
+    carbohidratos = request.args.get('carbohidratos')
+
+    return render_template("recomendaciones.html",
+                           calorias=calorias,
+                           proteinas=proteinas,
+                           grasas=grasas,
+                           carbohidratos=carbohidratos,
+                           usuario=session['usuario'])
+
+# ----------------- PANEL ADMIN -----------------
 ADMIN_EMAIL = "andresfelipeaguasaco@gmail.com"
 
 @app.route('/admin/usuarios')
@@ -172,6 +189,5 @@ def logout():
     return redirect(url_for('login'))
 
 # ----------------- MAIN -----------------
-# Esto es importante para Render
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
