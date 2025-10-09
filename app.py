@@ -1,51 +1,54 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-import sqlite3, os
+import psycopg2, os
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 app.secret_key = "clave_super_segura"
 
-# ----------------- CONFIGURACIÓN BASE DE DATOS -----------------
-os.makedirs(app.instance_path, exist_ok=True)
-DB_PATH = os.path.join(app.instance_path, "usuarios.db")
+# ----------------- CONEXIÓN A POSTGRES -----------------
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+def get_connection():
+    return psycopg2.connect(DATABASE_URL)
 
 # ----------------- FUNCIONES DE BD -----------------
 def crear_tabla():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS usuarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT NOT NULL,
-            correo TEXT UNIQUE NOT NULL,
-            contraseña TEXT NOT NULL
+            id SERIAL PRIMARY KEY,
+            nombre VARCHAR(100) NOT NULL,
+            correo VARCHAR(100) UNIQUE NOT NULL,
+            contraseña VARCHAR(100) NOT NULL
         )
     """)
     conn.commit()
     conn.close()
 
 def agregar_usuario(nombre, correo, contraseña):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO usuarios (nombre, correo, contraseña) VALUES (?, ?, ?)",
+        cursor.execute("INSERT INTO usuarios (nombre, correo, contraseña) VALUES (%s, %s, %s)",
                        (nombre, correo, contraseña))
         conn.commit()
-    except sqlite3.IntegrityError:
+    except psycopg2.Error:
         conn.close()
         return False
     conn.close()
     return True
 
 def obtener_usuario(correo):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM usuarios WHERE correo = ?", (correo,))
+    cursor.execute("SELECT * FROM usuarios WHERE correo = %s", (correo,))
     usuario = cursor.fetchone()
     conn.close()
     return usuario
 
 def obtener_todos_usuarios():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM usuarios")
     usuarios = cursor.fetchall()
@@ -53,25 +56,28 @@ def obtener_todos_usuarios():
     return usuarios
 
 def modificar_usuario(id_usuario, nombre, correo, contraseña):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
         UPDATE usuarios 
-        SET nombre = ?, correo = ?, contraseña = ?
-        WHERE id = ?
+        SET nombre = %s, correo = %s, contraseña = %s
+        WHERE id = %s
     """, (nombre, correo, contraseña, id_usuario))
     conn.commit()
     conn.close()
 
 def eliminar_usuario(id_usuario):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM usuarios WHERE id = ?", (id_usuario,))
+    cursor.execute("DELETE FROM usuarios WHERE id = %s", (id_usuario,))
     conn.commit()
     conn.close()
 
 # Crear tabla si no existe
-crear_tabla()
+try:
+    crear_tabla()
+except Exception as e:
+    print("⚠️ Error al crear la tabla:", e)
 
 # Crear usuario admin si no existe
 if not obtener_usuario("andresfelipeaguasaco@gmail.com"):
@@ -128,22 +134,11 @@ def calculadora():
     return render_template("calculadora.html", usuario=session['usuario'])
 
 # ----------------- RECOMENDACIONES -----------------
-@app.route('/recomendaciones', methods=['GET', 'POST'])
+@app.route('/recomendaciones')
 def recomendaciones():
     if "usuario" not in session:
         return redirect(url_for('login'))
-
-    calorias = request.args.get('calorias')
-    proteinas = request.args.get('proteinas')
-    grasas = request.args.get('grasas')
-    carbohidratos = request.args.get('carbohidratos')
-
-    return render_template("recomendaciones.html",
-                           calorias=calorias,
-                           proteinas=proteinas,
-                           grasas=grasas,
-                           carbohidratos=carbohidratos,
-                           usuario=session['usuario'])
+    return render_template("recomendaciones.html")
 
 # ----------------- PANEL ADMIN -----------------
 ADMIN_EMAIL = "andresfelipeaguasaco@gmail.com"
@@ -167,9 +162,9 @@ def admin_modificar(id_usuario):
         modificar_usuario(id_usuario, nombre, correo, contraseña)
         return redirect(url_for('admin_usuarios'))
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM usuarios WHERE id = ?", (id_usuario,))
+    cursor.execute("SELECT * FROM usuarios WHERE id = %s", (id_usuario,))
     usuario = cursor.fetchone()
     conn.close()
     return render_template("admin_modificar.html", usuario=usuario)
