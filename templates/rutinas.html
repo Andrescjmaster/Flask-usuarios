@@ -1,31 +1,81 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-5">
-  <h2 class="text-center mb-4">🏋️ Rutinas de Entrenamiento</h2>
-  <p class="text-center">Aquí encontrarás diferentes rutinas para mejorar tu fuerza, resistencia y bienestar.</p>
+  <h2 class="text-center mb-4">💪 Rutinas de Entrenamiento</h2>
+  <p class="text-center">Selecciona un entorno y descubre rutinas diseñadas para ese espacio.</p>
 
   <div class="row mt-4">
+    <!-- Rutinas en Casa -->
     <div class="col-md-4">
       <div class="card p-3 shadow-sm">
-        <h5>Rutina para Principiantes</h5>
-        <p>Ideal para quienes inician. Ejercicios básicos de cuerpo completo.</p>
-        <button class="btn btn-primary w-100">Ver Rutina</button>
+        <h5>🏠 Rutinas en Casa</h5>
+        <p>Entrena desde la comodidad de tu hogar con poco o ningún equipo.</p>
+        <button class="btn btn-primary w-100" onclick="toggleSection('casa')">Ver Rutinas</button>
+        <div id="casa" class="rutina-section mt-3 collapse">
+          <ul class="list-group">
+            <li class="list-group-item">Rutina Full Body (sin pesas)</li>
+            <li class="list-group-item">Cardio 20 min en casa</li>
+            <li class="list-group-item">Yoga y estiramientos matutinos</li>
+          </ul>
+        </div>
       </div>
     </div>
+
+    <!-- Rutinas Laborales -->
     <div class="col-md-4">
       <div class="card p-3 shadow-sm">
-        <h5>Rutina Intermedia</h5>
-        <p>Perfecta para mantener el ritmo y mejorar tu rendimiento.</p>
-        <button class="btn btn-primary w-100">Ver Rutina</button>
+        <h5>💼 Rutinas Laborales</h5>
+        <p>Ejercicios cortos para realizar durante tu jornada laboral.</p>
+        <button class="btn btn-primary w-100" onclick="toggleSection('laboral')">Ver Rutinas</button>
+        <div id="laboral" class="rutina-section mt-3 collapse">
+          <ul class="list-group">
+            <li class="list-group-item">Ejercicios de estiramiento en oficina</li>
+            <li class="list-group-item">Pausas activas de 10 minutos</li>
+            <li class="list-group-item">Movilidad cervical y lumbar</li>
+          </ul>
+        </div>
       </div>
     </div>
+
+    <!-- Rutinas al Aire Libre -->
     <div class="col-md-4">
       <div class="card p-3 shadow-sm">
-        <h5>Rutina Avanzada</h5>
-        <p>Desafía tus límites con ejercicios de alta intensidad.</p>
-        <button class="btn btn-primary w-100">Ver Rutina</button>
+        <h5>🌳 Rutinas al Aire Libre</h5>
+        <p>Aprovecha el espacio exterior para entrenar y conectar con la naturaleza.</p>
+        <button class="btn btn-primary w-100" onclick="toggleSection('airelibre')">Ver Rutinas</button>
+        <div id="airelibre" class="rutina-section mt-3 collapse">
+          <ul class="list-group">
+            <li class="list-group-item">Caminata + trote ligero</li>
+            <li class="list-group-item">Circuito de ejercicios en parque</li>
+            <li class="list-group-item">Entrenamiento con peso corporal</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  const allSections = document.querySelectorAll('.rutina-section');
+
+  // Cierra las demás secciones
+  allSections.forEach(sec => {
+    if (sec !== section) sec.classList.remove('show');
+  });
+
+  // Alterna la visibilidad de la seleccionada
+  section.classList.toggle('show');
+}
+</script>
+
+<style>
+.list-group-item {
+  background-color: #f8f9fa;
+  border: none;
+  margin-bottom: 5px;
+  border-radius: 8px;
+}
+</style>
 {% endblock %}
