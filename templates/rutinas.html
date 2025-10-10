@@ -80,99 +80,162 @@ function mostrarRutinaDetallada(nombre) {
   const descripcion = document.getElementById('descripcion-rutina');
   const pasos = document.getElementById('pasos-rutina');
   
-  // Base de datos de rutinas
   const rutinas = {
     "Rutina Full Body (sin pesas)": {
-      descripcion: "Ideal para trabajar todo el cuerpo desde casa sin necesidad de equipo.",
+      descripcion: "Ideal para trabajar todo el cuerpo desde casa sin necesidad de equipo. Se enfoca en fuerza funcional y resistencia.",
+      detalles: [
+        "⏱️ Duración: 25-30 minutos.",
+        "📅 Frecuencia recomendada: 3-4 veces por semana.",
+        "🎯 Objetivo: mejorar fuerza general y tono muscular.",
+        "💪 Beneficios: fortalece el core, mejora la postura y activa todos los grupos musculares."
+      ],
       pasos: [
         "Calentamiento de 5 minutos (saltos suaves o trote en el lugar).",
         "3 rondas de 15 sentadillas, 10 flexiones y 20 abdominales.",
+        "Plancha durante 30 segundos al final de cada ronda.",
         "30 segundos de descanso entre rondas.",
-        "Estiramientos finales de piernas y espalda."
+        "Estiramientos finales de piernas y espalda (2-3 minutos)."
       ]
     },
     "Cardio 20 min en casa": {
-      descripcion: "Un entrenamiento cardiovascular corto e intenso sin salir de casa.",
+      descripcion: "Un entrenamiento cardiovascular corto e intenso para mejorar tu resistencia sin salir de casa.",
+      detalles: [
+        "⏱️ Duración: 20 minutos.",
+        "📅 Frecuencia: 3-5 veces por semana.",
+        "🎯 Objetivo: mejorar capacidad pulmonar y quema de grasa.",
+        "🔥 Beneficios: acelera el metabolismo, fortalece el corazón y libera endorfinas."
+      ],
       pasos: [
-        "5 min de calentamiento: saltos de tijera y skipping.",
+        "5 minutos de calentamiento: saltos de tijera y skipping.",
         "Circuito de 4 rondas: 40s trabajo / 20s descanso.",
         "Ejercicios: jumping jacks, escaladores, burpees, sentadillas con salto.",
+        "1 minuto de recuperación activa caminando en el sitio.",
         "Enfriamiento con respiración profunda y estiramientos."
       ]
     },
     "Yoga y estiramientos matutinos": {
-      descripcion: "Perfecto para comenzar el día con energía y equilibrio.",
+      descripcion: "Una rutina suave para conectar mente y cuerpo al iniciar el día.",
+      detalles: [
+        "⏱️ Duración: 15-20 minutos.",
+        "📅 Frecuencia: diaria o días alternos.",
+        "🎯 Objetivo: mejorar flexibilidad y reducir estrés.",
+        "🧘 Beneficios: activa la circulación, mejora la respiración y aporta calma mental."
+      ],
       pasos: [
         "Postura del perro boca abajo (30s).",
         "Cobra y guerrero (30s cada lado).",
         "Torsión espinal y respiración profunda.",
-        "Relajación final (Savasana, 1 min)."
+        "Postura del niño y relajación final (Savasana, 2 min)."
       ]
     },
     "Ejercicios de estiramiento en oficina": {
-      descripcion: "Alivia la tensión del trabajo con estiramientos sencillos.",
+      descripcion: "Estiramientos rápidos para aliviar tensión acumulada por largas horas de trabajo.",
+      detalles: [
+        "⏱️ Duración: 5-8 minutos.",
+        "📅 Frecuencia: cada 2-3 horas laborales.",
+        "🎯 Objetivo: evitar rigidez muscular y fatiga postural.",
+        "💼 Beneficios: mejora la concentración y previene dolores musculares."
+      ],
       pasos: [
         "Giros suaves de cuello (10 repeticiones).",
         "Estiramiento de hombros hacia atrás (3 veces).",
         "Torsiones de tronco en silla (10 repeticiones).",
+        "Flexiones de muñeca y dedos (20 segundos cada una).",
         "Respiración controlada por 1 minuto."
       ]
     },
     "Pausas activas de 10 minutos": {
-      descripcion: "Ejercicios rápidos para reactivar tu cuerpo y mente.",
+      descripcion: "Perfecta para romper la inactividad durante el trabajo o estudio prolongado.",
+      detalles: [
+        "⏱️ Duración: 10 minutos.",
+        "📅 Frecuencia: 2 veces al día.",
+        "🎯 Objetivo: activar la circulación y oxigenar el cerebro.",
+        "💡 Beneficios: mejora la productividad, reduce estrés y fatiga visual."
+      ],
       pasos: [
         "Camina alrededor del escritorio por 1 minuto.",
         "Haz círculos con brazos y piernas (30 segundos).",
-        "Sentadillas y elevaciones de talones (3 series).",
-        "Estiramiento de cuello y muñecas."
+        "Sentadillas y elevaciones de talones (3 series de 15).",
+        "Estiramiento de cuello y muñecas.",
+        "Respiración profunda con cierre de ojos (30 segundos)."
       ]
     },
     "Movilidad cervical y lumbar": {
-      descripcion: "Reduce la rigidez muscular con movimientos controlados.",
+      descripcion: "Movimientos controlados para aliviar rigidez y prevenir dolores musculares.",
+      detalles: [
+        "⏱️ Duración: 12-15 minutos.",
+        "📅 Frecuencia: diaria o según necesidad.",
+        "🎯 Objetivo: mantener movilidad articular y postura saludable.",
+        "🩺 Beneficios: previene contracturas y mejora la flexibilidad."
+      ],
       pasos: [
-        "Giros lentos de cuello y hombros.",
-        "Inclinaciones laterales del tronco.",
-        "Arqueo lumbar con manos en la cadera.",
-        "Estiramiento completo de espalda."
+        "Giros lentos de cuello y hombros (10 repeticiones).",
+        "Inclinaciones laterales del tronco (10 cada lado).",
+        "Arqueo lumbar con manos en la cadera (15 segundos).",
+        "Estiramiento completo de espalda (postura del gato y la vaca)."
       ]
     },
     "Caminata + trote ligero": {
-      descripcion: "Excelente rutina para mejorar tu resistencia al aire libre.",
+      descripcion: "Combinación ideal de caminata y trote para mejorar resistencia sin impacto alto.",
+      detalles: [
+        "⏱️ Duración: 30-40 minutos.",
+        "📅 Frecuencia: 3-5 veces por semana.",
+        "🎯 Objetivo: mejorar resistencia cardiovascular.",
+        "🌿 Beneficios: fortalece piernas, reduce estrés y mejora estado de ánimo."
+      ],
       pasos: [
         "Camina 5 minutos para calentar.",
-        "Alterna 5 min caminata / 3 min trote (30 minutos).",
+        "Alterna 5 min caminata / 3 min trote (durante 30 minutos).",
         "Respira profundamente y mantén buena postura.",
-        "Estiramiento final de piernas."
+        "Estiramiento final de piernas y caderas (5 minutos)."
       ]
     },
     "Circuito de ejercicios en parque": {
-      descripcion: "Aprovecha bancos y barras del parque para un circuito completo.",
+      descripcion: "Usa bancos y barras del parque para un entrenamiento completo de cuerpo libre.",
+      detalles: [
+        "⏱️ Duración: 25-35 minutos.",
+        "📅 Frecuencia: 3 veces por semana.",
+        "🎯 Objetivo: fortalecer el cuerpo completo con peso corporal.",
+        "💪 Beneficios: mejora coordinación, fuerza y equilibrio."
+      ],
       pasos: [
         "Dominadas en barra (10 repeticiones).",
         "Fondos en banco (12 repeticiones).",
         "Abdominales en césped (20 repeticiones).",
-        "Saltos al banco y descanso de 1 min (3 rondas)."
+        "Saltos al banco y descanso de 1 minuto (3 rondas).",
+        "Enfriamiento y estiramiento general (5 minutos)."
       ]
     },
     "Entrenamiento con peso corporal": {
-      descripcion: "Fortalece tu cuerpo usando solo tu peso y energía.",
+      descripcion: "Entrenamiento funcional que utiliza el peso de tu cuerpo para mejorar fuerza y control.",
+      detalles: [
+        "⏱️ Duración: 25 minutos.",
+        "📅 Frecuencia: 3-4 veces por semana.",
+        "🎯 Objetivo: ganar fuerza, resistencia y estabilidad.",
+        "🏋️ Beneficios: trabaja músculos principales y mejora el control corporal."
+      ],
       pasos: [
         "Calentamiento articular de 5 min.",
         "4 rondas de 12 flexiones, 15 sentadillas y 10 zancadas por pierna.",
         "Plancha abdominal de 45 segundos.",
-        "Estiramientos finales."
+        "Saltos al sitio o burpees durante 30 segundos.",
+        "Estiramientos finales (3 minutos)."
       ]
     }
   };
 
-  // Mostrar la rutina seleccionada
   const rutina = rutinas[nombre];
   if (!rutina) return;
 
   titulo.textContent = nombre;
-  descripcion.textContent = rutina.descripcion;
-  pasos.innerHTML = "";
+  descripcion.innerHTML = `
+    <p>${rutina.descripcion}</p>
+    <ul class="list-unstyled text-start mx-auto" style="max-width:600px;">
+      ${rutina.detalles.map(d => `<li>${d}</li>`).join("")}
+    </ul>
+  `;
 
+  pasos.innerHTML = "";
   rutina.pasos.forEach(p => {
     const li = document.createElement('li');
     li.classList.add('list-group-item');
@@ -184,25 +247,3 @@ function mostrarRutinaDetallada(nombre) {
   detalle.scrollIntoView({ behavior: "smooth" });
 }
 </script>
-
-<style>
-.list-group-item {
-  background-color: #f8f9fa;
-  border: none;
-  margin-bottom: 5px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-.list-group-item:hover {
-  background-color: #e9ecef;
-}
-#detalle-rutina {
-  animation: fadeIn 0.5s ease-in-out;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-</style>
-{% endblock %}
