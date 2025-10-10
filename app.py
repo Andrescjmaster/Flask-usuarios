@@ -140,6 +140,14 @@ def recomendaciones():
         return redirect(url_for('login'))
     return render_template("recomendaciones.html")
 
+# ----------------- RUTINAS -----------------
+@app.route('/rutinas')
+def rutinas():
+    if "usuario" not in session:
+        return redirect(url_for('login'))
+    return render_template("rutinas.html", usuario=session["usuario"])
+
+
 # ----------------- PANEL ADMIN -----------------
 ADMIN_EMAIL = "andresfelipeaguasaco@gmail.com"
 
