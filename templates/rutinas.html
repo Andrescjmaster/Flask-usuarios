@@ -4,6 +4,7 @@
   <h2 class="text-center mb-4">💪 Rutinas de Entrenamiento</h2>
   <p class="text-center">Selecciona un entorno y descubre rutinas diseñadas para ese espacio.</p>
 
+  <!-- TARJETAS DE CATEGORÍAS -->
   <div class="row mt-4">
     <!-- RUTINAS EN CASA -->
     <div class="col-md-4">
@@ -13,18 +14,9 @@
         <button class="btn btn-primary w-100" onclick="toggleSection('casa')">Ver Rutinas</button>
         <div id="casa" class="rutina-section mt-3 collapse">
           <ul class="list-group">
-            <li class="list-group-item" onclick="mostrarDescripcion(this, 'casa1')">
-              Rutina Full Body (sin pesas)
-              <div id="casa1" class="descripcion"></div>
-            </li>
-            <li class="list-group-item" onclick="mostrarDescripcion(this, 'casa2')">
-              Cardio 20 min en casa
-              <div id="casa2" class="descripcion"></div>
-            </li>
-            <li class="list-group-item" onclick="mostrarDescripcion(this, 'casa3')">
-              Yoga y estiramientos matutinos
-              <div id="casa3" class="descripcion"></div>
-            </li>
+            <li class="list-group-item" onclick="mostrarRutinaDetallada('Rutina Full Body (sin pesas)')">Rutina Full Body (sin pesas)</li>
+            <li class="list-group-item" onclick="mostrarRutinaDetallada('Cardio 20 min en casa')">Cardio 20 min en casa</li>
+            <li class="list-group-item" onclick="mostrarRutinaDetallada('Yoga y estiramientos matutinos')">Yoga y estiramientos matutinos</li>
           </ul>
         </div>
       </div>
@@ -38,18 +30,9 @@
         <button class="btn btn-primary w-100" onclick="toggleSection('laboral')">Ver Rutinas</button>
         <div id="laboral" class="rutina-section mt-3 collapse">
           <ul class="list-group">
-            <li class="list-group-item" onclick="mostrarDescripcion(this, 'lab1')">
-              Ejercicios de estiramiento en oficina
-              <div id="lab1" class="descripcion"></div>
-            </li>
-            <li class="list-group-item" onclick="mostrarDescripcion(this, 'lab2')">
-              Pausas activas de 10 minutos
-              <div id="lab2" class="descripcion"></div>
-            </li>
-            <li class="list-group-item" onclick="mostrarDescripcion(this, 'lab3')">
-              Movilidad cervical y lumbar
-              <div id="lab3" class="descripcion"></div>
-            </li>
+            <li class="list-group-item" onclick="mostrarRutinaDetallada('Ejercicios de estiramiento en oficina')">Ejercicios de estiramiento en oficina</li>
+            <li class="list-group-item" onclick="mostrarRutinaDetallada('Pausas activas de 10 minutos')">Pausas activas de 10 minutos</li>
+            <li class="list-group-item" onclick="mostrarRutinaDetallada('Movilidad cervical y lumbar')">Movilidad cervical y lumbar</li>
           </ul>
         </div>
       </div>
@@ -63,22 +46,21 @@
         <button class="btn btn-primary w-100" onclick="toggleSection('airelibre')">Ver Rutinas</button>
         <div id="airelibre" class="rutina-section mt-3 collapse">
           <ul class="list-group">
-            <li class="list-group-item" onclick="mostrarDescripcion(this, 'aire1')">
-              Caminata + trote ligero
-              <div id="aire1" class="descripcion"></div>
-            </li>
-            <li class="list-group-item" onclick="mostrarDescripcion(this, 'aire2')">
-              Circuito de ejercicios en parque
-              <div id="aire2" class="descripcion"></div>
-            </li>
-            <li class="list-group-item" onclick="mostrarDescripcion(this, 'aire3')">
-              Entrenamiento con peso corporal
-              <div id="aire3" class="descripcion"></div>
-            </li>
+            <li class="list-group-item" onclick="mostrarRutinaDetallada('Caminata + trote ligero')">Caminata + trote ligero</li>
+            <li class="list-group-item" onclick="mostrarRutinaDetallada('Circuito de ejercicios en parque')">Circuito de ejercicios en parque</li>
+            <li class="list-group-item" onclick="mostrarRutinaDetallada('Entrenamiento con peso corporal')">Entrenamiento con peso corporal</li>
           </ul>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- SECCIÓN DETALLADA (DINÁMICA) -->
+  <div id="detalle-rutina" class="mt-5 p-4 rounded shadow-sm bg-light" style="display:none;">
+    <h3 id="titulo-rutina" class="text-center mb-3"></h3>
+    <p id="descripcion-rutina" class="text-center"></p>
+    <hr>
+    <ol id="pasos-rutina" class="list-group list-group-numbered"></ol>
   </div>
 </div>
 
@@ -92,34 +74,114 @@ function toggleSection(id) {
   section.classList.toggle('show');
 }
 
-function mostrarDescripcion(elemento, idDescripcion) {
-  const descripcion = document.getElementById(idDescripcion);
-
-  // Cerrar todas las demás descripciones
-  document.querySelectorAll('.descripcion').forEach(desc => {
-    if (desc !== descripcion) desc.innerHTML = "";
-  });
-
-  // Si ya está abierta, la cierra
-  if (descripcion.innerHTML.trim() !== "") {
-    descripcion.innerHTML = "";
-    return;
-  }
-
-  // Descripciones personalizadas
-  const textos = {
-    casa1: "<b>Rutina Full Body:</b> Realiza 3 rondas de 15 sentadillas, 10 flexiones y 20 abdominales. Descansa 30 segundos entre cada ronda.",
-    casa2: "<b>Cardio en Casa:</b> Haz saltos de tijera, escaladores y skipping durante 20 minutos en intervalos de 40s trabajo / 20s descanso.",
-    casa3: "<b>Yoga Matutino:</b> Dedica 15 minutos a posturas básicas (perro boca abajo, cobra, guerrero) y respiración consciente.",
-    lab1: "<b>Estiramiento en Oficina:</b> Estira cuello, hombros y espalda cada hora. Mantén cada posición 15 segundos.",
-    lab2: "<b>Pausas Activas:</b> Levántate, camina y realiza círculos con brazos y piernas por 10 minutos para mejorar la circulación.",
-    lab3: "<b>Movilidad Cervical y Lumbar:</b> Gira suavemente la cabeza, eleva los hombros y arquea la espalda para aliviar tensión.",
-    aire1: "<b>Caminata + Trote:</b> Alterna 5 min de caminata con 3 min de trote por 30 minutos totales.",
-    aire2: "<b>Circuito en Parque:</b> 3 rondas de dominadas, fondos, abdominales y saltos al banco. Descanso de 1 min entre rondas.",
-    aire3: "<b>Entrenamiento con Peso Corporal:</b> Flexiones, sentadillas, zancadas y plancha — 4 rondas de 12 repeticiones cada una."
+function mostrarRutinaDetallada(nombre) {
+  const detalle = document.getElementById('detalle-rutina');
+  const titulo = document.getElementById('titulo-rutina');
+  const descripcion = document.getElementById('descripcion-rutina');
+  const pasos = document.getElementById('pasos-rutina');
+  
+  // Base de datos de rutinas
+  const rutinas = {
+    "Rutina Full Body (sin pesas)": {
+      descripcion: "Ideal para trabajar todo el cuerpo desde casa sin necesidad de equipo.",
+      pasos: [
+        "Calentamiento de 5 minutos (saltos suaves o trote en el lugar).",
+        "3 rondas de 15 sentadillas, 10 flexiones y 20 abdominales.",
+        "30 segundos de descanso entre rondas.",
+        "Estiramientos finales de piernas y espalda."
+      ]
+    },
+    "Cardio 20 min en casa": {
+      descripcion: "Un entrenamiento cardiovascular corto e intenso sin salir de casa.",
+      pasos: [
+        "5 min de calentamiento: saltos de tijera y skipping.",
+        "Circuito de 4 rondas: 40s trabajo / 20s descanso.",
+        "Ejercicios: jumping jacks, escaladores, burpees, sentadillas con salto.",
+        "Enfriamiento con respiración profunda y estiramientos."
+      ]
+    },
+    "Yoga y estiramientos matutinos": {
+      descripcion: "Perfecto para comenzar el día con energía y equilibrio.",
+      pasos: [
+        "Postura del perro boca abajo (30s).",
+        "Cobra y guerrero (30s cada lado).",
+        "Torsión espinal y respiración profunda.",
+        "Relajación final (Savasana, 1 min)."
+      ]
+    },
+    "Ejercicios de estiramiento en oficina": {
+      descripcion: "Alivia la tensión del trabajo con estiramientos sencillos.",
+      pasos: [
+        "Giros suaves de cuello (10 repeticiones).",
+        "Estiramiento de hombros hacia atrás (3 veces).",
+        "Torsiones de tronco en silla (10 repeticiones).",
+        "Respiración controlada por 1 minuto."
+      ]
+    },
+    "Pausas activas de 10 minutos": {
+      descripcion: "Ejercicios rápidos para reactivar tu cuerpo y mente.",
+      pasos: [
+        "Camina alrededor del escritorio por 1 minuto.",
+        "Haz círculos con brazos y piernas (30 segundos).",
+        "Sentadillas y elevaciones de talones (3 series).",
+        "Estiramiento de cuello y muñecas."
+      ]
+    },
+    "Movilidad cervical y lumbar": {
+      descripcion: "Reduce la rigidez muscular con movimientos controlados.",
+      pasos: [
+        "Giros lentos de cuello y hombros.",
+        "Inclinaciones laterales del tronco.",
+        "Arqueo lumbar con manos en la cadera.",
+        "Estiramiento completo de espalda."
+      ]
+    },
+    "Caminata + trote ligero": {
+      descripcion: "Excelente rutina para mejorar tu resistencia al aire libre.",
+      pasos: [
+        "Camina 5 minutos para calentar.",
+        "Alterna 5 min caminata / 3 min trote (30 minutos).",
+        "Respira profundamente y mantén buena postura.",
+        "Estiramiento final de piernas."
+      ]
+    },
+    "Circuito de ejercicios en parque": {
+      descripcion: "Aprovecha bancos y barras del parque para un circuito completo.",
+      pasos: [
+        "Dominadas en barra (10 repeticiones).",
+        "Fondos en banco (12 repeticiones).",
+        "Abdominales en césped (20 repeticiones).",
+        "Saltos al banco y descanso de 1 min (3 rondas)."
+      ]
+    },
+    "Entrenamiento con peso corporal": {
+      descripcion: "Fortalece tu cuerpo usando solo tu peso y energía.",
+      pasos: [
+        "Calentamiento articular de 5 min.",
+        "4 rondas de 12 flexiones, 15 sentadillas y 10 zancadas por pierna.",
+        "Plancha abdominal de 45 segundos.",
+        "Estiramientos finales."
+      ]
+    }
   };
 
-  descripcion.innerHTML = `<div class='alert alert-light mt-2 border'>${textos[idDescripcion]}</div>`;
+  // Mostrar la rutina seleccionada
+  const rutina = rutinas[nombre];
+  if (!rutina) return;
+
+  titulo.textContent = nombre;
+  descripcion.textContent = rutina.descripcion;
+  pasos.innerHTML = "";
+
+  rutina.pasos.forEach(p => {
+    const li = document.createElement('li');
+    li.classList.add('list-group-item');
+    li.textContent = p;
+    pasos.appendChild(li);
+  });
+
+  detalle.style.display = "block";
+  detalle.scrollIntoView({ behavior: "smooth" });
 }
 </script>
 
@@ -135,9 +197,12 @@ function mostrarDescripcion(elemento, idDescripcion) {
 .list-group-item:hover {
   background-color: #e9ecef;
 }
-.descripcion {
-  font-size: 0.9rem;
-  color: #333;
+#detalle-rutina {
+  animation: fadeIn 0.5s ease-in-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
 {% endblock %}
