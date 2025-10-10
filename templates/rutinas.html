@@ -5,7 +5,7 @@
   <p class="text-center">Selecciona un entorno y descubre rutinas diseñadas para ese espacio.</p>
 
   <div class="row mt-4">
-    <!-- Rutinas en Casa -->
+    <!-- RUTINAS EN CASA -->
     <div class="col-md-4">
       <div class="card p-3 shadow-sm">
         <h5>🏠 Rutinas en Casa</h5>
@@ -13,15 +13,24 @@
         <button class="btn btn-primary w-100" onclick="toggleSection('casa')">Ver Rutinas</button>
         <div id="casa" class="rutina-section mt-3 collapse">
           <ul class="list-group">
-            <li class="list-group-item">Rutina Full Body (sin pesas)</li>
-            <li class="list-group-item">Cardio 20 min en casa</li>
-            <li class="list-group-item">Yoga y estiramientos matutinos</li>
+            <li class="list-group-item" onclick="mostrarDescripcion(this, 'casa1')">
+              Rutina Full Body (sin pesas)
+              <div id="casa1" class="descripcion"></div>
+            </li>
+            <li class="list-group-item" onclick="mostrarDescripcion(this, 'casa2')">
+              Cardio 20 min en casa
+              <div id="casa2" class="descripcion"></div>
+            </li>
+            <li class="list-group-item" onclick="mostrarDescripcion(this, 'casa3')">
+              Yoga y estiramientos matutinos
+              <div id="casa3" class="descripcion"></div>
+            </li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Rutinas Laborales -->
+    <!-- RUTINAS LABORALES -->
     <div class="col-md-4">
       <div class="card p-3 shadow-sm">
         <h5>💼 Rutinas Laborales</h5>
@@ -29,15 +38,24 @@
         <button class="btn btn-primary w-100" onclick="toggleSection('laboral')">Ver Rutinas</button>
         <div id="laboral" class="rutina-section mt-3 collapse">
           <ul class="list-group">
-            <li class="list-group-item">Ejercicios de estiramiento en oficina</li>
-            <li class="list-group-item">Pausas activas de 10 minutos</li>
-            <li class="list-group-item">Movilidad cervical y lumbar</li>
+            <li class="list-group-item" onclick="mostrarDescripcion(this, 'lab1')">
+              Ejercicios de estiramiento en oficina
+              <div id="lab1" class="descripcion"></div>
+            </li>
+            <li class="list-group-item" onclick="mostrarDescripcion(this, 'lab2')">
+              Pausas activas de 10 minutos
+              <div id="lab2" class="descripcion"></div>
+            </li>
+            <li class="list-group-item" onclick="mostrarDescripcion(this, 'lab3')">
+              Movilidad cervical y lumbar
+              <div id="lab3" class="descripcion"></div>
+            </li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Rutinas al Aire Libre -->
+    <!-- RUTINAS AL AIRE LIBRE -->
     <div class="col-md-4">
       <div class="card p-3 shadow-sm">
         <h5>🌳 Rutinas al Aire Libre</h5>
@@ -45,9 +63,18 @@
         <button class="btn btn-primary w-100" onclick="toggleSection('airelibre')">Ver Rutinas</button>
         <div id="airelibre" class="rutina-section mt-3 collapse">
           <ul class="list-group">
-            <li class="list-group-item">Caminata + trote ligero</li>
-            <li class="list-group-item">Circuito de ejercicios en parque</li>
-            <li class="list-group-item">Entrenamiento con peso corporal</li>
+            <li class="list-group-item" onclick="mostrarDescripcion(this, 'aire1')">
+              Caminata + trote ligero
+              <div id="aire1" class="descripcion"></div>
+            </li>
+            <li class="list-group-item" onclick="mostrarDescripcion(this, 'aire2')">
+              Circuito de ejercicios en parque
+              <div id="aire2" class="descripcion"></div>
+            </li>
+            <li class="list-group-item" onclick="mostrarDescripcion(this, 'aire3')">
+              Entrenamiento con peso corporal
+              <div id="aire3" class="descripcion"></div>
+            </li>
           </ul>
         </div>
       </div>
@@ -59,14 +86,40 @@
 function toggleSection(id) {
   const section = document.getElementById(id);
   const allSections = document.querySelectorAll('.rutina-section');
-
-  // Cierra las demás secciones
   allSections.forEach(sec => {
     if (sec !== section) sec.classList.remove('show');
   });
-
-  // Alterna la visibilidad de la seleccionada
   section.classList.toggle('show');
+}
+
+function mostrarDescripcion(elemento, idDescripcion) {
+  const descripcion = document.getElementById(idDescripcion);
+
+  // Cerrar todas las demás descripciones
+  document.querySelectorAll('.descripcion').forEach(desc => {
+    if (desc !== descripcion) desc.innerHTML = "";
+  });
+
+  // Si ya está abierta, la cierra
+  if (descripcion.innerHTML.trim() !== "") {
+    descripcion.innerHTML = "";
+    return;
+  }
+
+  // Descripciones personalizadas
+  const textos = {
+    casa1: "<b>Rutina Full Body:</b> Realiza 3 rondas de 15 sentadillas, 10 flexiones y 20 abdominales. Descansa 30 segundos entre cada ronda.",
+    casa2: "<b>Cardio en Casa:</b> Haz saltos de tijera, escaladores y skipping durante 20 minutos en intervalos de 40s trabajo / 20s descanso.",
+    casa3: "<b>Yoga Matutino:</b> Dedica 15 minutos a posturas básicas (perro boca abajo, cobra, guerrero) y respiración consciente.",
+    lab1: "<b>Estiramiento en Oficina:</b> Estira cuello, hombros y espalda cada hora. Mantén cada posición 15 segundos.",
+    lab2: "<b>Pausas Activas:</b> Levántate, camina y realiza círculos con brazos y piernas por 10 minutos para mejorar la circulación.",
+    lab3: "<b>Movilidad Cervical y Lumbar:</b> Gira suavemente la cabeza, eleva los hombros y arquea la espalda para aliviar tensión.",
+    aire1: "<b>Caminata + Trote:</b> Alterna 5 min de caminata con 3 min de trote por 30 minutos totales.",
+    aire2: "<b>Circuito en Parque:</b> 3 rondas de dominadas, fondos, abdominales y saltos al banco. Descanso de 1 min entre rondas.",
+    aire3: "<b>Entrenamiento con Peso Corporal:</b> Flexiones, sentadillas, zancadas y plancha — 4 rondas de 12 repeticiones cada una."
+  };
+
+  descripcion.innerHTML = `<div class='alert alert-light mt-2 border'>${textos[idDescripcion]}</div>`;
 }
 </script>
 
@@ -76,6 +129,15 @@ function toggleSection(id) {
   border: none;
   margin-bottom: 5px;
   border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.list-group-item:hover {
+  background-color: #e9ecef;
+}
+.descripcion {
+  font-size: 0.9rem;
+  color: #333;
 }
 </style>
 {% endblock %}
