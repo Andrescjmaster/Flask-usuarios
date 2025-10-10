@@ -7,11 +7,13 @@
   <!-- TARJETAS DE CATEGORÍAS -->
   <div class="row mt-4">
     <!-- RUTINAS EN CASA -->
-    <div class="col-md-4">
-      <div class="card p-3 shadow-sm">
+    <div class="col-md-4 mb-4">
+      <div class="card p-3 shadow-sm h-100">
         <h5>🏠 Rutinas en Casa</h5>
         <p>Entrena desde la comodidad de tu hogar con poco o ningún equipo.</p>
-        <button class="btn btn-primary w-100" onclick="toggleSection('casa')">Ver Rutinas</button>
+        <button class="btn btn-primary w-100" type="button" onclick="toggleSection('casa')">
+          Ver Rutinas
+        </button>
         <div id="casa" class="rutina-section mt-3 collapse">
           <ul class="list-group">
             <li class="list-group-item" onclick="mostrarRutinaDetallada('Rutina Full Body (sin pesas)')">Rutina Full Body (sin pesas)</li>
@@ -23,11 +25,13 @@
     </div>
 
     <!-- RUTINAS LABORALES -->
-    <div class="col-md-4">
-      <div class="card p-3 shadow-sm">
+    <div class="col-md-4 mb-4">
+      <div class="card p-3 shadow-sm h-100">
         <h5>💼 Rutinas Laborales</h5>
         <p>Ejercicios cortos para realizar durante tu jornada laboral.</p>
-        <button class="btn btn-primary w-100" onclick="toggleSection('laboral')">Ver Rutinas</button>
+        <button class="btn btn-primary w-100" type="button" onclick="toggleSection('laboral')">
+          Ver Rutinas
+        </button>
         <div id="laboral" class="rutina-section mt-3 collapse">
           <ul class="list-group">
             <li class="list-group-item" onclick="mostrarRutinaDetallada('Ejercicios de estiramiento en oficina')">Ejercicios de estiramiento en oficina</li>
@@ -39,11 +43,13 @@
     </div>
 
     <!-- RUTINAS AL AIRE LIBRE -->
-    <div class="col-md-4">
-      <div class="card p-3 shadow-sm">
+    <div class="col-md-4 mb-4">
+      <div class="card p-3 shadow-sm h-100">
         <h5>🌳 Rutinas al Aire Libre</h5>
         <p>Aprovecha el espacio exterior para entrenar y conectar con la naturaleza.</p>
-        <button class="btn btn-primary w-100" onclick="toggleSection('airelibre')">Ver Rutinas</button>
+        <button class="btn btn-primary w-100" type="button" onclick="toggleSection('airelibre')">
+          Ver Rutinas
+        </button>
         <div id="airelibre" class="rutina-section mt-3 collapse">
           <ul class="list-group">
             <li class="list-group-item" onclick="mostrarRutinaDetallada('Caminata + trote ligero')">Caminata + trote ligero</li>
@@ -56,7 +62,7 @@
   </div>
 
   <!-- SECCIÓN DETALLADA (DINÁMICA) -->
-  <div id="detalle-rutina" class="mt-5 p-4 rounded shadow-sm bg-light" style="display:none;">
+  <div id="detalle-rutina" class="mt-5 p-4 rounded shadow-sm bg-light d-none">
     <h3 id="titulo-rutina" class="text-center mb-3"></h3>
     <p id="descripcion-rutina" class="text-center"></p>
     <hr>
@@ -235,15 +241,12 @@ function mostrarRutinaDetallada(nombre) {
     </ul>
   `;
 
-  pasos.innerHTML = "";
-  rutina.pasos.forEach(p => {
-    const li = document.createElement('li');
-    li.classList.add('list-group-item');
-    li.textContent = p;
-    pasos.appendChild(li);
-  });
+  pasos.innerHTML = rutina.pasos
+    .map(p => `<li class="list-group-item">${p}</li>`)
+    .join("");
 
-  detalle.style.display = "block";
+  detalle.classList.remove("d-none");
   detalle.scrollIntoView({ behavior: "smooth" });
 }
 </script>
+{% endblock %}
