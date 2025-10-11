@@ -1,206 +1,143 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container py-5">
-  <h2 class="text-center mb-3 fw-bold text-primary">💪 Rutinas de Entrenamiento</h2>
-  <p class="text-center text-muted mb-5">Explora diferentes tipos de rutinas diseñadas para tus necesidades y espacios.</p>
+<div class="container mt-5">
+  <h2 class="text-center mb-4 fw-bold text-primary">💪 Rutinas de Entrenamiento</h2>
+  <p class="text-center text-muted">Selecciona un entorno y descubre rutinas diseñadas especialmente para ti.</p>
 
-  <!-- SECCIÓN DE CATEGORÍAS -->
-  <div class="row g-4" id="contenedor-tarjetas">
-
-    <!-- 🏠 Rutinas en Casa -->
+  <!-- TARJETAS DE CATEGORÍAS -->
+  <div class="row mt-4 g-4">
+    {% set categorias = [
+      {'id':'casa','icon':'🏠','titulo':'Rutinas en Casa','desc':'Entrena desde la comodidad de tu hogar con poco o ningún equipo.'},
+      {'id':'laboral','icon':'💼','titulo':'Rutinas Laborales','desc':'Ejercicios cortos para realizar durante tu jornada laboral.'},
+      {'id':'airelibre','icon':'🌳','titulo':'Rutinas al Aire Libre','desc':'Aprovecha el espacio exterior para entrenar y conectar con la naturaleza.'},
+      {'id':'rehabilitacion','icon':'❤️','titulo':'Rutinas de Rehabilitación','desc':'Ejercicios suaves enfocados en movilidad y recuperación.'},
+      {'id':'hiit','icon':'⚡','titulo':'Rutinas HIIT (Alta Intensidad)','desc':'Entrenamientos intensos y cortos para quemar grasa rápidamente.'},
+      {'id':'mindfulness','icon':'☯️','titulo':'Mindfulness y Relajación','desc':'Ejercicios para la calma mental, control del estrés y bienestar general.'}
+    ] %}
+    {% for cat in categorias %}
     <div class="col-md-4">
-      <div class="card categoria-card shadow-sm h-100 border-0">
-        <div class="card-body d-flex flex-column">
-          <h5 class="fw-semibold mb-2">🏠 Rutinas en Casa</h5>
-          <p class="text-muted flex-grow-1">
-            Entrena desde la comodidad de tu hogar con ejercicios prácticos, adaptables y sin necesidad de equipos.
-          </p>
-          <button class="btn btn-outline-primary w-100 mt-2 fw-semibold" onclick="toggleSection('casa')">Ver Rutinas</button>
-
-          <!-- Contenido desplegable -->
-          <div id="casa" class="rutina-section mt-3 collapse">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Rutina Full Body (sin pesas)', this)">Rutina Full Body (sin pesas)</li>
-              <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Cardio 20 min en casa', this)">Cardio 20 min en casa</li>
-              <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Yoga y estiramientos matutinos', this)">Yoga y estiramientos matutinos</li>
-            </ul>
-          </div>
+      <div class="card p-4 h-100 shadow-sm border-0 categoria-card">
+        <h5>{{cat.icon}} {{cat.titulo}}</h5>
+        <p class="text-muted small">{{cat.desc}}</p>
+        <button class="btn btn-gradient w-100" type="button" onclick="toggleSection('{{cat.id}}')">Ver Rutinas</button>
+        <div id="{{cat.id}}" class="rutina-section mt-3 collapse">
+          <ul class="list-group rutina-list"></ul>
         </div>
       </div>
     </div>
-
-    <!-- 💼 Rutinas Laborales -->
-    <div class="col-md-4">
-      <div class="card categoria-card shadow-sm h-100 border-0">
-        <div class="card-body d-flex flex-column">
-          <h5 class="fw-semibold mb-2">💼 Rutinas Laborales</h5>
-          <p class="text-muted flex-grow-1">
-            Mantén tu cuerpo activo durante el trabajo. Rutinas breves que puedes realizar en tu oficina o espacio laboral.
-          </p>
-          <button class="btn btn-outline-primary w-100 mt-2 fw-semibold" onclick="toggleSection('laboral')">Ver Rutinas</button>
-
-          <!-- Contenido desplegable -->
-          <div id="laboral" class="rutina-section mt-3 collapse">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Ejercicios de estiramiento en oficina', this)">Ejercicios de estiramiento en oficina</li>
-              <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Pausas activas de 10 minutos', this)">Pausas activas de 10 minutos</li>
-              <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Movilidad cervical y lumbar', this)">Movilidad cervical y lumbar</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 🌳 Rutinas al Aire Libre -->
-    <div class="col-md-4">
-      <div class="card categoria-card shadow-sm h-100 border-0">
-        <div class="card-body d-flex flex-column">
-          <h5 class="fw-semibold mb-2">🌳 Rutinas al Aire Libre</h5>
-          <p class="text-muted flex-grow-1">
-            Disfruta de la naturaleza mientras fortaleces tu cuerpo. Ejercicios dinámicos ideales para parques o espacios abiertos.
-          </p>
-          <button class="btn btn-outline-primary w-100 mt-2 fw-semibold" onclick="toggleSection('airelibre')">Ver Rutinas</button>
-
-          <!-- Contenido desplegable -->
-          <div id="airelibre" class="rutina-section mt-3 collapse">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Caminata + trote ligero', this)">Caminata + trote ligero</li>
-              <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Circuito de ejercicios en parque', this)">Circuito de ejercicios en parque</li>
-              <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Entrenamiento con peso corporal', this)">Entrenamiento con peso corporal</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    {% endfor %}
   </div>
 
-  <!-- BOTÓN VOLVER -->
-  <div class="text-end mt-4">
-    <button id="btn-volver" class="btn btn-outline-secondary d-none" onclick="restaurarVista()">← Ver todas las rutinas</button>
-  </div>
-
-  <!-- SECCIÓN DETALLE -->
-  <div id="detalle-rutina" class="mt-5 p-4 rounded bg-white shadow-sm border d-none">
-    <h3 id="titulo-rutina" class="text-center text-primary mb-3 fw-bold"></h3>
+  <!-- SECCIÓN DETALLADA -->
+  <div id="detalle-rutina" class="mt-5 p-4 rounded shadow-sm bg-light d-none animate__animated animate__fadeIn">
+    <button class="btn btn-outline-secondary mb-3" onclick="volverALista()">← Ver todas las rutinas</button>
+    <h3 id="titulo-rutina" class="text-center mb-3 fw-bold text-primary"></h3>
     <p id="descripcion-rutina" class="text-center text-muted"></p>
-    <div id="meta-rutina" class="text-center small mb-3 text-secondary"></div>
     <hr>
-    <div id="acordeon-pasos" class="accordion"></div>
+    <ol id="pasos-rutina" class="list-group list-group-numbered"></ol>
   </div>
 </div>
 
-<!-- 🎨 Estilos visuales -->
+<!-- ESTILO MEJORADO -->
 <style>
+  .btn-gradient {
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    border: none;
+    color: white;
+    transition: 0.3s;
+    font-weight: 500;
+  }
+  .btn-gradient:hover {
+    transform: scale(1.03);
+    background: linear-gradient(90deg, #0056b3, #0096c7);
+  }
   .categoria-card {
-    border-radius: 14px;
-    transition: all 0.25s ease;
-    background-color: #f9fafc;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 15px;
   }
   .categoria-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
-    background-color: #fff;
+    transform: translateY(-6px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
   }
-  .rutina-item {
+  .rutina-list li {
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.3s ease;
   }
-  .rutina-item:hover {
-    background-color: #0d6efd;
-    color: #fff;
-  }
-  .rutina-item.activa {
-    background-color: #0d6efd !important;
-    color: white;
-    font-weight: 600;
-  }
-  .categoria-card.inactiva {
-    opacity: 0.35;
-    pointer-events: none;
-    transition: opacity .25s ease;
-  }
-  #detalle-rutina {
-    animation: fadeIn 0.3s ease;
-  }
-  @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(10px);}
-    to {opacity: 1; transform: translateY(0);}
-  }
-  .card-body h5 {
-    color: #0d6efd;
-  }
-  .accordion-button {
-    background-color: #f8f9fa;
-    font-weight: 600;
-  }
-  .accordion-button:not(.collapsed) {
-    color: #0d6efd;
-    background-color: #e9f2ff;
-  }
-  .accordion-body {
-    background-color: #fff;
-    font-size: 0.95rem;
-    line-height: 1.6;
+  .rutina-list li:hover {
+    background-color: #f0f8ff;
+    transform: scale(1.02);
   }
 </style>
 
-<!-- 🧠 Script de interacción -->
 <script>
-  function toggleSection(id) {
-    const secciones = document.querySelectorAll('.rutina-section');
-    secciones.forEach(sec => {
-      if (sec.id !== id) sec.classList.remove('show');
-    });
-    document.getElementById(id).classList.toggle('show');
-  }
+const RUTINAS = {
+  "casa": [
+    "Rutina Full Body (sin pesas)",
+    "Cardio 20 min en casa",
+    "Yoga y estiramientos matutinos"
+  ],
+  "laboral": [
+    "Ejercicios de estiramiento en oficina",
+    "Pausas activas de 10 minutos",
+    "Movilidad cervical y lumbar"
+  ],
+  "airelibre": [
+    "Caminata + trote ligero",
+    "Circuito de ejercicios en parque",
+    "Entrenamiento con peso corporal"
+  ],
+  "rehabilitacion": [
+    "Movilidad articular suave",
+    "Ejercicios post-lesión",
+    "Fortalecimiento progresivo"
+  ],
+  "hiit": [
+    "HIIT 15 minutos (sin equipo)",
+    "Cardio explosivo 10 minutos",
+    "Tabata express"
+  ],
+  "mindfulness": [
+    "Relajación guiada",
+    "Respiración consciente",
+    "Meditación en movimiento"
+  ]
+};
 
-  function mostrarRutinaDetallada(nombre, elemento) {
-    document.querySelectorAll('.rutina-item').forEach(item => item.classList.remove('activa'));
-    elemento.classList.add('activa');
+function toggleSection(id) {
+  document.querySelectorAll('.rutina-section').forEach(sec => {
+    if (sec.id !== id) sec.classList.remove('show');
+  });
 
-    const tarjetas = document.querySelectorAll('.categoria-card');
-    tarjetas.forEach(card => {
-      if (!card.contains(elemento)) card.classList.add('inactiva');
-    });
+  const section = document.getElementById(id);
+  const list = section.querySelector('.rutina-list');
+  list.innerHTML = RUTINAS[id].map(r => `
+    <li class="list-group-item" onclick="mostrarRutinaDetallada('${r}')">${r}</li>
+  `).join("");
+  section.classList.toggle('show');
+}
 
-    document.getElementById('detalle-rutina').classList.remove('d-none');
-    document.getElementById('btn-volver').classList.remove('d-none');
-    document.getElementById('titulo-rutina').innerText = nombre;
-    document.getElementById('descripcion-rutina').innerText = "Descripción detallada de " + nombre + ". Aquí puedes incluir pasos, recomendaciones y consejos prácticos.";
-    document.getElementById('acordeon-pasos').innerHTML = `
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#paso1">Paso 1</button>
-        </h2>
-        <div id="paso1" class="accordion-collapse collapse show">
-          <div class="accordion-body">Explicación detallada del paso 1 para ${nombre}. Incluye duración, repeticiones y técnica correcta.</div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#paso2">Paso 2</button>
-        </h2>
-        <div id="paso2" class="accordion-collapse collapse">
-          <div class="accordion-body">Detalles del paso 2: consejos para mantener la postura, respiración y ritmo adecuado.</div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#paso3">Paso 3</button>
-        </h2>
-        <div id="paso3" class="accordion-collapse collapse">
-          <div class="accordion-body">Resumen final, estiramientos de cierre y consejos de recuperación para ${nombre}.</div>
-        </div>
-      </div>
-    `;
-  }
+function mostrarRutinaDetallada(nombre) {
+  const detalle = document.getElementById('detalle-rutina');
+  const titulo = document.getElementById('titulo-rutina');
+  const descripcion = document.getElementById('descripcion-rutina');
+  const pasos = document.getElementById('pasos-rutina');
 
-  function restaurarVista() {
-    document.querySelectorAll('.categoria-card').forEach(card => card.classList.remove('inactiva'));
-    document.querySelectorAll('.rutina-item').forEach(item => item.classList.remove('activa'));
-    document.getElementById('detalle-rutina').classList.add('d-none');
-    document.getElementById('btn-volver').classList.add('d-none');
-  }
+  // Aquí puedes mantener la estructura original de tus descripciones
+  titulo.textContent = nombre;
+  descripcion.innerHTML = "<p>Descripción detallada y pasos personalizados para esta rutina.</p>";
+  pasos.innerHTML = `
+    <li class="list-group-item">Paso 1: Calentamiento general (3-5 minutos)</li>
+    <li class="list-group-item">Paso 2: Ejercicio principal adaptado a la rutina</li>
+    <li class="list-group-item">Paso 3: Estiramientos y respiración consciente</li>
+  `;
+  
+  detalle.classList.remove("d-none");
+  detalle.scrollIntoView({ behavior: "smooth" });
+}
+
+function volverALista() {
+  document.getElementById('detalle-rutina').classList.add('d-none');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 </script>
 {% endblock %}
