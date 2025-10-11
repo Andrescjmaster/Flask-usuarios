@@ -14,9 +14,9 @@
         <button class="btn btn-primary w-100" type="button" onclick="toggleSection('casa')">Ver Rutinas</button>
         <div id="casa" class="rutina-section mt-3 collapse">
           <ul class="list-group">
-            <li class="list-group-item" onclick="mostrarRutinaDetallada('Rutina Full Body (sin pesas)')">Rutina Full Body (sin pesas)</li>
-            <li class="list-group-item" onclick="mostrarRutinaDetallada('Cardio 20 min en casa')">Cardio 20 min en casa</li>
-            <li class="list-group-item" onclick="mostrarRutinaDetallada('Yoga y estiramientos matutinos')">Yoga y estiramientos matutinos</li>
+            <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Rutina Full Body (sin pesas)')">Rutina Full Body (sin pesas)</li>
+            <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Cardio 20 min en casa')">Cardio 20 min en casa</li>
+            <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Yoga y estiramientos matutinos')">Yoga y estiramientos matutinos</li>
           </ul>
         </div>
       </div>
@@ -30,9 +30,9 @@
         <button class="btn btn-primary w-100" type="button" onclick="toggleSection('laboral')">Ver Rutinas</button>
         <div id="laboral" class="rutina-section mt-3 collapse">
           <ul class="list-group">
-            <li class="list-group-item" onclick="mostrarRutinaDetallada('Ejercicios de estiramiento en oficina')">Ejercicios de estiramiento en oficina</li>
-            <li class="list-group-item" onclick="mostrarRutinaDetallada('Pausas activas de 10 minutos')">Pausas activas de 10 minutos</li>
-            <li class="list-group-item" onclick="mostrarRutinaDetallada('Movilidad cervical y lumbar')">Movilidad cervical y lumbar</li>
+            <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Ejercicios de estiramiento en oficina')">Ejercicios de estiramiento en oficina</li>
+            <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Pausas activas de 10 minutos')">Pausas activas de 10 minutos</li>
+            <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Movilidad cervical y lumbar')">Movilidad cervical y lumbar</li>
           </ul>
         </div>
       </div>
@@ -46,9 +46,9 @@
         <button class="btn btn-primary w-100" type="button" onclick="toggleSection('airelibre')">Ver Rutinas</button>
         <div id="airelibre" class="rutina-section mt-3 collapse">
           <ul class="list-group">
-            <li class="list-group-item" onclick="mostrarRutinaDetallada('Caminata + trote ligero')">Caminata + trote ligero</li>
-            <li class="list-group-item" onclick="mostrarRutinaDetallada('Circuito de ejercicios en parque')">Circuito de ejercicios en parque</li>
-            <li class="list-group-item" onclick="mostrarRutinaDetallada('Entrenamiento con peso corporal')">Entrenamiento con peso corporal</li>
+            <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Caminata + trote ligero')">Caminata + trote ligero</li>
+            <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Circuito de ejercicios en parque')">Circuito de ejercicios en parque</li>
+            <li class="list-group-item rutina-item" onclick="mostrarRutinaDetallada('Entrenamiento con peso corporal')">Entrenamiento con peso corporal</li>
           </ul>
         </div>
       </div>
@@ -63,6 +63,32 @@
     <ol id="pasos-rutina" class="list-group list-group-numbered"></ol>
   </div>
 </div>
+
+<!-- ESTILOS INTERACTIVOS -->
+<style>
+  .rutina-item {
+    cursor: pointer;
+    background-color: #f8f9fa;
+    border: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 12px 15px;
+    text-align: center;
+  }
+
+  .rutina-item:hover {
+    background-color: #007bff;
+    color: white;
+    transform: scale(1.03);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .rutina-item:active {
+    transform: scale(0.98);
+  }
+</style>
 
 <script>
 function toggleSection(id) {
@@ -80,7 +106,6 @@ function mostrarRutinaDetallada(nombre) {
   const pasos = document.getElementById('pasos-rutina');
 
   const rutinas = {
-    // ===== RUTINAS EN CASA =====
     "Rutina Full Body (sin pesas)": {
       descripcion: "Entrenamiento completo que trabaja todos los grupos musculares usando solo el peso corporal.",
       detalles: [
@@ -90,7 +115,7 @@ function mostrarRutinaDetallada(nombre) {
         "💪 Beneficios: fortalece piernas, brazos y core"
       ],
       pasos: [
-        "Calentamiento: 5 minutos de saltos suaves y movilidad articular.",
+        "Calentamiento: 5 minutos de movilidad articular.",
         "3 rondas de 15 sentadillas, 10 flexiones y 20 abdominales.",
         "Plancha durante 30 segundos al final de cada ronda.",
         "Descanso de 45 segundos entre rondas.",
@@ -109,7 +134,7 @@ function mostrarRutinaDetallada(nombre) {
         "5 minutos de calentamiento (marchas, giros de brazos).",
         "Circuito: jumping jacks, escaladores, sentadillas con salto, burpees (40 seg por ejercicio, 20 seg descanso).",
         "3 rondas completas.",
-        "2 minutos de recuperación final y respiración profunda."
+        "2 minutos de respiración profunda y estiramiento final."
       ]
     },
     "Yoga y estiramientos matutinos": {
@@ -127,8 +152,6 @@ function mostrarRutinaDetallada(nombre) {
         "Savasana (postura de relajación) durante 3 minutos."
       ]
     },
-
-    // ===== RUTINAS LABORALES =====
     "Ejercicios de estiramiento en oficina": {
       descripcion: "Movimientos ligeros para aliviar la tensión muscular durante la jornada.",
       detalles: [
@@ -176,8 +199,6 @@ function mostrarRutinaDetallada(nombre) {
         "Estiramiento de espalda baja y respiración profunda."
       ]
     },
-
-    // ===== RUTINAS AL AIRE LIBRE =====
     "Caminata + trote ligero": {
       descripcion: "Ejercicio cardiovascular moderado que combina caminata y trote suave.",
       detalles: [
