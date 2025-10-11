@@ -56,39 +56,151 @@
   </div>
 
   <!-- SECCIÓN DETALLADA -->
-  <div id="detalle-rutina" class="mt-5 p-4 rounded shadow-sm bg-light d-none animate__animated animate__fadeIn">
+  <div class="d-flex justify-content-end mb-2">
+    <button id="btn-volver" class="btn btn-outline-secondary d-none" onclick="restaurarVista()">← Ver todas las rutinas</button>
+  </div>
+
+  <div id="detalle-rutina" class="mt-2 p-4 rounded shadow-sm bg-light d-none">
     <h3 id="titulo-rutina" class="text-center mb-3"></h3>
     <p id="descripcion-rutina" class="text-center"></p>
+    <div id="meta-rutina" class="text-center mb-3"></div>
     <hr>
-    <ol id="pasos-rutina" class="list-group list-group-numbered"></ol>
+    <div id="acordeon-pasos" class="accordion"></div>
   </div>
 </div>
 
-<!-- ESTILOS -->
+<!-- ESTILOS LOCALES -->
 <style>
 .rutina-item {
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.18s ease;
 }
 .rutina-item:hover {
   background-color: #0d6efd;
-  color: white;
-  transform: scale(1.03);
+  color: #fff;
+  transform: translateY(-2px);
 }
 .rutina-item.activa {
   background-color: #0d6efd;
   color: white;
-  font-weight: bold;
+  font-weight: 600;
 }
 .categoria-card.inactiva {
-  opacity: 0.4;
+  opacity: 0.35;
   pointer-events: none;
-  transition: 0.5s ease;
+  transition: 0.25s ease;
 }
+#detalle-rutina { animation: fadeIn 220ms ease; }
+@keyframes fadeIn { from {opacity:0; transform: translateY(6px);} to {opacity:1; transform:none;} }
 </style>
 
-<!-- SCRIPT -->
+<!-- SCRIPT FUNCIONAL -->
 <script>
+// ---------- DATOS LOCALES (RUTINAS) ----------
+const RUTINAS = {
+  "Rutina Full Body (sin pesas)": {
+    descripcion: "Entrenamiento completo sin equipamiento, ideal para ganar tono y fuerza funcional.",
+    meta: ["Duración: 25-30 min", "Frecuencia: 3x/sem", "Nivel: Todos"],
+    pasos: [
+      { titulo: "Calentamiento (5 min)", detalle: "Movilidad articular: círculos de hombros, caderas y tobillos; 1-2 minutos de marcha en el sitio y elevaciones de rodilla suaves. Subir la temperatura corporal para prevenir lesiones." },
+      { titulo: "Circuito principal (3 rondas)", detalle: "15 sentadillas profundas (pies a la anchura de caderas), 10 flexiones con técnica controlada (si es necesario apoyadas en rodillas), 20 abdominales tipo crunch. Mantén ritmo constante y respira correctamente." },
+      { titulo: "Ejercicio de core (plancha)", detalle: "Plancha frontal de 30-45 s. Asegúrate de mantener línea recta desde cabeza a talones, no hundir la cadera." },
+      { titulo: "Descanso activo", detalle: "30-45 s entre rondas. Camina en el sitio y mantén respiración controlada." },
+      { titulo: "Estiramientos (2-4 min)", detalle: "Estira cuádriceps, isquiotibiales y región lumbar. Mantén 20-30 s por estiramiento, respira profundo." }
+    ]
+  },
+
+  "Cardio 20 min en casa": {
+    descripcion: "Circuito intervalado para mejorar cardio y quemar calorías en poco tiempo.",
+    meta: ["Duración: 20 min", "Intensidad: Moderada/Alta", "Frecuencia: 3-5x/sem"],
+    pasos: [
+      { titulo: "Calentamiento 5 min", detalle: "Marcha en sitio, saltos suaves de tijera, movimientos de brazos y tobillos. Aumenta progresivamente la intensidad."},
+      { titulo: "Intervalos (4 rondas)", detalle: "40s trabajo / 20s descanso. Ejercicios: jumping jacks (20-30 rep), mountain climbers (rápidos), burpees suavecitos (o sin salto si hace falta), sentadillas con salto moderado."},
+      { titulo: "Recuperación activa", detalle: "1 min caminando en el sitio, bajar ritmo. Mantén respiración controlada."},
+      { titulo: "Enfriamiento y estiramiento", detalle: "Respira profundo, estira cuádriceps, gemelos y lumbares durante 3-4 minutos."}
+    ]
+  },
+
+  "Yoga y estiramientos matutinos": {
+    descripcion: "Secuencia suave para activar el cuerpo y la mente al empezar el día.",
+    meta: ["Duración: 15-20 min", "Frecuencia: diaria", "Nivel: Suave"],
+    pasos: [
+      { titulo: "Respiración inicial", detalle: "3-5 respiraciones profundas (inhalar por la nariz, exhalar por la boca) para centrarte."},
+      { titulo: "Secuencia básica", detalle: "Perro boca abajo → plancha → cobra: 30s cada postura, repite 2 veces para abrir el pecho y espalda."},
+      { titulo: "Guerrero y estiramientos laterales", detalle: "Guerrero I/II 30s por lado para activar piernas y equilibrio."},
+      { titulo: "Relajación final (Savasana)", detalle: "Acostado 2-3 min, respiración lenta y atención corporal."}
+    ]
+  },
+
+  "Ejercicios de estiramiento en oficina": {
+    descripcion: "Movimientos prácticos para aliviar tensión durante la jornada laboral.",
+    meta: ["Duración: 5-8 min", "Frecuencia: cada 2-3 h"],
+    pasos: [
+      { titulo: "Giros cervicales controlados", detalle: "Gira el cuello lentamente de lado a lado (10 rep). No forzar; detener si hay dolor."},
+      { titulo: "Estiramiento de hombros", detalle: "Cruza un brazo al frente y empuja con el otro para estirar hombro/trapecio (20-30 s cada lado)."},
+      { titulo: "Torsión sentado", detalle: "Sentado, gira el tronco sujetando el respaldo; mantén 15-20 s por lado para movilizar la columna."},
+      { titulo: "Movilidad de muñecas", detalle: "Extiende brazo y con la otra mano empuja dedos suavemente hacia atrás; 15-20 s por mano para evitar molestias por teclado."}
+    ]
+  },
+
+  "Pausas activas de 10 minutos": {
+    descripcion: "Pausa breve y efectiva para reactivar el cuerpo y la mente durante el trabajo.",
+    meta: ["Duración: 10 min", "Frecuencia: 1-2 veces al día"],
+    pasos: [
+      { titulo: "Caminar 1 minuto", detalle: "Caminata moderada alrededor del área de trabajo; balancea los brazos para activar circulación."},
+      { titulo: "Círculos de brazos y piernas (30s)", detalle: "Haz círculos amplios con hombros y tobillos para liberar tensión."},
+      { titulo: "Serie rápida de fuerza (3x15)", detalle: "3 series de 15 sentadillas lentas y elevaciones de talones (para activar piernas y gemelos). Mantén buena técnica."},
+      { titulo: "Estiramiento de cuello y muñecas", detalle: "Inclina lateralmente el cuello y estira muñecas; 15-20 s por postura."},
+      { titulo: "Respiración final 30s", detalle: "Cierra ojos y respira profunda y lenta para volver con concentración."}
+    ]
+  },
+
+  "Movilidad cervical y lumbar": {
+    descripcion: "Rutina para mantener movilidad y reducir dolores por malas posturas.",
+    meta: ["Duración: 12-15 min", "Frecuencia: diaria"],
+    pasos: [
+      { titulo: "Rotaciones de cuello", detalle: "Movimiento lento en semicírculos; 8-10 rep para cada lado."},
+      { titulo: "Gato - Vaca (columna)", detalle: "En cuatro puntos, arquea y redondea columna 10 rep; coordina con respiración."},
+      { titulo: "Inclinaciones laterales y estiramiento lumbar", detalle: "Inclinaciones laterales sentado; elevación pélvica suave para movilidad lumbar."},
+      { titulo: "Respiración y relajación", detalle: "Respiraciones profundas acompañadas de estiramientos ligeros para completar la sesión."}
+    ]
+  },
+
+  "Caminata + trote ligero": {
+    descripcion: "Entrenamiento exterior ideal para mejorar resistencia sin impactos fuertes.",
+    meta: ["Duración: 30-40 min", "Frecuencia: 3-5x/sem"],
+    pasos: [
+      { titulo: "Calentamiento 5 min", detalle: "Caminata tranquila, movimiento de hombros y tobillos."},
+      { titulo: "Alternar camina/trote", detalle: "5 min camina / 3 min trota ligera, repetir hasta completar 30 min. Mantén ritmo que permita conversación corta."},
+      { titulo: "Técnica de respiración", detalle: "Respira por nariz y boca de forma rítmica para mejor oxigenación."},
+      { titulo: "Enfriamiento y estiramiento final", detalle: "Caminar suave 3-5 min y estirar cuádriceps y gemelos."}
+    ]
+  },
+
+  "Circuito de ejercicios en parque": {
+    descripcion: "Secuencia usando bancos y barras para un entrenamiento completo.",
+    meta: ["Duración: 25-35 min", "Frecuencia: 2-3x/sem"],
+    pasos: [
+      { titulo: "Dominadas o agarre asistido", detalle: "Si no puedes hacer dominadas completas, usa banda o salto controlado. 6-10 rep x 3 series."},
+      { titulo: "Fondos en banco", detalle: "12 rep x 3 series, manos en banco y bajar con control para trabajar tríceps y pecho."},
+      { titulo: "Saltos al banco y pliometría", detalle: "10 rep x 3 series, controlar la caída y absorción para proteger rodillas."},
+      { titulo: "Core en césped", detalle: "Plancha 45s, 3 repeticiones, y trabajo abdominal corto para estabilidad."}
+    ]
+  },
+
+  "Entrenamiento con peso corporal": {
+    descripcion: "Sesión funcional para fuerza y control, solo con tu propio peso.",
+    meta: ["Duración: 25 min", "Frecuencia: 3-4x/sem"],
+    pasos: [
+      { titulo: "Calentamiento articular", detalle: "Movimientos de tobillo, rodilla, cadera y hombro (5 min)."},
+      { titulo: "Circuito principal 4 rondas", detalle: "12 flexiones, 15 sentadillas, 10 zancadas por pierna. Técnica lenta y controlada."},
+      { titulo: "Trabajo de core y estabilidad", detalle: "Plancha 45s, Side plank 30s por lado para mejorar control del tronco."},
+      { titulo: "Movilidad final y estiramiento", detalle: "Estiramientos estáticos 3-5 min para recuperación."}
+    ]
+  }
+};
+
+// ---------- FUNCIONES UI ----------
 function toggleSection(id) {
   const section = document.getElementById(id);
   document.querySelectorAll('.rutina-section').forEach(sec => {
@@ -98,44 +210,81 @@ function toggleSection(id) {
 }
 
 function mostrarRutinaDetallada(nombre, elemento) {
+  // elemento puede venir como 'this' desde el onclick
+  // si no se pasa, buscamos el primer elemento con el texto
+  if (!elemento) {
+    elemento = [...document.querySelectorAll('.rutina-item')].find(li => li.textContent.trim() === nombre);
+  }
+
   const detalle = document.getElementById('detalle-rutina');
   const titulo = document.getElementById('titulo-rutina');
   const descripcion = document.getElementById('descripcion-rutina');
-  const pasos = document.getElementById('pasos-rutina');
+  const meta = document.getElementById('meta-rutina');
+  const acordeon = document.getElementById('acordeon-pasos');
+  const btnVolver = document.getElementById('btn-volver');
 
-  // Marcar la rutina activa
+  // marcar activo
   document.querySelectorAll('.rutina-item').forEach(i => i.classList.remove('activa'));
-  elemento.classList.add('activa');
+  if (elemento) elemento.classList.add('activa');
 
-  // Inactivar las demás categorías
+  // atenuar otras tarjetas
   document.querySelectorAll('.categoria-card').forEach(card => card.classList.add('inactiva'));
-  elemento.closest('.categoria-card').classList.remove('inactiva');
+  if (elemento) {
+    const miCard = elemento.closest('.categoria-card');
+    if (miCard) miCard.classList.remove('inactiva');
+  }
 
-  // Mostrar solo el detalle
-  detalle.classList.remove('d-none');
-  detalle.scrollIntoView({ behavior: "smooth" });
+  // mostrar detalle
+  const rutina = RUTINAS[nombre];
+  if (!rutina) return;
 
-  // Mismo objeto de rutinas (no se modifica)
-  const rutinas = { ...{{rutinas|safe}} }; // Ignorado en HTML puro, usar tu objeto original aquí
-
-  // Simulación de ejemplo si estás en HTML puro:
-  const rutinasEjemplo = {
-    "Cardio 20 min en casa": {
-      descripcion: "Rutina rápida para mejorar resistencia cardiovascular y quemar calorías desde casa.",
-      detalles: ["⏱️ Duración: 20 min", "🔥 Intensidad: moderada a alta", "🎯 Objetivo: resistencia y quema de grasa"],
-      pasos: ["5 min calentamiento", "Circuito de 3 rondas", "Respiración final"]
-    }
-  };
-
-  const rutina = rutinasEjemplo[nombre] || { descripcion: "", detalles: [], pasos: [] };
   titulo.textContent = nombre;
-  descripcion.innerHTML = `
-    <p>${rutina.descripcion}</p>
-    <ul class="list-unstyled text-start mx-auto" style="max-width:600px;">
-      ${rutina.detalles.map(d => `<li>${d}</li>`).join("")}
-    </ul>
-  `;
-  pasos.innerHTML = rutina.pasos.map(p => `<li class="list-group-item">${p}</li>`).join("");
+  descripcion.innerHTML = `<p class="lead">${rutina.descripcion}</p>`;
+  meta.innerHTML = rutina.meta.map(m => `<span class="badge bg-secondary me-2">${m}</span>`).join('');
+
+  // construir acordeón con pasos (Bootstrap 5 accordions)
+  acordeon.innerHTML = ''; // limpiar
+  rutina.pasos.forEach((p, idx) => {
+    const idHead = `heading-${idx}-${sanitize(nombre)}`;
+    const idBody = `collapse-${idx}-${sanitize(nombre)}`;
+    acordeon.innerHTML += `
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="${idHead}">
+          <button class="accordion-button ${idx === 0 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${idBody}" aria-expanded="${idx === 0 ? 'true' : 'false'}" aria-controls="${idBody}">
+            ${idx + 1}. ${escapeHtml(p.titulo)}
+          </button>
+        </h2>
+        <div id="${idBody}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" aria-labelledby="${idHead}" data-bs-parent="#acordeon-pasos">
+          <div class="accordion-body">${escapeHtml(p.detalle)}</div>
+        </div>
+      </div>`;
+  });
+
+  detalle.classList.remove('d-none');
+  btnVolver.classList.remove('d-none');
+  detalle.scrollIntoView({ behavior: 'smooth' });
+}
+
+function restaurarVista() {
+  // reactivar todo y ocultar detalle
+  document.querySelectorAll('.categoria-card').forEach(card => card.classList.remove('inactiva'));
+  document.querySelectorAll('.rutina-item').forEach(i => i.classList.remove('activa'));
+  document.getElementById('detalle-rutina').classList.add('d-none');
+  document.getElementById('btn-volver').classList.add('d-none');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// utilidades
+function sanitize(text) {
+  return text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase();
+}
+function escapeHtml(unsafe) {
+  return unsafe
+    .replaceAll('&', '&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'", '&#039;');
 }
 </script>
 {% endblock %}
