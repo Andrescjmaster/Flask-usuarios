@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro Facial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f6f6f6;
+            text-align: center;
+            padding: 30px;
+        }
+        video, canvas {
+            border: 3px solid #444;
+            border-radius: 10px;
+            width: 320px;
+            height: 240px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Registro de Rostro</h2>
+    <p>Permite el acceso a la cámara y haz clic en “Capturar Rostro”</p>
+
+    <video id="video" autoplay></video>
+    <br>
+    <button onclick="capturar()">📸 Capturar Rostro</button>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <form id="formRostro" method="POST" action="/registrar_rostro">
+        <input type="hidden" name="imagen" id="imagen">
+    </form>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const imagen = document.getElementById('imagen');
+        const form = document.getElementById('formRostro');
+
+        // Solicitar acceso a la cámara
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => alert("Error al acceder a la cámara: " + err));
+
+        function capturar() {
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataURL = canvas.toDataURL('image/png');
+            imagen.value = dataURL;
+            form.submit();
+        }
+    </script>
+</body>
+</html>
