@@ -7,10 +7,15 @@ click==8.1.7
 psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 
-# --- Reconocimiento facial (liviano y compatible con Render free tier) ---
+# --- Reconocimiento facial (compatibles con Render) ---
 numpy==1.26.4
 Pillow==10.3.0
-opencv-python==4.10.0.84
-tensorflow-cpu==2.15.0
-keras==2.15.0
-deepface==0.0.79
+opencv-python-headless==4.10.0.84
+
+# DeepFace sin TensorFlow ni MTCNN (usa retinaface)
+deepface==0.0.93
+retina-face==0.0.17
+
+# Dependencias necesarias para RetinaFace
+torch==2.4.0
+torchvision==0.19.0
