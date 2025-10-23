@@ -7,10 +7,10 @@ click==8.1.7
 psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 
-# --- Reconocimiento facial (compatible con Render) ---
+# --- Reconocimiento facial (liviano y compatible con Render free tier) ---
 numpy==1.26.4
 Pillow==10.3.0
 opencv-python==4.10.0.84
-deepface==0.0.92
-tensorflow==2.16.2
-keras==3.3.3
+tensorflow-cpu==2.15.0
+keras==2.15.0
+deepface==0.0.79
