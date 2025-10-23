@@ -5,25 +5,23 @@
     <title>Registro Facial</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f6f6f6;
+            background-color: #f8f9fa;
             text-align: center;
-            padding: 30px;
+            font-family: Arial, sans-serif;
         }
-        video, canvas {
-            border: 3px solid #444;
+        video {
+            border: 3px solid #333;
             border-radius: 10px;
-            width: 320px;
-            height: 240px;
+            margin-top: 20px;
         }
         button {
+            margin-top: 15px;
+            padding: 10px 20px;
             background-color: #007bff;
             color: white;
-            padding: 10px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 15px;
         }
         button:hover {
             background-color: #0056b3;
@@ -31,35 +29,42 @@
     </style>
 </head>
 <body>
-    <h2>Registro de Rostro</h2>
-    <p>Permite el acceso a la cámara y haz clic en “Capturar Rostro”</p>
+    <h2>Registro facial de {{ usuario }}</h2>
 
-    <video id="video" autoplay></video>
-    <br>
-    <button onclick="capturar()">📸 Capturar Rostro</button>
-    <canvas id="canvas" style="display:none;"></canvas>
-
-    <form id="formRostro" method="POST" action="/registrar_rostro">
-        <input type="hidden" name="imagen" id="imagen">
-    </form>
+    <video id="video" width="400" height="300" autoplay></video><br>
+    <button onclick="capturar()">Capturar rostro</button>
 
     <script>
+        // Iniciar la cámara
         const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const imagen = document.getElementById('imagen');
-        const form = document.getElementById('formRostro');
-
-        // Solicitar acceso a la cámara
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => { video.srcObject = stream; })
             .catch(err => alert("Error al acceder a la cámara: " + err));
 
+        // Capturar imagen y enviarla al servidor
         function capturar() {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
             const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataURL = canvas.toDataURL('image/png');
-            imagen.value = dataURL;
-            form.submit();
+            ctx.drawImage(video, 0, 0);
+            const imagen = canvas.toDataURL('image/jpeg');
+
+            fetch("/guardar_rostro", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ imagen })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("✅ Rostro guardado correctamente");
+                    window.location.href = "/home";
+                } else {
+                    alert("❌ Error: " + data.error);
+                }
+            })
+            .catch(err => alert("Error de red: " + err));
         }
     </script>
 </body>

@@ -220,6 +220,83 @@ def rutinas():
     return render_template("rutinas.html", usuario=session["usuario"])
 
 
+# ----------------- ROSTRO / REGISTRO FACIAL -----------------
+
+@app.route('/registro_rostro')
+def registro_rostro():
+    """
+    Muestra la página donde el usuario puede capturar su rostro.
+    """
+    if "usuario" not in session:
+        return redirect(url_for('login'))
+    return render_template('registro_rostro.html', usuario=session["usuario"])
+
+@app.route('/guardar_rostro', methods=['POST'])
+def guardar_rostro():
+    """
+    Recibe la imagen del rostro en base64, genera el embedding y lo guarda en la base de datos.
+    """
+    data = request.get_json()
+    imagen = data.get("imagen")
+    correo = session.get("correo")
+
+    if not imagen or not correo:
+        return {"success": False, "error": "Datos incompletos"}
+
+    try:
+        # Obtener el embedding con DeepFace
+        embedding = obtener_embedding(imagen)
+        embedding_bytes = embedding.tobytes()
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE usuarios SET rostro = %s WHERE correo = %s", (embedding_bytes, correo))
+        conn.commit()
+        conn.close()
+        return {"success": True}
+    except Exception as e:
+        print("Error al guardar rostro:", e)
+        return {"success": False, "error": str(e)}
+
+
+@app.route('/verificar_rostro', methods=['POST'])
+def verificar_rostro():
+    """
+    Compara el rostro enviado con el rostro guardado en la base de datos.
+    """
+    data = request.get_json()
+    imagen = data.get("imagen")
+    correo = data.get("correo")
+
+    if not imagen or not correo:
+        return {"success": False, "error": "Datos incompletos"}
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT nombre, rostro FROM usuarios WHERE correo = %s", (correo,))
+        fila = cursor.fetchone()
+        conn.close()
+
+        if not fila or fila[1] is None:
+            return {"success": False, "error": "No hay rostro registrado"}
+
+        nombre, rostro_guardado = fila
+        embedding_guardado = np.frombuffer(rostro_guardado, dtype=np.float32)
+        embedding_actual = obtener_embedding(imagen)
+
+        if comparar_embeddings(embedding_actual, embedding_guardado):
+            session["usuario"] = nombre
+            session["correo"] = correo
+            return {"success": True}
+        else:
+            return {"success": False, "error": "Rostro no coincide"}
+    except Exception as e:
+        print("Error en verificar_rostro:", e)
+        return {"success": False, "error": str(e)}
+
+
+
 # ----------------- PANEL ADMIN -----------------
 ADMIN_EMAIL = "andresfelipeaguasaco@gmail.com"
 
