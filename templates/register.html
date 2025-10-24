@@ -10,6 +10,7 @@
         input { width: 95%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
         button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 50px; }
         button:hover { background: #218838; cursor: pointer; }
+        video, canvas { width: 100%; border-radius: 10px; margin-top: 10px; }
         .extra { text-align: center; margin-top: 10px; }
         .extra a { color: #28a745; text-decoration: none; }
         .extra a:hover { text-decoration: underline; }
@@ -18,23 +19,73 @@
 <body>
     <div class="container">
         <h2>Registro</h2>
-        <form action="/register" method="POST">
-            <input type="text" name="nombre" placeholder="Nombre completo" required>
-            <input type="email" name="correo" placeholder="Correo electrónico" required>
-            <input type="password" name="contraseña" placeholder="Contraseña" required>
+
+        <form id="registroForm">
+            <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
+            <input type="email" id="correo" name="correo" placeholder="Correo electrónico" required>
+            <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" required>
+
+            <!-- Captura facial -->
+            <video id="camara" autoplay playsinline></video>
+            <button type="button" id="capturar">Capturar Rostro</button>
+            <canvas id="fotoCanvas" style="display:none;"></canvas>
+
             <button type="submit">Registrarse</button>
         </form>
+
         <div class="extra">
             <p>¿Ya tienes cuenta? <a href="/login">Iniciar sesión</a></p>
         </div>
     </div>
+
+    <script>
+        const video = document.getElementById('camara');
+        const canvas = document.getElementById('fotoCanvas');
+        const ctx = canvas.getContext('2d');
+        let rostroBase64 = null;
+
+        // Iniciar cámara
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => console.error("Error al acceder a la cámara:", err));
+
+        // Capturar foto
+        document.getElementById('capturar').addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            rostroBase64 = canvas.toDataURL('image/jpeg');
+            alert("✅ Rostro capturado correctamente.");
+        });
+
+        // Enviar datos al backend
+        document.getElementById('registroForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const datos = {
+                nombre: document.getElementById('nombre').value,
+                correo: document.getElementById('correo').value,
+                contraseña: document.getElementById('contraseña').value,
+                rostro: rostroBase64  // puede ser null si no capturó rostro
+            };
+
+            try {
+                const res = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+
+                const texto = await res.text();
+                if (res.ok) {
+                    window.location.href = '/login';
+                } else {
+                    alert("⚠️ Error al registrar: " + texto);
+                }
+            } catch (err) {
+                alert("❌ Error de conexión: " + err.message);
+            }
+        });
+    </script>
 </body>
 </html>
-
-   
-
-
-
-
-
-    
