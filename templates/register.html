@@ -14,27 +14,35 @@
         .extra { text-align: center; margin-top: 10px; }
         .extra a { color: #28a745; text-decoration: none; }
         .extra a:hover { text-decoration: underline; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Registro</h2>
 
-        <form id="registroForm">
-            <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
-            <input type="email" id="correo" name="correo" placeholder="Correo electrónico" required>
-            <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" required>
+        <!-- Sección 1: formulario de datos -->
+        <div id="formularioSeccion">
+            <form id="registroForm">
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
+                <input type="email" id="correo" name="correo" placeholder="Correo electrónico" required>
+                <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" required>
+                
+                <button type="button" id="abrirCamara">Tomar foto</button>
+                <button type="submit">Registrarse</button>
+            </form>
 
-            <!-- Captura facial -->
+            <div class="extra">
+                <p>¿Ya tienes cuenta? <a href="/login">Iniciar sesión</a></p>
+            </div>
+        </div>
+
+        <!-- Sección 2: cámara -->
+        <div id="camaraSeccion" class="hidden">
             <video id="camara" autoplay playsinline></video>
+            <canvas id="fotoCanvas" class="hidden"></canvas>
             <button type="button" id="capturar">Capturar Rostro</button>
-            <canvas id="fotoCanvas" style="display:none;"></canvas>
-
-            <button type="submit">Registrarse</button>
-        </form>
-
-        <div class="extra">
-            <p>¿Ya tienes cuenta? <a href="/login">Iniciar sesión</a></p>
+            <button type="button" id="volver">Volver</button>
         </div>
     </div>
 
@@ -44,18 +52,37 @@
         const ctx = canvas.getContext('2d');
         let rostroBase64 = null;
 
-        // Iniciar cámara
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => { video.srcObject = stream; })
-            .catch(err => console.error("Error al acceder a la cámara:", err));
+        const formularioSeccion = document.getElementById('formularioSeccion');
+        const camaraSeccion = document.getElementById('camaraSeccion');
 
-        // Capturar foto
+        // Abrir cámara
+        document.getElementById('abrirCamara').addEventListener('click', async () => {
+            formularioSeccion.classList.add('hidden');
+            camaraSeccion.classList.remove('hidden');
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                alert("⚠️ No se pudo acceder a la cámara: " + err.message);
+                formularioSeccion.classList.remove('hidden');
+                camaraSeccion.classList.add('hidden');
+            }
+        });
+
+        // Capturar rostro
         document.getElementById('capturar').addEventListener('click', () => {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             ctx.drawImage(video, 0, 0);
             rostroBase64 = canvas.toDataURL('image/jpeg');
             alert("✅ Rostro capturado correctamente.");
+        });
+
+        // Volver al formulario
+        document.getElementById('volver').addEventListener('click', () => {
+            camaraSeccion.classList.add('hidden');
+            formularioSeccion.classList.remove('hidden');
         });
 
         // Enviar datos al backend
@@ -66,7 +93,7 @@
                 nombre: document.getElementById('nombre').value,
                 correo: document.getElementById('correo').value,
                 contraseña: document.getElementById('contraseña').value,
-                rostro: rostroBase64  // puede ser null si no capturó rostro
+                rostro: rostroBase64
             };
 
             try {
@@ -78,6 +105,7 @@
 
                 const texto = await res.text();
                 if (res.ok) {
+                    alert("✅ Registro exitoso. Redirigiendo al login...");
                     window.location.href = '/login';
                 } else {
                     alert("⚠️ Error al registrar: " + texto);
