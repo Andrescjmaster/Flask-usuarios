@@ -1,22 +1,25 @@
-# --- Flask base ---
+# --- Core Flask ---
 Flask==3.0.3
 gunicorn==22.0.0
 itsdangerous==2.2.0
 Jinja2==3.1.4
 Werkzeug==3.0.3
 click==8.1.7
+
+# --- PostgreSQL ---
+psycopg2-binary==2.9.9
+SQLAlchemy==2.0.32
+
+# --- Configuración ---
 python-dotenv==1.0.1
 
-# --- DeepFace y dependencias PyTorch ---
-deepface==0.0.79
-torch==2.4.0
-torchvision==0.19.0
-retina-face==0.0.12
-
-# --- Otros requeridos ---
+# --- Reconocimiento facial ---
 numpy==1.26.4
 Pillow==10.3.0
 opencv-python-headless==4.10.0.84
-tqdm==4.66.4
-h5py==3.10.0
-protobuf==3.20.3
+deepface==0.0.93
+retina-face==0.0.17
+
+# --- PyTorch (para DeepFace, sin TensorFlow) ---
+torch==2.3.1
+torchvision==0.18.1
