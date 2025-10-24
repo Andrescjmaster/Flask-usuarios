@@ -4,28 +4,92 @@
     <meta charset="UTF-8">
     <title>Iniciar Sesión</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f4f4; }
-        .container { max-width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 10px; }
-        h2 { text-align: center; }
-        input { width: 95%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 50px; }
-        button:hover { background: #0056b3; cursor: pointer; }
-        .extra { text-align: center; margin-top: 10px; }
-        .extra a { color: #007bff; text-decoration: none; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #f4f4f4; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0;
+        }
+        .container { 
+            max-width: 400px; 
+            background: white; 
+            padding: 35px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            text-align: center;
+        }
+        h2 { 
+            margin-bottom: 25px; 
+            color: #333; 
+        }
+        input { 
+            width: 90%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            border: 1px solid #ccc; 
+            border-radius: 8px; 
+            font-size: 15px;
+        }
+        button { 
+            width: 95%; 
+            padding: 12px; 
+            border: none; 
+            border-radius: 25px; 
+            font-size: 16px; 
+            color: white; 
+            background: #007bff; 
+            margin-top: 10px; 
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+        button:hover { background: #0056b3; }
+        .extra { 
+            margin-top: 20px; 
+            font-size: 14px;
+        }
+        .extra a { 
+            color: #007bff; 
+            text-decoration: none; 
+        }
         .extra a:hover { text-decoration: underline; }
+        .divider {
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            color: #777;
+        }
+        .face-btn {
+            background: #28a745;
+        }
+        .face-btn:hover {
+            background: #1e7e34;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Iniciar Sesión</h2>
+
+        <!-- Formulario tradicional -->
         <form action="/login" method="POST">
             <input type="email" name="correo" placeholder="Correo electrónico" required>
             <input type="password" name="contraseña" placeholder="Contraseña" required>
             <button type="submit">Ingresar</button>
         </form>
+
+        <div class="divider">o</div>
+
+        <!-- Botón para reconocimiento facial -->
+        <form action="/login_face" method="GET">
+            <button type="submit" class="face-btn">Ingresar con reconocimiento facial</button>
+        </form>
+
         <div class="extra">
             <p>¿No tienes cuenta? <a href="/register">Crear cuenta</a></p>
         </div>
     </div>
 </body>
-</html>        
+</html>

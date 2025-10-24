@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio de sesión facial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 400px;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h2 { margin-bottom: 20px; color: #333; }
+        video, canvas {
+            width: 100%;
+            border-radius: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        button:hover { background: #218838; cursor: pointer; }
+        .back-btn {
+            background: #007bff;
+        }
+        .back-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Iniciar sesión con rostro</h2>
+        <video id="video" autoplay></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+
+        <button id="capture">Capturar rostro</button>
+        <button class="back-btn" onclick="window.location.href='/login'">Volver</button>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+
+        // Solicitar acceso a la cámara
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => alert("Error al acceder a la cámara: " + err));
+
+        // Capturar imagen y enviarla al servidor
+        document.getElementById('capture').addEventListener('click', async () => {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const dataUrl = canvas.toDataURL('image/jpeg');
+
+            const respuesta = await fetch('/login_face', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imagen: dataUrl })
+            });
+
+            const resultado = await respuesta.json();
+
+            if (resultado.success) {
+                alert("✅ Bienvenido, " + resultado.usuario);
+                window.location.href = "/home";
+            } else {
+                alert("❌ " + resultado.error);
+            }
+        });
+    </script>
+</body>
+</html>
