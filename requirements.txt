@@ -20,5 +20,6 @@ torch==2.4.0
 torchvision==0.19.0
 tqdm==4.66.4
 
-# --- Compatibilidad para TensorFlow y Keras 3 ---
+# --- Compatibilidad TensorFlow/Keras ---
+tensorflow==2.15.0
 tf-keras==2.15.0
