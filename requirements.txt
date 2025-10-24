@@ -5,23 +5,18 @@ itsdangerous==2.2.0
 Jinja2==3.1.4
 Werkzeug==3.0.3
 click==8.1.7
-psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 
-# --- DeepFace sin MTCNN (CPU friendly) ---
+# --- DeepFace y dependencias PyTorch ---
 deepface==0.0.79
+torch==2.4.0
+torchvision==0.19.0
 retina-face==0.0.12
+
+# --- Otros requeridos ---
 numpy==1.26.4
 Pillow==10.3.0
 opencv-python-headless==4.10.0.84
-torch==2.4.0
-torchvision==0.19.0
 tqdm==4.66.4
-
-# --- TensorFlow fijo y compatible ---
-tensorflow==2.15.0
-tf-keras==2.15.0
-
-# --- Evitar conflictos de nuevas dependencias ---
 h5py==3.10.0
 protobuf==3.20.3
