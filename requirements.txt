@@ -8,14 +8,17 @@ click==8.1.7
 psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 
-# --- Dependencias para DeepFace (sin TensorFlow / sin MTCNN) ---
+# --- DeepFace sin MTCNN ---
 deepface==0.0.93
 retina-face==0.0.17
 numpy==1.26.4
 Pillow==10.3.0
 opencv-python-headless==4.10.0.84
 
-# --- Dependencias PyTorch (para RetinaFace y Facenet512) ---
+# --- PyTorch (para RetinaFace y Facenet512) ---
 torch==2.4.0
 torchvision==0.19.0
 tqdm==4.66.4
+
+# --- Compatibilidad para TensorFlow y Keras 3 ---
+tf-keras==2.15.0
