@@ -17,13 +17,10 @@ python-dotenv==1.0.1
 numpy==1.26.4
 Pillow==10.3.0
 opencv-python-headless==4.10.0.84
-
-# DeepFace + RetinaFace (TensorFlow compatible)
 deepface==0.0.93
 retina-face==0.0.17
-tensorflow==2.15.0
-tf-keras==2.15.0
+tf-keras==2.20.0
 
-# --- PyTorch (opcional, pero mantenemos para compatibilidad de DeepFace) ---
+# --- PyTorch (para DeepFace, sin TensorFlow) ---
 torch==2.3.1
 torchvision==0.18.1
