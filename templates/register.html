@@ -4,31 +4,107 @@
     <meta charset="UTF-8">
     <title>Registro</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f4f4; }
-        .container { max-width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 10px; }
-        h2 { text-align: center; }
-        input { width: 95%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 50px; }
-        button:hover { background: #218838; cursor: pointer; }
-        video, canvas { width: 100%; border-radius: 10px; margin-top: 10px; }
-        .extra { text-align: center; margin-top: 10px; }
-        .extra a { color: #28a745; text-decoration: none; }
-        .extra a:hover { text-decoration: underline; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 420px;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.8em;
+        }
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 50px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 4px rgba(40,167,69,0.4);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #218838;
+            cursor: pointer;
+        }
+        .camara-btn {
+            background: #007bff;
+        }
+        .camara-btn:hover {
+            background: #0056b3;
+        }
+        .volver-btn {
+            background: #6c757d;
+        }
+        .volver-btn:hover {
+            background: #5a6268;
+        }
+        .extra {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .extra a {
+            color: #28a745;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .extra a:hover {
+            text-decoration: underline;
+        }
+        video, canvas {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+        }
         .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Registro</h2>
+        <h2>Crear cuenta</h2>
 
-        <!-- Sección 1: formulario de datos -->
+        <!-- Sección 1: formulario -->
         <div id="formularioSeccion">
             <form id="registroForm">
                 <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
                 <input type="email" id="correo" name="correo" placeholder="Correo electrónico" required>
                 <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" required>
-                
-                <button type="button" id="abrirCamara">Tomar foto (opcional)</button>
+
+                <button type="button" class="camara-btn" id="abrirCamara">📸 Tomar foto (opcional)</button>
                 <button type="submit">Registrarse</button>
             </form>
 
@@ -41,8 +117,8 @@
         <div id="camaraSeccion" class="hidden">
             <video id="camara" autoplay playsinline></video>
             <canvas id="fotoCanvas" class="hidden"></canvas>
-            <button type="button" id="capturar">Capturar Rostro</button>
-            <button type="button" id="volver">Volver</button>
+            <button type="button" id="capturar">✅ Capturar Rostro</button>
+            <button type="button" class="volver-btn" id="volver">🔙 Volver</button>
         </div>
     </div>
 
