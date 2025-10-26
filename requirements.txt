@@ -1,4 +1,4 @@
-# --- Core Flask ---
+# --- Flask Core ---
 Flask==3.0.3
 gunicorn==22.0.0
 itsdangerous==2.2.0
@@ -13,7 +13,7 @@ SQLAlchemy==2.0.32
 # --- Configuración ---
 python-dotenv==1.0.1
 
-# --- Reconocimiento facial (solo PyTorch, sin TensorFlow) ---
+# --- Reconocimiento Facial con PyTorch ---
 numpy==1.26.4
 Pillow==10.3.0
 opencv-python-headless==4.10.0.84
@@ -21,3 +21,6 @@ deepface==0.0.91
 retina-face==0.0.13
 torch==2.3.1
 torchvision==0.18.1
+
+# --- Evita instalación automática de TensorFlow y MTCNN ---
+# (deepface==0.0.91 aún intenta traer mtcnn, por eso lo anulamos manualmente)

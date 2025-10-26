@@ -1,14 +1,22 @@
 # facial_utils.py
 import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # silencia TensorFlow
-os.environ["DEEPFACE_BACKEND"] = "torch"  # fuerza backend PyTorch
-os.environ["KERAS_BACKEND"] = "torch"     # evita carga de tf.keras
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"        # Silencia TensorFlow logs
+os.environ["DEEPFACE_BACKEND"] = "torch"        # Fuerza uso de backend PyTorch
+os.environ["KERAS_BACKEND"] = "torch"           # Evita intentar cargar tf.keras
 
 import numpy as np
 import base64
 from io import BytesIO
 from PIL import Image
 from deepface import DeepFace
+
+# ⚙️ Cargamos el modelo solo una vez al inicio
+try:
+    model = DeepFace.build_model("Facenet512")
+    print("✅ Modelo 'Facenet512' cargado correctamente (backend PyTorch).")
+except Exception as e:
+    print(f"❌ Error al cargar modelo Facenet512: {e}")
+    model = None
 
 
 def obtener_embedding(imagen_base64):
@@ -18,21 +26,25 @@ def obtener_embedding(imagen_base64):
             print("⚠️ No se recibió imagen válida en base64.")
             return None
 
-        # Decodificar imagen base64 → RGB array
+        # 🔹 Decodificar imagen base64 → matriz RGB
         imagen_bytes = base64.b64decode(imagen_base64.split(",")[1])
         img = Image.open(BytesIO(imagen_bytes)).convert("RGB")
         img_np = np.array(img)
 
-        # Cargar modelo con backend PyTorch
-        model = DeepFace.build_model("Facenet512")
+        if model is None:
+            print("⚠️ Modelo no disponible.")
+            return None
 
+        # 🔹 Obtener embedding facial
         embedding_obj = DeepFace.represent(
             img_path=img_np,
             model_name="Facenet512",
+            model=model,                    # Reutilizamos el modelo cargado
             detector_backend="retinaface",
             enforce_detection=False
         )
 
+        # Retornar el embedding como vector NumPy
         return np.array(embedding_obj[0]["embedding"], dtype=np.float32)
 
     except Exception as e:
