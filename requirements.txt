@@ -13,7 +13,7 @@ SQLAlchemy==2.0.32
 # --- Configuración ---
 python-dotenv==1.0.1
 
-# --- Reconocimiento facial optimizado ---
+# --- Reconocimiento facial (solo PyTorch) ---
 numpy==1.26.4
 Pillow==10.3.0
 opencv-python-headless==4.10.0.84
