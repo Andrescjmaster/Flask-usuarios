@@ -1,21 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import psycopg2, os
-import psycopg2.extras
 import numpy as np
 
-# Importar utilidades faciales
+# Importar utilidades faciales optimizadas
 from facial_utils import obtener_embedding, comparar_embeddings
 
 app = Flask(__name__)
-app.secret_key = "clave_super_segura"
+app.secret_key = os.getenv("SECRET_KEY", "clave_super_segura")
 
 # ----------------- CONEXIÓN A POSTGRES -----------------
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection():
-    # Espera que DATABASE_URL esté en formato de conexión compatible con psycopg2.
-    # En Render, DATABASE_URL suele estar definido como variable de entorno.
-    return psycopg2.connect(DATABASE_URL)
+    """Conecta a la base de datos PostgreSQL de forma segura."""
+    return psycopg2.connect(DATABASE_URL, sslmode="require")
 
 # ----------------- FUNCIONES DE BD -----------------
 def crear_tabla():
@@ -35,24 +33,25 @@ def crear_tabla():
     conn.close()
 
 def agregar_usuario(nombre, correo, contraseña):
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Agrega un usuario nuevo sin rostro (por defecto)."""
     try:
-        cursor.execute("INSERT INTO usuarios (nombre, correo, contraseña) VALUES (%s, %s, %s)",
-                       (nombre, correo, contraseña))
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO usuarios (nombre, correo, contraseña) VALUES (%s, %s, %s)",
+            (nombre, correo, contraseña)
+        )
         conn.commit()
+        return True
     except psycopg2.Error as e:
-        # Si falla (por ejemplo duplicado), devolvemos False
-        print("Error agregar_usuario:", e)
-        conn.rollback()
-        cursor.close()
-        conn.close()
+        print("⚠️ Error al agregar usuario:", e)
         return False
-    cursor.close()
-    conn.close()
-    return True
+    finally:
+        if conn:
+            conn.close()
 
 def obtener_usuario(correo):
+    """Obtiene un usuario por su correo."""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM usuarios WHERE correo = %s", (correo,))
@@ -74,7 +73,7 @@ def modificar_usuario(id_usuario, nombre, correo, contraseña):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        UPDATE usuarios 
+        UPDATE usuarios
         SET nombre = %s, correo = %s, contraseña = %s
         WHERE id = %s
     """, (nombre, correo, contraseña, id_usuario))
@@ -90,25 +89,24 @@ def eliminar_usuario(id_usuario):
     cursor.close()
     conn.close()
 
-# Crear tabla si no existe
+# ----------------- CREACIÓN INICIAL -----------------
 try:
     crear_tabla()
+    print("✅ Tabla 'usuarios' verificada/creada.")
 except Exception as e:
-    print("⚠️ Error al crear la tabla:", e)
+    print("⚠️ Error al crear tabla:", e)
 
-# Crear usuario admin si no existe
 try:
     if not obtener_usuario("andresfelipeaguasaco@gmail.com"):
         agregar_usuario("Administrador", "andresfelipeaguasaco@gmail.com", "123456789")
+        print("👤 Usuario administrador creado.")
 except Exception as e:
     print("⚠️ Error comprobando/creando admin:", e)
 
 # ----------------- RUTAS -----------------
 @app.route('/')
 def root():
-    if "usuario" in session:
-        return redirect(url_for('home'))
-    return redirect(url_for('login'))
+    return redirect(url_for('home') if "usuario" in session else url_for('login'))
 
 @app.route('/home')
 def home():
@@ -116,44 +114,32 @@ def home():
         return redirect(url_for('login'))
     return render_template('home.html', usuario=session['usuario'])
 
-# ----------------- LOGIN (normal) -----------------
+# ----------------- LOGIN (Normal) -----------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         correo = request.form['correo']
         contraseña = request.form['contraseña']
         usuario = obtener_usuario(correo)
-        # usuario: (id, nombre, correo, contraseña, rostro)
         if usuario and usuario[3] == contraseña:
             session['usuario'] = usuario[1]
             session['correo'] = usuario[2]
             return redirect(url_for('home'))
-        else:
-            return "❌ Usuario o contraseña incorrectos. <a href='/login'>Intentar de nuevo</a>"
+        return "❌ Usuario o contraseña incorrectos. <a href='/login'>Intentar de nuevo</a>"
     return render_template('login.html')
 
-# ----------------- PAGINA: LOGIN FACIAL -----------------
+# ----------------- LOGIN FACIAL -----------------
 @app.route('/login_face', methods=['GET'])
 def login_face_page():
-    # muestra la plantilla que abre la cámara y captura
     return render_template('login_face.html')
 
-# ----------------- ENDPOINT: LOGIN FACIAL (POST JSON) -----------------
 @app.route('/login_face', methods=['POST'])
 def login_face_post():
-    """
-    Espera JSON: { "imagen": "<dataurl>" }
-    Retorna JSON: { "success": True/False, "usuario": nombre OR "error": mensaje }
-    """
     data = request.get_json(silent=True)
-    if not data:
-        return jsonify({"success": False, "error": "No se recibió JSON"}), 400
+    if not data or "imagen" not in data:
+        return jsonify({"success": False, "error": "Imagen no recibida"}), 400
 
-    imagen = data.get("imagen")
-    if not imagen:
-        return jsonify({"success": False, "error": "No se envió imagen"}), 400
-
-    # Obtener embedding del frame recibido
+    imagen = data["imagen"]
     embedding_actual = obtener_embedding(imagen)
     if embedding_actual is None:
         return jsonify({"success": False, "error": "No se detectó un rostro válido"}), 400
@@ -166,44 +152,20 @@ def login_face_post():
         cursor.close()
         conn.close()
 
-        # comparar con cada rostro guardado
         for nombre, correo, rostro_guardado in filas:
             if rostro_guardado is None:
                 continue
-            try:
-                # reconstruir embedding guardado
-                embedding_guardado = np.frombuffer(rostro_guardado, dtype=np.float32)
-                if comparar_embeddings(embedding_guardado, embedding_actual):
-                    session['usuario'] = nombre
-                    session['correo'] = correo
-                    return jsonify({"success": True, "usuario": nombre})
-            except Exception as e:
-                print("Error comparando embeddings:", e)
-                continue
+            embedding_guardado = np.frombuffer(rostro_guardado, dtype=np.float32)
+            if comparar_embeddings(embedding_guardado, embedding_actual):
+                session["usuario"] = nombre
+                session["correo"] = correo
+                return jsonify({"success": True, "usuario": nombre})
 
         return jsonify({"success": False, "error": "Rostro no reconocido"}), 401
 
     except Exception as e:
-        print("Error en login_face POST:", e)
+        print("❌ Error en login_face POST:", e)
         return jsonify({"success": False, "error": "Error interno"}), 500
-
-# ----------------- (Compatibilidad) antigua ruta POST si alguna página la usa -----------------
-@app.route('/login_facial', methods=['POST'])
-def login_facial_compat():
-    """
-    Compatibilidad con endpoints antiguos que envían form-urlencoded (campo 'imagen').
-    Aquí aceptamos tanto form como JSON; delegamos a login_face_post para lógica.
-    """
-    # si viene multipart/form o form-urlencoded
-    imagen = request.form.get('imagen') or request.values.get('imagen')
-    if imagen:
-        # emular JSON y llamar directamente al handler
-        request_json = {"imagen": imagen}
-        # Llamamos a la misma lógica reutilizable:
-        return login_face_post()
-    else:
-        # si no vino por form, intentamos JSON
-        return login_face_post()
 
 # ----------------- REGISTER -----------------
 @app.route('/register', methods=['GET', 'POST'])
@@ -212,69 +174,56 @@ def register():
         nombre = request.form['nombre']
         correo = request.form['correo']
         contraseña = request.form['contraseña']
-        rostro_base64 = request.form.get('rostro')  # puede ser None
+        rostro_base64 = request.form.get('rostro')
 
-        rostro_embedding = None
-        if rostro_base64:
-            # obtener embedding (numpy array)
-            rostro_embedding = obtener_embedding(rostro_base64)
+        rostro_embedding = obtener_embedding(rostro_base64) if rostro_base64 else None
 
-        conn = get_connection()
-        cursor = conn.cursor()
         try:
+            conn = get_connection()
+            cursor = conn.cursor()
             if rostro_embedding is not None:
-                # convertir a bytes antes de guardar
-                cursor.execute(
-                    "INSERT INTO usuarios (nombre, correo, contraseña, rostro) VALUES (%s, %s, %s, %s)",
-                    (nombre, correo, contraseña, psycopg2.Binary(rostro_embedding.tobytes()))
-                )
+                cursor.execute("""
+                    INSERT INTO usuarios (nombre, correo, contraseña, rostro)
+                    VALUES (%s, %s, %s, %s)
+                """, (nombre, correo, contraseña, psycopg2.Binary(rostro_embedding.tobytes())))
             else:
-                cursor.execute(
-                    "INSERT INTO usuarios (nombre, correo, contraseña) VALUES (%s, %s, %s)",
-                    (nombre, correo, contraseña)
-                )
+                cursor.execute("""
+                    INSERT INTO usuarios (nombre, correo, contraseña)
+                    VALUES (%s, %s, %s)
+                """, (nombre, correo, contraseña))
             conn.commit()
-        except psycopg2.Error as e:
+        except psycopg2.errors.UniqueViolation:
             conn.rollback()
-            cursor.close()
-            conn.close()
-            # Si es error por duplicado
-            if getattr(e, 'pgcode', None) == '23505':
-                return "⚠️ Este correo ya está registrado. <a href='/register'>Intenta con otro</a>"
-            print("Error al insertar usuario:", e)
+            return "⚠️ Este correo ya está registrado. <a href='/register'>Intenta con otro</a>"
+        except Exception as e:
+            print("❌ Error al registrar usuario:", e)
             return f"⚠️ Error al registrar usuario: {e}"
         finally:
-            try:
-                cursor.close()
-                conn.close()
-            except:
-                pass
+            cursor.close()
+            conn.close()
 
         return redirect(url_for('login'))
     return render_template('register.html')
 
-# ----------------- CALCULADORA -----------------
+# ----------------- FUNCIONALIDADES ADICIONALES -----------------
 @app.route('/calculadora')
 def calculadora():
     if "usuario" not in session:
         return redirect(url_for('login'))
     return render_template("calculadora.html", usuario=session['usuario'])
 
-# ----------------- RECOMENDACIONES -----------------
 @app.route('/recomendaciones')
 def recomendaciones():
     if "usuario" not in session:
         return redirect(url_for('login'))
     return render_template("recomendaciones.html")
 
-# ----------------- RUTINAS -----------------
 @app.route('/rutinas')
 def rutinas():
     if "usuario" not in session:
         return redirect(url_for('login'))
     return render_template("rutinas.html", usuario=session["usuario"])
 
-# ----------------- REGISTRO FACIAL -----------------
 @app.route('/registro_rostro')
 def registro_rostro():
     if "usuario" not in session:
@@ -286,6 +235,7 @@ def guardar_rostro():
     data = request.get_json(silent=True)
     if not data:
         return {"success": False, "error": "No se envió JSON"}
+
     imagen = data.get("imagen")
     correo = session.get("correo")
 
@@ -297,78 +247,40 @@ def guardar_rostro():
         if embedding is None:
             return {"success": False, "error": "No se detectó rostro válido"}
 
-        embedding_bytes = embedding.tobytes()
-
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("UPDATE usuarios SET rostro = %s WHERE correo = %s", (psycopg2.Binary(embedding_bytes), correo))
+        cursor.execute("UPDATE usuarios SET rostro = %s WHERE correo = %s",
+                       (psycopg2.Binary(embedding.tobytes()), correo))
         conn.commit()
         cursor.close()
         conn.close()
         return {"success": True}
     except Exception as e:
-        print("Error al guardar rostro:", e)
+        print("❌ Error al guardar rostro:", e)
         return {"success": False, "error": str(e)}
 
-@app.route('/verificar_rostro', methods=['POST'])
-def verificar_rostro():
-    data = request.get_json(silent=True)
-    if not data:
-        return {"success": False, "error": "No se envió JSON"}
-    imagen = data.get("imagen")
-    correo = data.get("correo")
-
-    if not imagen or not correo:
-        return {"success": False, "error": "Datos incompletos"}
-
-    try:
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT nombre, rostro FROM usuarios WHERE correo = %s", (correo,))
-        fila = cursor.fetchone()
-        cursor.close()
-        conn.close()
-
-        if not fila or fila[1] is None:
-            return {"success": False, "error": "No hay rostro registrado"}
-
-        nombre, rostro_guardado = fila
-        embedding_guardado = np.frombuffer(rostro_guardado, dtype=np.float32)
-        embedding_actual = obtener_embedding(imagen)
-
-        if embedding_actual is None:
-            return {"success": False, "error": "No se detectó rostro válido"}
-
-        if comparar_embeddings(embedding_actual, embedding_guardado):
-            session["usuario"] = nombre
-            session["correo"] = correo
-            return {"success": True}
-        else:
-            return {"success": False, "error": "Rostro no coincide"}
-    except Exception as e:
-        print("Error en verificar_rostro:", e)
-        return {"success": False, "error": str(e)}
-
-# ----------------- PANEL ADMIN -----------------
+# ----------------- ADMIN -----------------
 ADMIN_EMAIL = "andresfelipeaguasaco@gmail.com"
 
 @app.route('/admin/usuarios')
 def admin_usuarios():
-    if "correo" not in session or session["correo"] != ADMIN_EMAIL:
+    if session.get("correo") != ADMIN_EMAIL:
         return "🚫 Acceso denegado"
     usuarios = obtener_todos_usuarios()
     return render_template("admin_usuarios.html", usuarios=usuarios)
 
 @app.route('/admin/modificar/<int:id_usuario>', methods=['GET', 'POST'])
 def admin_modificar(id_usuario):
-    if "correo" not in session or session["correo"] != ADMIN_EMAIL:
+    if session.get("correo") != ADMIN_EMAIL:
         return "🚫 Acceso denegado"
 
     if request.method == 'POST':
-        nombre = request.form['nombre']
-        correo = request.form['correo']
-        contraseña = request.form['contraseña']
-        modificar_usuario(id_usuario, nombre, correo, contraseña)
+        modificar_usuario(
+            id_usuario,
+            request.form['nombre'],
+            request.form['correo'],
+            request.form['contraseña']
+        )
         return redirect(url_for('admin_usuarios'))
 
     conn = get_connection()
@@ -381,7 +293,7 @@ def admin_modificar(id_usuario):
 
 @app.route('/admin/eliminar/<int:id_usuario>')
 def admin_eliminar(id_usuario):
-    if "correo" not in session or session["correo"] != ADMIN_EMAIL:
+    if session.get("correo") != ADMIN_EMAIL:
         return "🚫 Acceso denegado"
     eliminar_usuario(id_usuario)
     return redirect(url_for('admin_usuarios'))
@@ -389,8 +301,7 @@ def admin_eliminar(id_usuario):
 # ----------------- LOGOUT -----------------
 @app.route('/logout')
 def logout():
-    session.pop("usuario", None)
-    session.pop("correo", None)
+    session.clear()
     return redirect(url_for('login'))
 
 # ----------------- MAIN -----------------
