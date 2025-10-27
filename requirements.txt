@@ -21,9 +21,8 @@ deepface==0.0.93
 retina-face==0.0.14
 torch==2.3.1
 torchvision==0.18.1
-tf-keras==2.18.0  # se instala liviano y evita errores internos en deepface
+# tf-keras se mantiene liviano y evita conflictos internos
+tf-keras==2.18.0
 
 # --- Render Optimization ---
-# Evitamos mtcnn y tensorflow pesados
-# tensorflow==none
-# mtcnn==none
+# No instalamos mtcnn ni tensorflow pesado

@@ -4,32 +4,29 @@ import numpy as np
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 
 # ==============================================================
-# ⚙️ CONFIGURACIONES AMBIENTALES Y BACKEND
+# ⚙️ CONFIGURACIÓN GLOBAL
 # ==============================================================
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["DEEPFACE_BACKEND"] = "torch"
 os.environ["KERAS_BACKEND"] = "torch"
 os.environ["NO_MTCNN"] = "1"
+os.environ["DETECTOR_BACKEND"] = "retinaface"
 os.environ["FORCE_RELOAD_BACKENDS"] = "1"
 
-# Evita errores de Keras en Render
-try:
-    import tensorflow as tf
-    tf.keras.backend.clear_session()
-except Exception:
-    pass
-
-# Desactiva MTCNN completamente
+# Desactiva TensorFlow si no es necesario (solo PyTorch)
 import importlib.util
 if importlib.util.find_spec("mtcnn"):
     import sys
     sys.modules["mtcnn"] = None
 
 # ==============================================================
-# 📦 IMPORT UTILIDADES FACIALES
+# 🧠 IMPORTA UTILIDADES FACIALES
 # ==============================================================
 from facial_utils import obtener_embedding, comparar_embeddings
 
+# ==============================================================
+# 🧩 CONFIGURACIÓN FLASK
+# ==============================================================
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "clave_super_segura")
 
@@ -39,11 +36,11 @@ app.secret_key = os.getenv("SECRET_KEY", "clave_super_segura")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection():
-    """Crea conexión segura a PostgreSQL."""
+    """Conecta de forma segura a PostgreSQL."""
     return psycopg2.connect(DATABASE_URL, sslmode="require")
 
 # ==============================================================
-# 🧩 FUNCIONES DE BASE DE DATOS
+# 🧾 FUNCIONES SQL
 # ==============================================================
 def crear_tabla():
     with get_connection() as conn:
@@ -60,7 +57,6 @@ def crear_tabla():
         conn.commit()
 
 def agregar_usuario(nombre, correo, contraseña):
-    """Agrega usuario sin rostro inicial."""
     try:
         with get_connection() as conn:
             with conn.cursor() as cursor:
@@ -103,13 +99,13 @@ def eliminar_usuario(id_usuario):
         conn.commit()
 
 # ==============================================================
-# 🔧 INICIALIZACIÓN BASE DE DATOS
+# 🔧 INICIALIZACIÓN
 # ==============================================================
 try:
     crear_tabla()
-    print("✅ Tabla 'usuarios' creada/verificada correctamente.")
+    print("✅ Tabla 'usuarios' verificada o creada correctamente.")
 except Exception as e:
-    print("⚠️ Error creando tabla:", e)
+    print("⚠️ Error al crear tabla:", e)
 
 try:
     if not obtener_usuario("andresfelipeaguasaco@gmail.com"):
@@ -119,7 +115,7 @@ except Exception as e:
     print("⚠️ Error comprobando/creando admin:", e)
 
 # ==============================================================
-# 🌐 RUTAS
+# 🌐 RUTAS PRINCIPALES
 # ==============================================================
 @app.route("/")
 def root():
@@ -188,43 +184,6 @@ def login_face_post():
         return jsonify({"success": False, "error": "Error interno"}), 500
 
 # ==============================================================
-# 🧾 REGISTRO DE USUARIO
-# ==============================================================
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        nombre = request.form["nombre"]
-        correo = request.form["correo"]
-        contraseña = request.form["contraseña"]
-        rostro_base64 = request.form.get("rostro")
-
-        rostro_embedding = obtener_embedding(rostro_base64) if rostro_base64 else None
-
-        try:
-            with get_connection() as conn:
-                with conn.cursor() as cursor:
-                    if rostro_embedding is not None:
-                        cursor.execute("""
-                            INSERT INTO usuarios (nombre, correo, contraseña, rostro)
-                            VALUES (%s, %s, %s, %s)
-                        """, (nombre, correo, contraseña, psycopg2.Binary(rostro_embedding.tobytes())))
-                    else:
-                        cursor.execute("""
-                            INSERT INTO usuarios (nombre, correo, contraseña)
-                            VALUES (%s, %s, %s)
-                        """, (nombre, correo, contraseña))
-                conn.commit()
-        except psycopg2.errors.UniqueViolation:
-            return "⚠️ Este correo ya está registrado. <a href='/register'>Intenta con otro</a>"
-        except Exception as e:
-            print("❌ Error al registrar usuario:", e)
-            return f"⚠️ Error al registrar usuario: {e}"
-
-        return redirect(url_for("login"))
-
-    return render_template("register.html")
-
-# ==============================================================
 # 📸 REGISTRO Y GUARDADO DE ROSTRO
 # ==============================================================
 @app.route("/registro_rostro")
@@ -235,7 +194,6 @@ def registro_rostro():
 
 @app.route("/guardar_rostro", methods=["POST"])
 def guardar_rostro():
-    """Recibe la imagen base64 desde JS, la convierte en embedding y la guarda en la base de datos."""
     data = request.get_json(silent=True)
     if not data or "imagen" not in data:
         return jsonify({"success": False, "error": "No se envió la imagen"})
