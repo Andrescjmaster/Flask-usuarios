@@ -13,14 +13,13 @@ os.environ["NO_MTCNN"] = "1"
 os.environ["DETECTOR_BACKEND"] = "retinaface"
 os.environ["FORCE_RELOAD_BACKENDS"] = "1"
 
-# Desactiva TensorFlow si no es necesario (solo PyTorch)
 import importlib.util
 if importlib.util.find_spec("mtcnn"):
     import sys
     sys.modules["mtcnn"] = None
 
 # ==============================================================
-# 🧠 IMPORTA UTILIDADES FACIALES
+# 🧠 UTILIDADES FACIALES
 # ==============================================================
 from facial_utils import obtener_embedding, comparar_embeddings
 
@@ -36,7 +35,6 @@ app.secret_key = os.getenv("SECRET_KEY", "clave_super_segura")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection():
-    """Conecta de forma segura a PostgreSQL."""
     return psycopg2.connect(DATABASE_URL, sslmode="require")
 
 # ==============================================================
@@ -146,23 +144,66 @@ def login():
     return render_template("login.html")
 
 # ==============================================================
-# 🧠 LOGIN FACIAL
+# 🧠 LOGIN FACIAL (PÁGINA Y PROCESO)
 # ==============================================================
 @app.route("/login_face")
 def login_face_page():
     return render_template("login_face.html")
 
-@app.route("/login_face", methods=["POST"])
-def login_face_post():
+# ==============================================================
+# 📸 REGISTRO FACIAL (PÁGINA Y API)
+# ==============================================================
+@app.route("/registro_rostro")
+def registro_rostro():
+    if "usuario" not in session:
+        return redirect(url_for("login"))
+    return render_template("registro_rostro.html", usuario=session["usuario"])
+
+# ==============================================================
+# 🌐 ENDPOINTS API (PARA USO DIRECTO DESDE LA WEB)
+# ==============================================================
+@app.route("/api/registrar_rostro", methods=["POST"])
+def api_registrar_rostro():
+    """Guarda el embedding facial del usuario autenticado."""
+    if "correo" not in session:
+        return jsonify({"success": False, "error": "Usuario no autenticado"}), 401
+
+    data = request.get_json(silent=True)
+    if not data or "imagen" not in data:
+        return jsonify({"success": False, "error": "No se envió la imagen"}), 400
+
+    try:
+        embedding = obtener_embedding(data["imagen"])
+        if embedding is None:
+            return jsonify({"success": False, "error": "No se detectó un rostro válido"}), 400
+
+        with get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE usuarios SET rostro = %s WHERE correo = %s
+                """, (psycopg2.Binary(embedding.tobytes()), session["correo"]))
+            conn.commit()
+
+        print(f"✅ Rostro registrado correctamente para {session['correo']}")
+        return jsonify({"success": True, "mensaje": "Rostro registrado con éxito"})
+
+    except Exception as e:
+        print("❌ Error en registrar rostro:", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/verificar_rostro", methods=["POST"])
+def api_verificar_rostro():
+    """Verifica si un rostro coincide con alguno en la base de datos."""
     data = request.get_json(silent=True)
     if not data or "imagen" not in data:
         return jsonify({"success": False, "error": "Imagen no recibida"}), 400
 
-    embedding_actual = obtener_embedding(data["imagen"])
-    if embedding_actual is None:
-        return jsonify({"success": False, "error": "No se detectó rostro válido"}), 400
-
     try:
+        embedding_actual = obtener_embedding(data["imagen"])
+        if embedding_actual is None:
+            return jsonify({"success": False, "error": "No se detectó rostro válido"}), 400
+
         with get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT nombre, correo, rostro FROM usuarios WHERE rostro IS NOT NULL")
@@ -175,51 +216,14 @@ def login_face_post():
             if comparar_embeddings(embedding_guardado, embedding_actual):
                 session["usuario"] = nombre
                 session["correo"] = correo
+                print(f"✅ Usuario reconocido: {nombre}")
                 return jsonify({"success": True, "usuario": nombre})
 
         return jsonify({"success": False, "error": "Rostro no reconocido"}), 401
 
     except Exception as e:
-        print("❌ Error en login facial:", e)
-        return jsonify({"success": False, "error": "Error interno"}), 500
-
-# ==============================================================
-# 📸 REGISTRO Y GUARDADO DE ROSTRO
-# ==============================================================
-@app.route("/registro_rostro")
-def registro_rostro():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
-    return render_template("registro_rostro.html", usuario=session["usuario"])
-
-@app.route("/guardar_rostro", methods=["POST"])
-def guardar_rostro():
-    data = request.get_json(silent=True)
-    if not data or "imagen" not in data:
-        return jsonify({"success": False, "error": "No se envió la imagen"})
-
-    correo = session.get("correo")
-    if not correo:
-        return jsonify({"success": False, "error": "Usuario no autenticado"})
-
-    try:
-        embedding = obtener_embedding(data["imagen"])
-        if embedding is None:
-            return jsonify({"success": False, "error": "No se detectó un rostro válido"})
-
-        with get_connection() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute("""
-                    UPDATE usuarios SET rostro = %s WHERE correo = %s
-                """, (psycopg2.Binary(embedding.tobytes()), correo))
-            conn.commit()
-
-        print(f"✅ Rostro guardado correctamente para {correo}")
-        return jsonify({"success": True})
-
-    except Exception as e:
-        print("❌ Error al guardar rostro:", e)
-        return jsonify({"success": False, "error": str(e)})
+        print("❌ Error al verificar rostro:", e)
+        return jsonify({"success": False, "error": str(e)}), 500
 
 # ==============================================================
 # 🔐 ADMINISTRADOR

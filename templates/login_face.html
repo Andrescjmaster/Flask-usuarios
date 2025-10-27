@@ -44,6 +44,10 @@
         .back-btn:hover {
             background: #0056b3;
         }
+        #estado {
+            margin-top: 10px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -54,39 +58,56 @@
 
         <button id="capture">Capturar rostro</button>
         <button class="back-btn" onclick="window.location.href='/login'">Volver</button>
+        <p id="estado"></p>
     </div>
 
     <script>
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
+        const estado = document.getElementById('estado');
+        const boton = document.getElementById('capture');
 
-        // Solicitar acceso a la cámara
+        // Acceso a la cámara
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => { video.srcObject = stream; })
             .catch(err => alert("Error al acceder a la cámara: " + err));
 
-        // Capturar imagen y enviarla al servidor
-        document.getElementById('capture').addEventListener('click', async () => {
-            const context = canvas.getContext('2d');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // Captura y envío al backend
+        boton.addEventListener('click', async () => {
+            boton.disabled = true;
+            estado.textContent = "Analizando rostro, por favor espera...";
+            estado.style.color = "orange";
 
-            const dataUrl = canvas.toDataURL('image/jpeg');
+            try {
+                const context = canvas.getContext('2d');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            const respuesta = await fetch('/login_face', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imagen: dataUrl })
-            });
+                const dataUrl = canvas.toDataURL('image/jpeg');
 
-            const resultado = await respuesta.json();
+                const respuesta = await fetch('/api/verificar_rostro', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imagen: dataUrl })
+                });
 
-            if (resultado.success) {
-                alert("✅ Bienvenido, " + resultado.usuario);
-                window.location.href = "/home";
-            } else {
-                alert("❌ " + resultado.error);
+                const resultado = await respuesta.json();
+
+                if (resultado.success) {
+                    estado.textContent = "✅ Bienvenido, " + resultado.usuario;
+                    estado.style.color = "green";
+                    setTimeout(() => window.location.href = "/home", 1500);
+                } else {
+                    estado.textContent = "❌ " + (resultado.error || "No se reconoció el rostro.");
+                    estado.style.color = "red";
+                }
+
+            } catch (error) {
+                estado.textContent = "⚠️ Error al conectar con el servidor.";
+                estado.style.color = "red";
+            } finally {
+                boton.disabled = false;
             }
         });
     </script>

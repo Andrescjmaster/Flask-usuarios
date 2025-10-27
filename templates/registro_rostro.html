@@ -41,7 +41,7 @@
     <h2>Registro facial de {{ usuario }}</h2>
 
     <video id="video" width="400" height="300" autoplay></video><br>
-    <button id="btnCapturar" onclick="capturar()">📸 Capturar rostro</button>
+    <button id="btnCapturar">📸 Capturar rostro</button>
     <p id="mensaje"></p>
 
     <script>
@@ -49,19 +49,17 @@
         const mensaje = document.getElementById('mensaje');
         const btn = document.getElementById('btnCapturar');
 
-        // Iniciar cámara
+        // Inicializar cámara
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => video.srcObject = stream)
-            .catch(err => {
-                alert("❌ No se pudo acceder a la cámara: " + err);
-            });
+            .catch(err => alert("❌ No se pudo acceder a la cámara: " + err));
 
-        async function capturar() {
+        btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            mensaje.textContent = "Procesando rostro, por favor espera...";
+            mensaje.style.color = "orange";
+
             try {
-                btn.disabled = true;
-                mensaje.textContent = "Procesando rostro, por favor espera...";
-                mensaje.style.color = "orange";
-
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
@@ -69,29 +67,29 @@
                 ctx.drawImage(video, 0, 0);
                 const imagen = canvas.toDataURL('image/jpeg');
 
-                const res = await fetch("/guardar_rostro", {
+                const res = await fetch("/api/registrar_rostro", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ imagen })
                 });
 
                 const data = await res.json();
+
                 if (data.success) {
-                    mensaje.textContent = "✅ Rostro guardado correctamente.";
+                    mensaje.textContent = "✅ Rostro registrado con éxito.";
                     mensaje.style.color = "green";
-                    setTimeout(() => { window.location.href = "/home"; }, 1500);
+                    setTimeout(() => window.location.href = "/home", 1500);
                 } else {
-                    mensaje.textContent = "❌ Error: " + data.error;
+                    mensaje.textContent = "❌ Error: " + (data.error || "No se pudo registrar el rostro.");
                     mensaje.style.color = "red";
                 }
-
             } catch (err) {
-                mensaje.textContent = "⚠️ Error de red o servidor: " + err;
+                mensaje.textContent = "⚠️ Error al conectar con el servidor.";
                 mensaje.style.color = "red";
             } finally {
                 btn.disabled = false;
             }
-        }
+        });
     </script>
 </body>
 </html>
