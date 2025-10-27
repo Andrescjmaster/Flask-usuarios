@@ -13,7 +13,7 @@ SQLAlchemy==2.0.32
 # --- Configuración ---
 python-dotenv==1.0.1
 
-# --- Reconocimiento Facial (solo PyTorch, sin TensorFlow) ---
+# --- Reconocimiento Facial (PyTorch + RetinaFace) ---
 numpy==1.26.4
 Pillow==10.3.0
 opencv-python-headless==4.10.0.84
@@ -21,8 +21,8 @@ deepface==0.0.93
 retina-face==0.0.14
 torch==2.3.1
 torchvision==0.18.1
-# tf-keras se mantiene liviano y evita conflictos internos
-tf-keras==2.18.0
+mtcnn==0.1.1
+tf-keras==2.18.0  # Evita errores internos en deepface
 
 # --- Render Optimization ---
-# No instalamos mtcnn ni tensorflow pesado
+# Evitamos tensorflow pesado
