@@ -5,26 +5,35 @@
     <title>Registro Facial</title>
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f5f6fa;
             text-align: center;
             font-family: Arial, sans-serif;
+            margin-top: 40px;
         }
         video {
-            border: 3px solid #333;
+            border: 3px solid #007bff;
             border-radius: 10px;
-            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            margin-top: 15px;
         }
         button {
-            margin-top: 15px;
-            padding: 10px 20px;
+            margin-top: 20px;
+            padding: 12px 25px;
             background-color: #007bff;
             color: white;
+            font-weight: bold;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         button:hover {
             background-color: #0056b3;
+        }
+        #mensaje {
+            margin-top: 15px;
+            color: #333;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -32,39 +41,56 @@
     <h2>Registro facial de {{ usuario }}</h2>
 
     <video id="video" width="400" height="300" autoplay></video><br>
-    <button onclick="capturar()">Capturar rostro</button>
+    <button id="btnCapturar" onclick="capturar()">📸 Capturar rostro</button>
+    <p id="mensaje"></p>
 
     <script>
-        // Iniciar la cámara
         const video = document.getElementById('video');
+        const mensaje = document.getElementById('mensaje');
+        const btn = document.getElementById('btnCapturar');
+
+        // Iniciar cámara
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => { video.srcObject = stream; })
-            .catch(err => alert("Error al acceder a la cámara: " + err));
+            .then(stream => video.srcObject = stream)
+            .catch(err => {
+                alert("❌ No se pudo acceder a la cámara: " + err);
+            });
 
-        // Capturar imagen y enviarla al servidor
-        function capturar() {
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0);
-            const imagen = canvas.toDataURL('image/jpeg');
+        async function capturar() {
+            try {
+                btn.disabled = true;
+                mensaje.textContent = "Procesando rostro, por favor espera...";
+                mensaje.style.color = "orange";
 
-            fetch("/guardar_rostro", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ imagen })
-            })
-            .then(res => res.json())
-            .then(data => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+                const imagen = canvas.toDataURL('image/jpeg');
+
+                const res = await fetch("/guardar_rostro", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ imagen })
+                });
+
+                const data = await res.json();
                 if (data.success) {
-                    alert("✅ Rostro guardado correctamente");
-                    window.location.href = "/home";
+                    mensaje.textContent = "✅ Rostro guardado correctamente.";
+                    mensaje.style.color = "green";
+                    setTimeout(() => { window.location.href = "/home"; }, 1500);
                 } else {
-                    alert("❌ Error: " + data.error);
+                    mensaje.textContent = "❌ Error: " + data.error;
+                    mensaje.style.color = "red";
                 }
-            })
-            .catch(err => alert("Error de red: " + err));
+
+            } catch (err) {
+                mensaje.textContent = "⚠️ Error de red o servidor: " + err;
+                mensaje.style.color = "red";
+            } finally {
+                btn.disabled = false;
+            }
         }
     </script>
 </body>

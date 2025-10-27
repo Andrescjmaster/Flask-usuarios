@@ -6,12 +6,28 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 # ==============================================================
 # ⚙️ CONFIGURACIONES AMBIENTALES Y BACKEND
 # ==============================================================
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # Silencia TensorFlow
-os.environ["DEEPFACE_BACKEND"] = "torch"  # Obliga uso de PyTorch
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+os.environ["DEEPFACE_BACKEND"] = "torch"
 os.environ["KERAS_BACKEND"] = "torch"
-os.environ["NO_MTCNN"] = "1"  # Evita cargar detector MTCNN (usa retinaface)
+os.environ["NO_MTCNN"] = "1"
+os.environ["FORCE_RELOAD_BACKENDS"] = "1"
 
-# Importar DeepFace utils (con backend ya configurado)
+# Evita errores de Keras en Render
+try:
+    import tensorflow as tf
+    tf.keras.backend.clear_session()
+except Exception:
+    pass
+
+# Desactiva MTCNN completamente
+import importlib.util
+if importlib.util.find_spec("mtcnn"):
+    import sys
+    sys.modules["mtcnn"] = None
+
+# ==============================================================
+# 📦 IMPORT UTILIDADES FACIALES
+# ==============================================================
 from facial_utils import obtener_embedding, comparar_embeddings
 
 app = Flask(__name__)
@@ -23,7 +39,7 @@ app.secret_key = os.getenv("SECRET_KEY", "clave_super_segura")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection():
-    """Conecta de forma segura a PostgreSQL."""
+    """Crea conexión segura a PostgreSQL."""
     return psycopg2.connect(DATABASE_URL, sslmode="require")
 
 # ==============================================================
@@ -44,14 +60,14 @@ def crear_tabla():
         conn.commit()
 
 def agregar_usuario(nombre, correo, contraseña):
-    """Agrega un usuario nuevo sin rostro."""
+    """Agrega usuario sin rostro inicial."""
     try:
         with get_connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute(
-                    "INSERT INTO usuarios (nombre, correo, contraseña) VALUES (%s, %s, %s)",
-                    (nombre, correo, contraseña)
-                )
+                cursor.execute("""
+                    INSERT INTO usuarios (nombre, correo, contraseña)
+                    VALUES (%s, %s, %s)
+                """, (nombre, correo, contraseña))
             conn.commit()
         return True
     except psycopg2.Error as e:
@@ -87,13 +103,13 @@ def eliminar_usuario(id_usuario):
         conn.commit()
 
 # ==============================================================
-# 🔧 INICIALIZACIÓN
+# 🔧 INICIALIZACIÓN BASE DE DATOS
 # ==============================================================
 try:
     crear_tabla()
-    print("✅ Tabla 'usuarios' verificada o creada correctamente.")
+    print("✅ Tabla 'usuarios' creada/verificada correctamente.")
 except Exception as e:
-    print("⚠️ Error al crear tabla:", e)
+    print("⚠️ Error creando tabla:", e)
 
 try:
     if not obtener_usuario("andresfelipeaguasaco@gmail.com"):
@@ -129,7 +145,6 @@ def login():
             session["usuario"] = usuario[1]
             session["correo"] = usuario[2]
             return redirect(url_for("home"))
-
         return "❌ Usuario o contraseña incorrectos. <a href='/login'>Intentar de nuevo</a>"
 
     return render_template("login.html")
@@ -137,7 +152,7 @@ def login():
 # ==============================================================
 # 🧠 LOGIN FACIAL
 # ==============================================================
-@app.route("/login_face", methods=["GET"])
+@app.route("/login_face")
 def login_face_page():
     return render_template("login_face.html")
 
@@ -149,7 +164,7 @@ def login_face_post():
 
     embedding_actual = obtener_embedding(data["imagen"])
     if embedding_actual is None:
-        return jsonify({"success": False, "error": "No se detectó un rostro válido"}), 400
+        return jsonify({"success": False, "error": "No se detectó rostro válido"}), 400
 
     try:
         with get_connection() as conn:
@@ -210,26 +225,8 @@ def register():
     return render_template("register.html")
 
 # ==============================================================
-# 🧩 FUNCIONES EXTRA
+# 📸 REGISTRO Y GUARDADO DE ROSTRO
 # ==============================================================
-@app.route("/calculadora")
-def calculadora():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
-    return render_template("calculadora.html", usuario=session["usuario"])
-
-@app.route("/recomendaciones")
-def recomendaciones():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
-    return render_template("recomendaciones.html")
-
-@app.route("/rutinas")
-def rutinas():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
-    return render_template("rutinas.html", usuario=session["usuario"])
-
 @app.route("/registro_rostro")
 def registro_rostro():
     if "usuario" not in session:
@@ -238,30 +235,33 @@ def registro_rostro():
 
 @app.route("/guardar_rostro", methods=["POST"])
 def guardar_rostro():
+    """Recibe la imagen base64 desde JS, la convierte en embedding y la guarda en la base de datos."""
     data = request.get_json(silent=True)
-    if not data:
-        return {"success": False, "error": "No se envió JSON"}
+    if not data or "imagen" not in data:
+        return jsonify({"success": False, "error": "No se envió la imagen"})
 
-    imagen = data.get("imagen")
     correo = session.get("correo")
-
-    if not imagen or not correo:
-        return {"success": False, "error": "Datos incompletos"}
+    if not correo:
+        return jsonify({"success": False, "error": "Usuario no autenticado"})
 
     try:
-        embedding = obtener_embedding(imagen)
+        embedding = obtener_embedding(data["imagen"])
         if embedding is None:
-            return {"success": False, "error": "No se detectó rostro válido"}
+            return jsonify({"success": False, "error": "No se detectó un rostro válido"})
 
         with get_connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute("UPDATE usuarios SET rostro = %s WHERE correo = %s",
-                               (psycopg2.Binary(embedding.tobytes()), correo))
+                cursor.execute("""
+                    UPDATE usuarios SET rostro = %s WHERE correo = %s
+                """, (psycopg2.Binary(embedding.tobytes()), correo))
             conn.commit()
-        return {"success": True}
+
+        print(f"✅ Rostro guardado correctamente para {correo}")
+        return jsonify({"success": True})
+
     except Exception as e:
         print("❌ Error al guardar rostro:", e)
-        return {"success": False, "error": str(e)}
+        return jsonify({"success": False, "error": str(e)})
 
 # ==============================================================
 # 🔐 ADMINISTRADOR
@@ -312,7 +312,7 @@ def logout():
     return redirect(url_for("login"))
 
 # ==============================================================
-# 🩺 HEALTH CHECK (para Render)
+# 🩺 HEALTH CHECK
 # ==============================================================
 @app.route("/health")
 def health():
