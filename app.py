@@ -103,15 +103,21 @@ except Exception as e:
 # ==============================================================
 # 🌐 RUTAS PRINCIPALES
 # ==============================================================
+
+# 🔹 Inicio forzado al login
 @app.route("/")
-def root():
-    return redirect(url_for("home") if "usuario" in session else url_for("login"))
+def inicio():
+    return redirect(url_for("login"))
 
 @app.route("/home")
 def home():
     if "usuario" not in session:
         return redirect(url_for("login"))
-    return render_template("home.html", usuario=session["usuario"])
+    try:
+        return render_template("home.html", usuario=session["usuario"])
+    except Exception as e:
+        print("⚠️ Error cargando home:", e)
+        return "Error cargando la página principal", 500
 
 # ==============================================================
 # 🔐 LOGIN TRADICIONAL
