@@ -27,3 +27,4 @@ tf-keras==2.18.0  # se instala liviano y evita errores internos en deepface
 # Evitamos tensorflow y dependencias pesadas
 
 # --- Fix for DeepFace (import interno obligatorio) ---
+mtcnn
