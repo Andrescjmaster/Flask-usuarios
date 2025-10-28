@@ -4,19 +4,15 @@ import numpy as np
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 
 # ==============================================================
-# ⚙️ CONFIGURACIÓN GLOBAL (DeepFace - RetinaFace)
+# ⚙️ CONFIGURACIÓN GLOBAL (DeepFace - SOLO TORCH + RETINAFACE)
 # ==============================================================
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["DETECTOR_BACKEND"] = "retinaface"
+os.environ["BACKEND"] = "torch"           # 🔥 Fuerza PyTorch
+os.environ["DISABLE_TF"] = "1"            # 🚫 Desactiva TensorFlow
 os.environ["FORCE_RELOAD_BACKENDS"] = "1"
 
-# ✅ CORRECCIÓN:
-# Ya no bloqueamos el módulo mtcnn, solo avisamos si no está instalado.
-try:
-    import mtcnn  # Se usará solo si DeepFace lo necesita
-    print("✅ MTCNN detectado correctamente.")
-except ImportError:
-    print("⚠️ MTCNN no instalado (DeepFace usará RetinaFace).")
+print("🧠 DeepFace optimizado para PyTorch + RetinaFace")
 
 # ==============================================================
 # 🧠 UTILIDADES FACIALES
