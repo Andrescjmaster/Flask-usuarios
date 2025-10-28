@@ -232,7 +232,7 @@ def rutinas():
     return render_template("rutinas.html", usuario=session["usuario"])
 
 @app.route("/registro_rostro")
-def registro_rostro_page():
+def registro_rostro():
     if "usuario" not in session:
         return redirect(url_for("login"))
     return render_template("registro_rostro.html", usuario=session["usuario"])
