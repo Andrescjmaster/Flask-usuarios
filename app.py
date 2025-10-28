@@ -10,10 +10,13 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["DETECTOR_BACKEND"] = "retinaface"
 os.environ["FORCE_RELOAD_BACKENDS"] = "1"
 
-import importlib.util
-if importlib.util.find_spec("mtcnn"):
-    import sys
-    sys.modules["mtcnn"] = None
+# ✅ CORRECCIÓN:
+# Ya no bloqueamos el módulo mtcnn, solo avisamos si no está instalado.
+try:
+    import mtcnn  # Se usará solo si DeepFace lo necesita
+    print("✅ MTCNN detectado correctamente.")
+except ImportError:
+    print("⚠️ MTCNN no instalado (DeepFace usará RetinaFace).")
 
 # ==============================================================
 # 🧠 UTILIDADES FACIALES
@@ -290,6 +293,6 @@ def health():
 # ==============================================================
 # 🚀 MAIN
 # ==============================================================
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+if __name__ == "__main__":
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=8080)
