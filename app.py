@@ -1,105 +1,133 @@
-app.py funcional 
+import os
+import psycopg2
+import numpy as np
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 
-from flask import Flask, render_template, request, redirect, url_for, session
-import psycopg2, os
-from urllib.parse import urlparse
+# ==============================================================
+# ⚙️ CONFIGURACIÓN GLOBAL (DeepFace - RetinaFace)
+# ==============================================================
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+os.environ["DETECTOR_BACKEND"] = "retinaface"
+os.environ["FORCE_RELOAD_BACKENDS"] = "1"
 
+import importlib.util
+if importlib.util.find_spec("mtcnn"):
+    import sys
+    sys.modules["mtcnn"] = None
+
+# ==============================================================
+# 🧠 UTILIDADES FACIALES
+# ==============================================================
+from facial_utils import obtener_embedding, comparar_embeddings
+
+# ==============================================================
+# ⚙️ CONFIGURACIÓN FLASK
+# ==============================================================
 app = Flask(__name__)
-app.secret_key = "clave_super_segura"
+app.secret_key = os.getenv("SECRET_KEY", "clave_super_segura")
 
-# ----------------- CONEXIÓN A POSTGRES -----------------
+# ==============================================================
+# 🗄️ CONEXIÓN A LA BASE DE DATOS
+# ==============================================================
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection():
-    return psycopg2.connect(DATABASE_URL)
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL no está configurada")
+    return psycopg2.connect(DATABASE_URL, sslmode="require")
 
-# ----------------- FUNCIONES DE BD -----------------
+# ==============================================================
+# 🧾 FUNCIONES DE BASE DE DATOS
+# ==============================================================
 def crear_tabla():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS usuarios (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(100) NOT NULL,
-            correo VARCHAR(100) UNIQUE NOT NULL,
-            contraseña VARCHAR(100) NOT NULL
-        )
-    """)
-    conn.commit()
-    conn.close()
-
-def agregar_usuario(nombre, correo, contraseña):
-    conn = get_connection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("INSERT INTO usuarios (nombre, correo, contraseña) VALUES (%s, %s, %s)",
-                       (nombre, correo, contraseña))
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS usuarios (
+                    id SERIAL PRIMARY KEY,
+                    nombre VARCHAR(100) NOT NULL,
+                    correo VARCHAR(100) UNIQUE NOT NULL,
+                    contraseña VARCHAR(100) NOT NULL,
+                    rostro BYTEA
+                )
+            """)
         conn.commit()
-    except psycopg2.Error:
-        conn.close()
-        return False
-    conn.close()
-    return True
 
 def obtener_usuario(correo):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM usuarios WHERE correo = %s", (correo,))
-    usuario = cursor.fetchone()
-    conn.close()
-    return usuario
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM usuarios WHERE correo = %s", (correo,))
+            return cursor.fetchone()
 
 def obtener_todos_usuarios():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM usuarios")
-    usuarios = cursor.fetchall()
-    conn.close()
-    return usuarios
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM usuarios ORDER BY id ASC")
+            return cursor.fetchall()
+
+def agregar_usuario(nombre, correo, contraseña, rostro=None):
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            if rostro is not None:
+                cursor.execute("""
+                    INSERT INTO usuarios (nombre, correo, contraseña, rostro)
+                    VALUES (%s, %s, %s, %s)
+                """, (nombre, correo, contraseña, psycopg2.Binary(rostro.tobytes())))
+            else:
+                cursor.execute("""
+                    INSERT INTO usuarios (nombre, correo, contraseña)
+                    VALUES (%s, %s, %s)
+                """, (nombre, correo, contraseña))
+        conn.commit()
 
 def modificar_usuario(id_usuario, nombre, correo, contraseña):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        UPDATE usuarios 
-        SET nombre = %s, correo = %s, contraseña = %s
-        WHERE id = %s
-    """, (nombre, correo, contraseña, id_usuario))
-    conn.commit()
-    conn.close()
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                UPDATE usuarios SET nombre=%s, correo=%s, contraseña=%s WHERE id=%s
+            """, (nombre, correo, contraseña, id_usuario))
+        conn.commit()
 
 def eliminar_usuario(id_usuario):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM usuarios WHERE id = %s", (id_usuario,))
-    conn.commit()
-    conn.close()
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("DELETE FROM usuarios WHERE id=%s", (id_usuario,))
+        conn.commit()
 
-# Crear tabla si no existe
+# ==============================================================
+# 🔧 INICIALIZACIÓN
+# ==============================================================
 try:
     crear_tabla()
+    print("✅ Tabla 'usuarios' lista.")
 except Exception as e:
-    print("⚠️ Error al crear la tabla:", e)
+    print("⚠️ Error al crear tabla:", e)
 
-# Crear usuario admin si no existe
-if not obtener_usuario("andresfelipeaguasaco@gmail.com"):
-    agregar_usuario("Administrador", "andresfelipeaguasaco@gmail.com", "123456789")
+try:
+    if not obtener_usuario("andresfelipeaguasaco@gmail.com"):
+        agregar_usuario("Administrador", "andresfelipeaguasaco@gmail.com", "123456789")
+        print("👤 Usuario administrador creado.")
+except Exception as e:
+    print("⚠️ Error creando admin:", e)
 
-# ----------------- ROOT -----------------
+# ==============================================================
+# 🌐 RUTAS PRINCIPALES
+# ==============================================================
 @app.route('/')
 def root():
     if "usuario" in session:
         return redirect(url_for('home'))
     return redirect(url_for('login'))
 
-# ----------------- HOME -----------------
 @app.route('/home')
 def home():
     if "usuario" not in session:
         return redirect(url_for('login'))
     return render_template('home.html', usuario=session['usuario'])
 
-# ----------------- LOGIN -----------------
+# ==============================================================
+# 🔐 LOGIN TRADICIONAL
+# ==============================================================
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -114,43 +142,105 @@ def login():
             return "❌ Usuario o contraseña incorrectos. <a href='/login'>Intentar de nuevo</a>"
     return render_template('login.html')
 
-# ----------------- REGISTER -----------------
+# ==============================================================
+# 🧠 LOGIN FACIAL
+# ==============================================================
+@app.route("/login_face", methods=["GET"])
+def login_face_page():
+    return render_template("login_face.html")
+
+@app.route("/login_face", methods=["POST"])
+def login_face_post():
+    data = request.get_json(silent=True)
+    if not data or "imagen" not in data:
+        return jsonify({"success": False, "error": "Imagen no recibida"}), 400
+
+    embedding_actual = obtener_embedding(data["imagen"])
+    if embedding_actual is None:
+        return jsonify({"success": False, "error": "No se detectó rostro"}), 400
+
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT nombre, correo, rostro FROM usuarios WHERE rostro IS NOT NULL")
+                filas = cursor.fetchall()
+
+        for nombre, correo, rostro_guardado in filas:
+            if rostro_guardado:
+                embedding_guardado = np.frombuffer(rostro_guardado, dtype=np.float32)
+                if comparar_embeddings(embedding_guardado, embedding_actual):
+                    session["usuario"] = nombre
+                    session["correo"] = correo
+                    return jsonify({"success": True, "usuario": nombre})
+
+        return jsonify({"success": False, "error": "Rostro no reconocido"}), 401
+
+    except Exception as e:
+        print("❌ Error en login facial:", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ==============================================================
+# 🧾 REGISTRO DE USUARIOS
+# ==============================================================
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        nombre = request.form['nombre']
-        correo = request.form['correo']
-        contraseña = request.form['contraseña']
-
-        if not agregar_usuario(nombre, correo, contraseña):
-            return "⚠️ Este correo ya está registrado. <a href='/register'>Intenta con otro</a>"
-
-        return redirect(url_for('login'))
+        data = request.get_json(silent=True)
+        if data:  # registro facial
+            nombre = data.get("nombre")
+            correo = data.get("correo")
+            contraseña = data.get("contraseña")
+            rostro_base64 = data.get("rostro")
+            try:
+                rostro_embedding = obtener_embedding(rostro_base64) if rostro_base64 else None
+                agregar_usuario(nombre, correo, contraseña, rostro_embedding)
+                return jsonify({"success": True})
+            except psycopg2.errors.UniqueViolation:
+                return jsonify({"success": False, "error": "Correo ya registrado"}), 400
+            except Exception as e:
+                print("❌ Error al registrar usuario facial:", e)
+                return jsonify({"success": False, "error": str(e)}), 500
+        else:  # registro tradicional
+            nombre = request.form['nombre']
+            correo = request.form['correo']
+            contraseña = request.form['contraseña']
+            try:
+                agregar_usuario(nombre, correo, contraseña)
+                return redirect(url_for('login'))
+            except Exception:
+                return "⚠️ Este correo ya está registrado. <a href='/register'>Intenta con otro</a>"
     return render_template('register.html')
 
-# ----------------- CALCULADORA -----------------
+# ==============================================================
+# 🧩 FUNCIONALIDADES ADICIONALES
+# ==============================================================
 @app.route('/calculadora')
 def calculadora():
     if "usuario" not in session:
         return redirect(url_for('login'))
     return render_template("calculadora.html", usuario=session['usuario'])
 
-# ----------------- RECOMENDACIONES -----------------
 @app.route('/recomendaciones')
 def recomendaciones():
     if "usuario" not in session:
         return redirect(url_for('login'))
     return render_template("recomendaciones.html")
 
-# ----------------- RUTINAS -----------------
 @app.route('/rutinas')
 def rutinas():
     if "usuario" not in session:
         return redirect(url_for('login'))
     return render_template("rutinas.html", usuario=session["usuario"])
 
+@app.route("/registro_rostro")
+def registro_rostro_page():
+    if "usuario" not in session:
+        return redirect(url_for("login"))
+    return render_template("registro_rostro.html", usuario=session["usuario"])
 
-# ----------------- PANEL ADMIN -----------------
+# ==============================================================
+# 🔐 PANEL ADMIN
+# ==============================================================
 ADMIN_EMAIL = "andresfelipeaguasaco@gmail.com"
 
 @app.route('/admin/usuarios')
@@ -164,7 +254,6 @@ def admin_usuarios():
 def admin_modificar(id_usuario):
     if "correo" not in session or session["correo"] != ADMIN_EMAIL:
         return "🚫 Acceso denegado"
-
     if request.method == 'POST':
         nombre = request.form['nombre']
         correo = request.form['correo']
@@ -172,11 +261,10 @@ def admin_modificar(id_usuario):
         modificar_usuario(id_usuario, nombre, correo, contraseña)
         return redirect(url_for('admin_usuarios'))
 
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM usuarios WHERE id = %s", (id_usuario,))
-    usuario = cursor.fetchone()
-    conn.close()
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM usuarios WHERE id = %s", (id_usuario,))
+            usuario = cursor.fetchone()
     return render_template("admin_modificar.html", usuario=usuario)
 
 @app.route('/admin/eliminar/<int:id_usuario>')
@@ -186,13 +274,22 @@ def admin_eliminar(id_usuario):
     eliminar_usuario(id_usuario)
     return redirect(url_for('admin_usuarios'))
 
-# ----------------- LOGOUT -----------------
+# ==============================================================
+# 🚪 LOGOUT Y HEALTHCHECK
+# ==============================================================
 @app.route('/logout')
 def logout():
     session.pop("usuario", None)
     session.pop("correo", None)
     return redirect(url_for('login'))
 
-# ----------------- MAIN -----------------
+@app.route('/health')
+def health():
+    return {"status": "ok"}, 200
+
+# ==============================================================
+# 🚀 MAIN
+# ==============================================================
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
