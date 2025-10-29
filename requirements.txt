@@ -1,27 +1,24 @@
-# --- Flask Core ---
-Flask==3.0.3
+# --- Framework principal ---
+flask==3.0.3
 gunicorn==22.0.0
-itsdangerous==2.2.0
-Jinja2==3.1.4
-Werkzeug==3.0.3
-click==8.1.7
 
-# --- PostgreSQL ---
+# --- Reconocimiento facial (solo PyTorch, sin TensorFlow) ---
+deepface==0.0.93
+torch==2.3.1
+torchvision==0.18.1
+facenet-pytorch==2.5.3
+mtcnn==0.1.1
+tf-keras==2.16.0
+
+# --- Procesamiento de imágenes ---
+opencv-python-headless==4.9.0.80
+numpy==1.26.4
+pillow==10.3.0
+scikit-learn==1.5.1
+
+# --- PostgreSQL (si tu app lo usa) ---
 psycopg2-binary==2.9.9
 SQLAlchemy==2.0.32
 
 # --- Configuración ---
 python-dotenv==1.0.1
-
-# --- Reconocimiento Facial (DeepFace optimizado PyTorch) ---
-numpy==1.26.4
-Pillow==10.3.0
-opencv-python-headless==4.10.0.84
-deepface==0.0.93
-retina-face==0.0.14
-torch==2.3.1
-torchvision==0.18.1
-facenet-pytorch==2.5.3
-
-# --- TensorFlow CPU (mínimo requerido para compatibilidad) ---
-tensorflow-cpu==2.15.0
