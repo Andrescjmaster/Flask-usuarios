@@ -1,95 +1,79 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Registro Facial</title>
-    <style>
-        body {
-            background-color: #f5f6fa;
-            text-align: center;
-            font-family: Arial, sans-serif;
-            margin-top: 40px;
-        }
-        video {
-            border: 3px solid #007bff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            margin-top: 15px;
-        }
-        button {
-            margin-top: 20px;
-            padding: 12px 25px;
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #mensaje {
-            margin-top: 15px;
-            color: #333;
-            font-size: 16px;
-        }
-    </style>
-</head>
-<body>
-    <h2>Registro facial de {{ usuario }}</h2>
+import cv2
+import os
+import face_recognition
+import numpy as np
 
-    <video id="video" width="400" height="300" autoplay></video><br>
-    <button id="btnCapturar">📸 Capturar rostro</button>
-    <p id="mensaje"></p>
+# Crear carpeta para almacenar los rostros si no existe
+carpeta_rostros = 'rostros_registrados'
+if not os.path.exists(carpeta_rostros):
+    os.makedirs(carpeta_rostros)
 
-    <script>
-        const video = document.getElementById('video');
-        const mensaje = document.getElementById('mensaje');
-        const btn = document.getElementById('btnCapturar');
+print("=== Registro de Rostro ===")
+nombre = input("Ingresa el nombre del usuario: ").strip()
 
-        // Inicializar cámara
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => video.srcObject = stream)
-            .catch(err => alert("❌ No se pudo acceder a la cámara: " + err));
+if not nombre:
+    print("⚠️  No ingresaste un nombre. Por favor, vuelve a intentarlo.")
+    exit()
 
-        btn.addEventListener('click', async () => {
-            btn.disabled = true;
-            mensaje.textContent = "Procesando rostro, por favor espera...";
-            mensaje.style.color = "orange";
+# Iniciar la cámara
+camara = cv2.VideoCapture(0)
+if not camara.isOpened():
+    print("❌ No se pudo acceder a la cámara. Verifica que esté conectada.")
+    exit()
 
-            try {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0);
-                const imagen = canvas.toDataURL('image/jpeg');
+print(f"\n📸 Capturando imágenes para {nombre}...")
+print("Mantén el rostro centrado y presiona 'q' para finalizar.\n")
 
-                const res = await fetch("/api/registrar_rostro", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ imagen })
-                });
+contador = 0
+while True:
+    ret, frame = camara.read()
+    if not ret:
+        print("⚠️ Error al capturar imagen.")
+        break
 
-                const data = await res.json();
+    cv2.imshow("Registro de rostro - Presiona 'q' para salir", frame)
 
-                if (data.success) {
-                    mensaje.textContent = "✅ Rostro registrado con éxito.";
-                    mensaje.style.color = "green";
-                    setTimeout(() => window.location.href = "/home", 1500);
-                } else {
-                    mensaje.textContent = "❌ Error: " + (data.error || "No se pudo registrar el rostro.");
-                    mensaje.style.color = "red";
-                }
-            } catch (err) {
-                mensaje.textContent = "⚠️ Error al conectar con el servidor.";
-                mensaje.style.color = "red";
-            } finally {
-                btn.disabled = false;
-            }
-        });
-    </script>
-</body>
-</html>
+    # Guardar cada cierto número de frames (por ejemplo, 1 de cada 5)
+    if contador % 5 == 0:
+        ruta_imagen = os.path.join(carpeta_rostros, f"{nombre}_{contador}.jpg")
+        cv2.imwrite(ruta_imagen, frame)
+
+    contador += 1
+
+    # Salir con 'q'
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# Liberar la cámara y cerrar ventanas
+camara.release()
+cv2.destroyAllWindows()
+
+print(f"\n✅ Se guardaron {contador // 5} imágenes del rostro de '{nombre}' en '{carpeta_rostros}'.")
+
+# Codificar rostros y guardar como referencia
+print("🔍 Procesando rostros...")
+
+imagenes = []
+nombres = []
+
+for archivo in os.listdir(carpeta_rostros):
+    if archivo.startswith(nombre):
+        ruta = os.path.join(carpeta_rostros, archivo)
+        imagen = face_recognition.load_image_file(ruta)
+        codigos = face_recognition.face_encodings(imagen)
+
+        if len(codigos) > 0:
+            imagenes.append(codigos[0])
+            nombres.append(nombre)
+
+# Validar que se haya detectado al menos un rostro
+if len(imagenes) == 0:
+    print("⚠️ No se detectaron rostros válidos. Vuelve a intentarlo en mejor iluminación.")
+    exit()
+
+# Guardar los datos en archivos numpy
+np.save(f"{carpeta_rostros}/codigos_{nombre}.npy", imagenes)
+np.save(f"{carpeta_rostros}/nombres_{nombre}.npy", nombres)
+
+print(f"✅ Registro completado correctamente para el usuario '{nombre}'.")
+print("🚀 Los datos se han guardado exitosamente.\n")

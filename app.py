@@ -238,6 +238,36 @@ def registro_rostro():
     return render_template("registro_rostro.html", usuario=session["usuario"])
 
 # ==============================================================
+# 📸 API PARA REGISTRAR ROSTRO  ✅ (NUEVA RUTA)
+# ==============================================================
+@app.route("/api/registrar_rostro", methods=["POST"])
+def api_registrar_rostro():
+    if "correo" not in session:
+        return jsonify({"success": False, "error": "No hay sesión activa"}), 403
+
+    data = request.get_json(silent=True)
+    if not data or "imagen" not in data:
+        return jsonify({"success": False, "error": "No se recibió la imagen"}), 400
+
+    try:
+        rostro_embedding = obtener_embedding(data["imagen"])
+        if rostro_embedding is None:
+            return jsonify({"success": False, "error": "No se detectó rostro"}), 400
+
+        with get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE usuarios SET rostro = %s WHERE correo = %s
+                """, (psycopg2.Binary(rostro_embedding.tobytes()), session["correo"]))
+            conn.commit()
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        print("❌ Error al registrar rostro:", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ==============================================================
 # 🔐 PANEL ADMIN
 # ==============================================================
 ADMIN_EMAIL = "andresfelipeaguasaco@gmail.com"
