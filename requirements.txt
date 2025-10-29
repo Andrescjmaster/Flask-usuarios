@@ -23,7 +23,5 @@ torch==2.3.1
 torchvision==0.18.1
 facenet-pytorch==2.5.3
 
-# --- Dependencia mínima para compatibilidad ---
-tf-keras==0.1.0
-
-# --- Optimizaciones ---
+# --- TensorFlow CPU (mínimo requerido para compatibilidad) ---
+tensorflow-cpu==2.15.0
