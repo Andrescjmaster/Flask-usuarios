@@ -1,79 +1,108 @@
-import cv2
-import os
-import face_recognition
-import numpy as np
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Facial | Mi ADN Fitness</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background: #f6f7fb;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 40px;
+            font-weight: 600;
+        }
+        video {
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.3);
+            width: 320px;
+            height: 240px;
+        }
+        #btn-capturar {
+            margin-top: 20px;
+        }
+        #mensaje {
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h2>📸 Registro Facial</h2>
+    <p>Mantén tu rostro centrado y bien iluminado, luego presiona el botón para registrar tu rostro.</p>
 
-# Crear carpeta para almacenar los rostros si no existe
-carpeta_rostros = 'rostros_registrados'
-if not os.path.exists(carpeta_rostros):
-    os.makedirs(carpeta_rostros)
+    <div class="container mt-4">
+        <video id="video" autoplay></video>
+        <br>
+        <button id="btn-capturar" class="btn btn-primary mt-3">📷 Capturar y Registrar</button>
+        <p id="mensaje" class="text-secondary mt-3"></p>
+    </div>
 
-print("=== Registro de Rostro ===")
-nombre = input("Ingresa el nombre del usuario: ").strip()
+    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
 
-if not nombre:
-    print("⚠️  No ingresaste un nombre. Por favor, vuelve a intentarlo.")
-    exit()
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const mensaje = document.getElementById('mensaje');
+        const btnCapturar = document.getElementById('btn-capturar');
 
-# Iniciar la cámara
-camara = cv2.VideoCapture(0)
-if not camara.isOpened():
-    print("❌ No se pudo acceder a la cámara. Verifica que esté conectada.")
-    exit()
+        // 🔹 Solicitar acceso a la cámara del navegador
+        async function iniciarCamara() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (error) {
+                mensaje.innerText = "❌ No se pudo acceder a la cámara. Verifica los permisos.";
+            }
+        }
 
-print(f"\n📸 Capturando imágenes para {nombre}...")
-print("Mantén el rostro centrado y presiona 'q' para finalizar.\n")
+        // 🔹 Capturar imagen del video y convertirla a base64
+        function capturarImagen() {
+            const contexto = canvas.getContext('2d');
+            contexto.drawImage(video, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg');
+        }
 
-contador = 0
-while True:
-    ret, frame = camara.read()
-    if not ret:
-        print("⚠️ Error al capturar imagen.")
-        break
+        // 🔹 Enviar imagen al servidor Flask
+        async function enviarImagen(base64) {
+            mensaje.innerText = "🧠 Procesando rostro, espera un momento...";
+            btnCapturar.disabled = true;
 
-    cv2.imshow("Registro de rostro - Presiona 'q' para salir", frame)
+            try {
+                const respuesta = await fetch("/api/registrar_rostro", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ imagen: base64 })
+                });
 
-    # Guardar cada cierto número de frames (por ejemplo, 1 de cada 5)
-    if contador % 5 == 0:
-        ruta_imagen = os.path.join(carpeta_rostros, f"{nombre}_{contador}.jpg")
-        cv2.imwrite(ruta_imagen, frame)
+                const data = await respuesta.json();
 
-    contador += 1
+                if (data.success) {
+                    mensaje.innerText = "✅ Rostro registrado exitosamente.";
+                    mensaje.className = "text-success mt-3";
+                } else {
+                    mensaje.innerText = "⚠️ " + (data.error || "Error al registrar rostro.");
+                    mensaje.className = "text-danger mt-3";
+                }
+            } catch (error) {
+                mensaje.innerText = "❌ Error al conectar con el servidor.";
+                mensaje.className = "text-danger mt-3";
+            } finally {
+                btnCapturar.disabled = false;
+            }
+        }
 
-    # Salir con 'q'
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        // 🔹 Evento del botón
+        btnCapturar.addEventListener("click", async () => {
+            const imagen = capturarImagen();
+            await enviarImagen(imagen);
+        });
 
-# Liberar la cámara y cerrar ventanas
-camara.release()
-cv2.destroyAllWindows()
-
-print(f"\n✅ Se guardaron {contador // 5} imágenes del rostro de '{nombre}' en '{carpeta_rostros}'.")
-
-# Codificar rostros y guardar como referencia
-print("🔍 Procesando rostros...")
-
-imagenes = []
-nombres = []
-
-for archivo in os.listdir(carpeta_rostros):
-    if archivo.startswith(nombre):
-        ruta = os.path.join(carpeta_rostros, archivo)
-        imagen = face_recognition.load_image_file(ruta)
-        codigos = face_recognition.face_encodings(imagen)
-
-        if len(codigos) > 0:
-            imagenes.append(codigos[0])
-            nombres.append(nombre)
-
-# Validar que se haya detectado al menos un rostro
-if len(imagenes) == 0:
-    print("⚠️ No se detectaron rostros válidos. Vuelve a intentarlo en mejor iluminación.")
-    exit()
-
-# Guardar los datos en archivos numpy
-np.save(f"{carpeta_rostros}/codigos_{nombre}.npy", imagenes)
-np.save(f"{carpeta_rostros}/nombres_{nombre}.npy", nombres)
-
-print(f"✅ Registro completado correctamente para el usuario '{nombre}'.")
-print("🚀 Los datos se han guardado exitosamente.\n")
+        // Iniciar cámara automáticamente
+        iniciarCamara();
+    </script>
+</body>
+</html>

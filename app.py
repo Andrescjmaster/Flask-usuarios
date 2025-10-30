@@ -2,6 +2,7 @@ import os
 import psycopg2
 import numpy as np
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from facial_utils import obtener_embedding, comparar_embeddings  # ✅ Import correcto
 
 # ==============================================================
 # ⚙️ CONFIGURACIÓN GLOBAL (DeepFace - SOLO TORCH + RETINAFACE)
@@ -13,11 +14,6 @@ os.environ["DISABLE_TF"] = "1"            # 🚫 Desactiva TensorFlow
 os.environ["FORCE_RELOAD_BACKENDS"] = "1"
 
 print("🧠 DeepFace optimizado para PyTorch + RetinaFace")
-
-# ==============================================================
-# 🧠 UTILIDADES FACIALES
-# ==============================================================
-from facial_utils import obtener_embedding, comparar_embeddings
 
 # ==============================================================
 # ⚙️ CONFIGURACIÓN FLASK
@@ -68,10 +64,11 @@ def agregar_usuario(nombre, correo, contraseña, rostro=None):
     with get_connection() as conn:
         with conn.cursor() as cursor:
             if rostro is not None:
+                rostro_bytes = np.array(rostro, dtype=np.float32).tobytes()  # ✅ Asegura formato correcto
                 cursor.execute("""
                     INSERT INTO usuarios (nombre, correo, contraseña, rostro)
                     VALUES (%s, %s, %s, %s)
-                """, (nombre, correo, contraseña, psycopg2.Binary(rostro.tobytes())))
+                """, (nombre, correo, contraseña, psycopg2.Binary(rostro_bytes)))
             else:
                 cursor.execute("""
                     INSERT INTO usuarios (nombre, correo, contraseña)
@@ -170,6 +167,7 @@ def login_face_post():
                 if comparar_embeddings(embedding_guardado, embedding_actual):
                     session["usuario"] = nombre
                     session["correo"] = correo
+                    print(f"✅ Rostro reconocido: {nombre}")  # ✅ Log informativo
                     return jsonify({"success": True, "usuario": nombre})
 
         return jsonify({"success": False, "error": "Rostro no reconocido"}), 401
@@ -193,7 +191,7 @@ def register():
             try:
                 rostro_embedding = obtener_embedding(rostro_base64) if rostro_base64 else None
                 agregar_usuario(nombre, correo, contraseña, rostro_embedding)
-                return jsonify({"success": True})
+                return jsonify({"success": True, "mensaje": "Usuario registrado con éxito"})
             except psycopg2.errors.UniqueViolation:
                 return jsonify({"success": False, "error": "Correo ya registrado"}), 400
             except Exception as e:
@@ -238,7 +236,7 @@ def registro_rostro():
     return render_template("registro_rostro.html", usuario=session["usuario"])
 
 # ==============================================================
-# 📸 API PARA REGISTRAR ROSTRO  ✅ (NUEVA RUTA)
+# 📸 API PARA REGISTRAR ROSTRO
 # ==============================================================
 @app.route("/api/registrar_rostro", methods=["POST"])
 def api_registrar_rostro():
@@ -261,7 +259,7 @@ def api_registrar_rostro():
                 """, (psycopg2.Binary(rostro_embedding.tobytes()), session["correo"]))
             conn.commit()
 
-        return jsonify({"success": True})
+        return jsonify({"success": True, "mensaje": "Rostro registrado con éxito"})  # ✅ mensaje claro
 
     except Exception as e:
         print("❌ Error al registrar rostro:", e)
@@ -320,6 +318,5 @@ def health():
 # 🚀 MAIN
 # ==============================================================
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
