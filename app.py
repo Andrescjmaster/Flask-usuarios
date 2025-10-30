@@ -1,5 +1,5 @@
 import os
-import psycopg2
+import psycopg
 import numpy as np
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from facial_utils import obtener_embedding, comparar_embeddings  # ✅ Import correcto
@@ -22,14 +22,33 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "clave_super_segura")
 
 # ==============================================================
-# 🗄️ CONEXIÓN A LA BASE DE DATOS
+# 🗄️ CONEXIÓN A LA BASE DE DATOS (psycopg moderno)
 # ==============================================================
-DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection():
-    if not DATABASE_URL:
-        raise RuntimeError("DATABASE_URL no está configurada")
-    return psycopg2.connect(DATABASE_URL, sslmode="require")
+    """Crea una conexión PostgreSQL con psycopg moderno."""
+    db_url = os.getenv("DATABASE_URL")
+    if db_url:
+        try:
+            return psycopg.connect(db_url, sslmode="require")
+        except Exception as e:
+            print("❌ Error al conectar con DATABASE_URL:", e)
+
+    # 🔹 Conexión local por defecto
+    try:
+        conn = psycopg.connect(
+            dbname=os.getenv("DB_NAME", "fitness"),
+            user=os.getenv("DB_USER", "postgres"),
+            password=os.getenv("DB_PASSWORD", "1234"),  # ✅ Tu contraseña real
+            host=os.getenv("DB_HOST", "localhost"),
+            port=os.getenv("DB_PORT", "5432")
+        )
+        print("✅ Conexión exitosa a PostgreSQL local")
+        return conn
+    except Exception as e:
+        print("❌ No se pudo conectar a PostgreSQL local:", e)
+        raise
+
 
 # ==============================================================
 # 🧾 FUNCIONES DE BASE DE DATOS
@@ -64,11 +83,11 @@ def agregar_usuario(nombre, correo, contraseña, rostro=None):
     with get_connection() as conn:
         with conn.cursor() as cursor:
             if rostro is not None:
-                rostro_bytes = np.array(rostro, dtype=np.float32).tobytes()  # ✅ Asegura formato correcto
+                rostro_bytes = np.array(rostro, dtype=np.float32).tobytes()
                 cursor.execute("""
                     INSERT INTO usuarios (nombre, correo, contraseña, rostro)
                     VALUES (%s, %s, %s, %s)
-                """, (nombre, correo, contraseña, psycopg2.Binary(rostro_bytes)))
+                """, (nombre, correo, contraseña, psycopg.Binary(rostro_bytes)))
             else:
                 cursor.execute("""
                     INSERT INTO usuarios (nombre, correo, contraseña)
@@ -89,6 +108,7 @@ def eliminar_usuario(id_usuario):
         with conn.cursor() as cursor:
             cursor.execute("DELETE FROM usuarios WHERE id=%s", (id_usuario,))
         conn.commit()
+
 
 # ==============================================================
 # 🔧 INICIALIZACIÓN
@@ -167,7 +187,7 @@ def login_face_post():
                 if comparar_embeddings(embedding_guardado, embedding_actual):
                     session["usuario"] = nombre
                     session["correo"] = correo
-                    print(f"✅ Rostro reconocido: {nombre}")  # ✅ Log informativo
+                    print(f"✅ Rostro reconocido: {nombre}")
                     return jsonify({"success": True, "usuario": nombre})
 
         return jsonify({"success": False, "error": "Rostro no reconocido"}), 401
@@ -175,6 +195,7 @@ def login_face_post():
     except Exception as e:
         print("❌ Error en login facial:", e)
         return jsonify({"success": False, "error": str(e)}), 500
+
 
 # ==============================================================
 # 🧾 REGISTRO DE USUARIOS
@@ -192,7 +213,7 @@ def register():
                 rostro_embedding = obtener_embedding(rostro_base64) if rostro_base64 else None
                 agregar_usuario(nombre, correo, contraseña, rostro_embedding)
                 return jsonify({"success": True, "mensaje": "Usuario registrado con éxito"})
-            except psycopg2.errors.UniqueViolation:
+            except psycopg.errors.UniqueViolation:
                 return jsonify({"success": False, "error": "Correo ya registrado"}), 400
             except Exception as e:
                 print("❌ Error al registrar usuario facial:", e)
@@ -207,6 +228,7 @@ def register():
             except Exception:
                 return "⚠️ Este correo ya está registrado. <a href='/register'>Intenta con otro</a>"
     return render_template('register.html')
+
 
 # ==============================================================
 # 🧩 FUNCIONALIDADES ADICIONALES
@@ -235,6 +257,7 @@ def registro_rostro():
         return redirect(url_for("login"))
     return render_template("registro_rostro.html", usuario=session["usuario"])
 
+
 # ==============================================================
 # 📸 API PARA REGISTRAR ROSTRO
 # ==============================================================
@@ -256,14 +279,15 @@ def api_registrar_rostro():
             with conn.cursor() as cursor:
                 cursor.execute("""
                     UPDATE usuarios SET rostro = %s WHERE correo = %s
-                """, (psycopg2.Binary(rostro_embedding.tobytes()), session["correo"]))
+                """, (psycopg.Binary(rostro_embedding.tobytes()), session["correo"]))
             conn.commit()
 
-        return jsonify({"success": True, "mensaje": "Rostro registrado con éxito"})  # ✅ mensaje claro
+        return jsonify({"success": True, "mensaje": "Rostro registrado con éxito"})
 
     except Exception as e:
         print("❌ Error al registrar rostro:", e)
         return jsonify({"success": False, "error": str(e)}), 500
+
 
 # ==============================================================
 # 🔐 PANEL ADMIN
@@ -314,9 +338,10 @@ def logout():
 def health():
     return {"status": "ok"}, 200
 
+
 # ==============================================================
 # 🚀 MAIN
 # ==============================================================
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
