@@ -2,14 +2,9 @@
 flask==3.0.3
 gunicorn==22.0.0
 
-# --- Reconocimiento facial (solo PyTorch, sin TensorFlow) ---
+# --- Reconocimiento facial (DeepFace con TensorFlow CPU estable y ligero) ---
 deepface==0.0.79
-tensorflow==2.16.1
-tf-keras==2.16.1
-torch==2.6.0
-torchvision==0.21.0
-facenet-pytorch==2.5.3
-mtcnn==0.1.1
+tensorflow-cpu==2.16.1
 
 # --- Procesamiento de imágenes ---
 opencv-python-headless==4.9.0.80
@@ -17,9 +12,13 @@ numpy==2.1.2
 pillow==11.0.0
 scikit-learn==1.6.1
 
-# --- PostgreSQL (si tu app lo usa) ---
+# --- Base de datos PostgreSQL ---
 psycopg[binary,pool]==3.2.3
 SQLAlchemy==2.0.32
 
-# --- Configuración ---
+# --- Configuración y entorno ---
 python-dotenv==1.0.1
+
+# --- Compatibilidad y estabilidad ---
+werkzeug==3.0.3
+requests==2.32.3
