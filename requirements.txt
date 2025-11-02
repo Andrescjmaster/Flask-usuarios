@@ -2,9 +2,10 @@
 flask==3.0.3
 gunicorn==22.0.0
 
-# --- Reconocimiento facial con DeepFace ---
+# --- Reconocimiento facial ---
 deepface==0.0.92
 tensorflow-cpu==2.16.1
+tf-keras==2.16.0
 opencv-python-headless==4.10.0.84
 numpy==1.26.4
 pillow==11.0.0
@@ -13,5 +14,5 @@ pillow==11.0.0
 psycopg[binary,pool]==3.2.3
 SQLAlchemy==2.0.36
 
-# --- Configuración ---
+# --- Utilidades ---
 python-dotenv==1.0.1
