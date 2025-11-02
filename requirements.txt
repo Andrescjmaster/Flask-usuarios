@@ -1,21 +1,17 @@
+# --- Core ---
 Flask==3.0.3
-gunicorn==22.0.0
-
-# DeepFace (sin dependencias duplicadas ni GPU)
-deepface==0.0.79
-tensorflow-cpu==2.16.1
-
-# Librerías esenciales
-opencv-python-headless==4.9.0.80
-numpy==1.26.4
-pillow==10.4.0
-scikit-learn==1.5.2
-
-# Conexión con PostgreSQL
-psycopg[binary,pool]==3.2.3
-SQLAlchemy==2.0.32
-
-# Utilidades
+gunicorn==23.0.0
 python-dotenv==1.0.1
-requests==2.32.3
-werkzeug==3.0.3
+
+# --- Database (PostgreSQL) ---
+psycopg[binary,pool]==3.2.3
+
+# --- Face Recognition (dlib backend) ---
+face-recognition==1.3.0
+face-recognition-models==0.3.0
+dlib==19.24.4
+opencv-python-headless==4.10.0.84
+numpy==1.26.4
+
+# --- Utils ---
+Pillow==10.3.0
