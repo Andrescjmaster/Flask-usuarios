@@ -2,13 +2,13 @@
 flask==3.0.3
 gunicorn==22.0.0
 
-# --- Reconocimiento facial (DeepFace con TensorFlow CPU estable y ligero) ---
+# --- Reconocimiento facial (DeepFace + TensorFlow CPU) ---
 deepface==0.0.79
 tensorflow-cpu==2.16.1
 
 # --- Procesamiento de imágenes ---
 opencv-python-headless==4.9.0.80
-numpy==2.1.2
+numpy==1.26.4
 pillow==11.0.0
 scikit-learn==1.6.1
 
