@@ -7,15 +7,10 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 import cv2
 from deepface import DeepFace
 
-# -------------------------
-# Flask / App config
-# -------------------------
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "clave_super_segura")
 
-# -------------------------
-# DB connection helper
-# -------------------------
+# ------------------------- DB connection -------------------------
 def get_connection():
     db_url = os.getenv("DATABASE_URL")
     try:
@@ -34,9 +29,7 @@ def get_connection():
         print("❌ Error al conectar a la base de datos:", e)
         raise
 
-# -------------------------
-# DB helpers
-# -------------------------
+# ------------------------- DB helpers -------------------------
 def crear_tabla():
     with get_connection() as conn:
         with conn.cursor() as cur:
@@ -55,12 +48,6 @@ def obtener_usuario(correo):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT * FROM usuarios WHERE correo = %s", (correo,))
-            return cur.fetchone()
-
-def obtener_usuario_por_id(id_usuario):
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("SELECT * FROM usuarios WHERE id = %s", (id_usuario,))
             return cur.fetchone()
 
 def obtener_todos_usuarios():
@@ -88,29 +75,13 @@ def agregar_usuario(nombre, correo, contrasena, rostro_bytes=None):
                 conn.rollback()
                 raise
 
-def modificar_usuario(id_usuario, nombre, correo, contrasena):
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                UPDATE usuarios SET nombre=%s, correo=%s, contrasena=%s WHERE id=%s
-            """, (nombre, correo, contrasena, id_usuario))
-        conn.commit()
-
-def eliminar_usuario(id_usuario):
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("DELETE FROM usuarios WHERE id=%s", (id_usuario,))
-        conn.commit()
-
 def actualizar_rostro_por_correo(correo, rostro_bytes):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("UPDATE usuarios SET rostro = %s WHERE correo = %s", (psycopg.Binary(rostro_bytes), correo))
         conn.commit()
 
-# -------------------------
-# DeepFace helpers
-# -------------------------
+# ------------------------- DeepFace helpers -------------------------
 def base64_to_rgb_image(base64_str):
     try:
         if not base64_str:
@@ -153,9 +124,7 @@ def comparar_embeddings(emb1, emb2, umbral=10.0):
         print("⚠️ Error comparando embeddings:", e)
         return False
 
-# -------------------------
-# Inicialización DB
-# -------------------------
+# ------------------------- Inicialización -------------------------
 try:
     crear_tabla()
     print("✅ Tabla 'usuarios' lista.")
@@ -169,9 +138,7 @@ try:
 except Exception as e:
     print("⚠️ Error creando admin:", e)
 
-# -------------------------
-# Helpers
-# -------------------------
+# ------------------------- Decorador -------------------------
 def login_required(view_func):
     def wrapper(*args, **kwargs):
         if "usuario" not in session:
@@ -180,19 +147,17 @@ def login_required(view_func):
     wrapper.__name__ = view_func.__name__
     return wrapper
 
-# -------------------------
-# Rutas web
-# -------------------------
+# ------------------------- Rutas -------------------------
 @app.route("/")
 def root():
     if "usuario" in session:
-        return redirect(url_for("home"))
+        return redirect(url_for("dashboard"))
     return redirect(url_for("login"))
 
-@app.route("/home")
+@app.route("/dashboard")
 @login_required
-def home():
-    return render_template("home.html", usuario=session.get("usuario"))
+def dashboard():
+    return render_template("dashboard.html", usuario=session.get("usuario"))
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -203,7 +168,7 @@ def login():
         if user and user[3] == contrasena:
             session["usuario"] = user[1]
             session["correo"] = user[2]
-            return redirect(url_for("home"))
+            return redirect(url_for("dashboard"))
         return render_template("login.html", error="Usuario o contraseña incorrectos")
     return render_template("login.html")
 
@@ -235,9 +200,7 @@ def login_face_page():
 def registro_rostro_page():
     return render_template("registro_rostro.html", usuario=session.get("usuario"))
 
-# -------------------------
-# API
-# -------------------------
+# ------------------------- APIs -------------------------
 @app.route("/api/registrar_rostro", methods=["POST"])
 def api_registrar_rostro():
     if "correo" not in session:
@@ -284,9 +247,7 @@ def api_login_face():
         print("❌ Error en login facial:", e)
         return jsonify({"success": False, "error": str(e)}), 500
 
-# -------------------------
-# Admin
-# -------------------------
+# ------------------------- Admin -------------------------
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "andresfelipeaguasaco@gmail.com")
 
 @app.route("/admin/usuarios")
@@ -296,9 +257,7 @@ def admin_usuarios():
     usuarios = obtener_todos_usuarios()
     return render_template("admin_usuarios.html", usuarios=usuarios)
 
-# -------------------------
-# Health y errores
-# -------------------------
+# ------------------------- Health y errores -------------------------
 @app.route("/health")
 def health():
     return {"status": "ok"}, 200
@@ -307,9 +266,7 @@ def health():
 def page_not_found(e):
     return render_template("404.html"), 404
 
-# -------------------------
-# Main
-# -------------------------
+# ------------------------- Main -------------------------
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=os.getenv("FLASK_DEBUG", "false").lower() == "true")
