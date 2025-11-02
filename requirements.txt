@@ -2,17 +2,15 @@
 flask==3.0.3
 gunicorn==22.0.0
 
-# --- Reconocimiento facial (sin dlib, compatible con Render) ---
+# --- Reconocimiento facial (DeepFace backend ligero) ---
 deepface==0.0.79
-torch==2.5.1
-torchvision==0.20.1
 opencv-python-headless==4.10.0.84
 numpy==1.26.4
-pillow==10.3.0
+pillow==11.0.0
 
-# --- Base de datos ---
+# --- PostgreSQL ---
 psycopg[binary,pool]==3.2.3
-SQLAlchemy==2.0.35
+SQLAlchemy==2.0.32
 
 # --- Configuración ---
 python-dotenv==1.0.1

@@ -5,7 +5,7 @@ import numpy as np
 import psycopg
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import cv2
-import face_recognition
+from deepface import DeepFace
 
 # -------------------------
 # Flask / App config
@@ -86,15 +86,15 @@ def actualizar_rostro_por_correo(correo, rostro_bytes):
         conn.commit()
 
 # -------------------------
-# Funciones de reconocimiento facial
+# Funciones de reconocimiento facial (DeepFace)
 # -------------------------
 def base64_to_rgb_image(base64_str):
-    """Convierte una cadena base64 a una imagen RGB (numpy array)."""
+    """Convierte base64 a imagen RGB."""
     try:
         if "," in base64_str:
             base64_str = base64_str.split(",")[1]
         img_bytes = base64.b64decode(base64_str)
-        arr = np.frombuffer(img_bytes, dtype=np.uint8)
+        arr = np.frombuffer(img_bytes, np.uint8)
         img_bgr = cv2.imdecode(arr, cv2.IMREAD_COLOR)
         if img_bgr is None:
             return None
@@ -104,21 +104,23 @@ def base64_to_rgb_image(base64_str):
         return None
 
 def obtener_embedding_desde_base64(base64_str):
-    """Extrae el embedding facial (128D)."""
+    """Obtiene embedding facial usando DeepFace (modelo FaceNet)."""
     img_rgb = base64_to_rgb_image(base64_str)
     if img_rgb is None:
         return None
     try:
-        encs = face_recognition.face_encodings(img_rgb)
-        if not encs:
-            return None
-        return np.array(encs[0], dtype=np.float32)
+        embedding = DeepFace.represent(
+            img_path=img_rgb,
+            model_name="Facenet",
+            enforce_detection=False
+        )[0]["embedding"]
+        return np.array(embedding, dtype=np.float32)
     except Exception as e:
-        print("⚠️ Error al obtener embedding:", e)
+        print("⚠️ Error al generar embedding:", e)
         return None
 
-def comparar_embeddings(emb1, emb2, umbral=0.6):
-    """Compara dos embeddings y devuelve True si son similares."""
+def comparar_embeddings(emb1, emb2, umbral=10.0):
+    """Compara embeddings con DeepFace (distancia Euclidiana)."""
     try:
         dist = np.linalg.norm(emb1 - emb2)
         return dist < umbral
@@ -181,7 +183,7 @@ def registro_rostro_page():
     return render_template("registro_rostro.html", usuario=session["usuario"])
 
 # -------------------------
-# API para registrar rostro
+# API: registrar rostro
 # -------------------------
 @app.route("/api/registrar_rostro", methods=["POST"])
 def api_registrar_rostro():
@@ -201,7 +203,7 @@ def api_registrar_rostro():
         return jsonify({"success": False, "error": str(e)}), 500
 
 # -------------------------
-# API para login facial
+# API: login facial
 # -------------------------
 @app.route("/api/login_face", methods=["POST"])
 def api_login_face():
