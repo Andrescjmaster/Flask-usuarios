@@ -1,17 +1,18 @@
-# --- Core ---
-Flask==3.0.3
-gunicorn==23.0.0
-python-dotenv==1.0.1
+# --- Framework principal ---
+flask==3.0.3
+gunicorn==22.0.0
 
-# --- Database (PostgreSQL) ---
-psycopg[binary,pool]==3.2.3
-
-# --- Face Recognition (dlib backend) ---
-face-recognition==1.3.0
-face-recognition-models==0.3.0
-dlib==19.24.4
+# --- Reconocimiento facial (sin dlib, compatible con Render) ---
+deepface==0.0.79
+torch==2.5.1
+torchvision==0.20.1
 opencv-python-headless==4.10.0.84
 numpy==1.26.4
+pillow==10.3.0
 
-# --- Utils ---
-Pillow==10.3.0
+# --- Base de datos ---
+psycopg[binary,pool]==3.2.3
+SQLAlchemy==2.0.35
+
+# --- Configuración ---
+python-dotenv==1.0.1
