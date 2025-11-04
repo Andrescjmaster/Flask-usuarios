@@ -3,7 +3,7 @@ import os
 import base64
 import numpy as np
 import psycopg  # psycopg v3
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, abort
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import cv2
 from deepface import DeepFace
 
@@ -164,12 +164,19 @@ def login():
     if request.method == "POST":
         correo = request.form.get("correo")
         contrasena = request.form.get("contrasena")
+
+        print(f"🟡 Intento de login con: {correo}")
+
         user = obtener_usuario(correo)
         if user and user[3] == contrasena:
             session["usuario"] = user[1]
             session["correo"] = user[2]
+            print(f"✅ Login correcto para {user[1]}")
             return redirect(url_for("dashboard"))
+
+        print("❌ Login fallido.")
         return render_template("login.html", error="Usuario o contraseña incorrectos")
+
     return render_template("login.html")
 
 @app.route("/logout")
@@ -269,4 +276,4 @@ def page_not_found(e):
 # ------------------------- Main -------------------------
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=os.getenv("FLASK_DEBUG", "false").lower() == "true")
+    app.run(host="0.0.0.0", port=port, debug=True)
