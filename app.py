@@ -1,5 +1,3 @@
-Te comparto el codigo del app.py:
-
 import os
 import psycopg
 import numpy as np
