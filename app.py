@@ -151,8 +151,13 @@ def login_required(view_func):
 @app.route("/")
 def root():
     if "usuario" in session:
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("home"))  # ✅ Cambiado a home
     return redirect(url_for("login"))
+
+@app.route("/home")
+@login_required
+def home():
+    return render_template("home.html", usuario=session.get("usuario"))  # ✅ Home es el centro
 
 @app.route("/dashboard")
 @login_required
@@ -172,7 +177,7 @@ def login():
             session["usuario"] = user[1]
             session["correo"] = user[2]
             print(f"✅ Login correcto para {user[1]}")
-            return redirect(url_for("dashboard"))
+            return redirect(url_for("home"))  # ✅ Redirige al centro (home.html)
 
         print("❌ Login fallido.")
         return render_template("login.html", error="Usuario o contraseña incorrectos")
