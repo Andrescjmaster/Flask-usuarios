@@ -13,9 +13,8 @@
 
     <style>
         .navbar-logo { width: 40px; height: 40px; object-fit: contain; margin-right: 8px; }
-        /* ❌ Eliminada la clase .recon-btn que no se usa */
-        /* .recon-btn { border-radius: 10px; font-weight: 600; padding: 7px 14px; } */
-        /* .recon-btn:hover { transform: translateY(-1px); } */
+        .recon-btn { border-radius: 10px; font-weight: 600; padding: 7px 14px; }
+        .recon-btn:hover { transform: translateY(-1px); }
         .main-content { padding-top: calc(var(--navbar-height, 70px) + 12px); min-height: calc(100vh - 120px); }
         footer { background: transparent; color: #fff; }
         body { background-color: #0b0b0b; }
@@ -48,6 +47,20 @@
                 <ul class="navbar-nav align-items-center me-3">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('calculadora') }}">Calculadora</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('rutinas') }}">Rutinas</a></li>
+                </ul>
+
+                <!-- Botón: apunta a la ruta intermedia "registro_rostro_nav" -->
+                <ul class="navbar-nav align-items-center me-3">
+                    <li class="nav-item">
+                        <a class="btn btn-success recon-btn d-flex align-items-center me-2" href="{{ url_for('registro_rostro_nav') }}">
+                            <i class="fas fa-user-check me-2"></i>
+                            {% if session.get('correo') %}
+                                Registrar / Gestionar rostro
+                            {% else %}
+                                Reconocimiento Facial
+                            {% endif %}
+                        </a>
+                    </li>
                 </ul>
 
                 <ul class="navbar-nav align-items-center">
