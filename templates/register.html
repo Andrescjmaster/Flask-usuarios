@@ -60,18 +60,7 @@
             background: #218838;
             cursor: pointer;
         }
-        .camara-btn {
-            background: #007bff;
-        }
-        .camara-btn:hover {
-            background: #0056b3;
-        }
-        .volver-btn {
-            background: #6c757d;
-        }
-        .volver-btn:hover {
-            background: #5a6268;
-        }
+        /* ❌ Eliminadas reglas .camara-btn, .volver-btn, video, canvas, .hidden */
         .extra {
             text-align: center;
             margin-top: 15px;
@@ -84,112 +73,25 @@
         .extra a:hover {
             text-decoration: underline;
         }
-        video, canvas {
-            width: 100%;
-            border-radius: 10px;
-            margin-top: 10px;
-            border: 1px solid #ccc;
-        }
-        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Crear cuenta</h2>
 
-        <!-- Sección 1: formulario -->
-        <div id="formularioSeccion">
-            <form id="registroForm">
-                <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
-                <input type="email" id="correo" name="correo" placeholder="Correo electrónico" required>
-                <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" required>
+        <form action="{{ url_for('register') }}" method="POST">
+            <input type="text" name="nombre" placeholder="Nombre completo" required>
+            <input type="email" name="correo" placeholder="Correo electrónico" required>
+            <input type="password" name="contraseña" placeholder="Contraseña" required>
 
-                <button type="button" class="camara-btn" id="abrirCamara">📸 Tomar foto (opcional)</button>
-                <button type="submit">Registrarse</button>
-            </form>
+            <button type="submit">Registrarse</button>
+        </form>
 
-            <div class="extra">
-                <p>¿Ya tienes cuenta? <a href="/login">Iniciar sesión</a></p>
-            </div>
+        <div class="extra">
+            <p>¿Ya tienes cuenta? <a href="/login">Iniciar sesión</a></p>
+        </div>
+        
         </div>
 
-        <!-- Sección 2: cámara -->
-        <div id="camaraSeccion" class="hidden">
-            <video id="camara" autoplay playsinline></video>
-            <canvas id="fotoCanvas" class="hidden"></canvas>
-            <button type="button" id="capturar">✅ Capturar Rostro</button>
-            <button type="button" class="volver-btn" id="volver">🔙 Volver</button>
-        </div>
-    </div>
-
-    <script>
-        const video = document.getElementById('camara');
-        const canvas = document.getElementById('fotoCanvas');
-        const ctx = canvas.getContext('2d');
-        let rostroBase64 = null;
-
-        const formularioSeccion = document.getElementById('formularioSeccion');
-        const camaraSeccion = document.getElementById('camaraSeccion');
-
-        // Abrir cámara
-        document.getElementById('abrirCamara').addEventListener('click', async () => {
-            formularioSeccion.classList.add('hidden');
-            camaraSeccion.classList.remove('hidden');
-
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
-            } catch (err) {
-                alert("⚠️ No se pudo acceder a la cámara: " + err.message);
-                formularioSeccion.classList.remove('hidden');
-                camaraSeccion.classList.add('hidden');
-            }
-        });
-
-        // Capturar rostro
-        document.getElementById('capturar').addEventListener('click', () => {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0);
-            rostroBase64 = canvas.toDataURL('image/jpeg');
-            alert("✅ Rostro capturado correctamente.");
-        });
-
-        // Volver al formulario
-        document.getElementById('volver').addEventListener('click', () => {
-            camaraSeccion.classList.add('hidden');
-            formularioSeccion.classList.remove('hidden');
-        });
-
-        // Enviar datos al backend
-        document.getElementById('registroForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const datos = {
-                nombre: document.getElementById('nombre').value,
-                correo: document.getElementById('correo').value,
-                contraseña: document.getElementById('contraseña').value,
-                rostro: rostroBase64
-            };
-
-            try {
-                const res = await fetch('/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(datos)
-                });
-
-                const texto = await res.text();
-                if (res.ok) {
-                    alert("✅ Registro exitoso. Redirigiendo al login...");
-                    window.location.href = '/login';
-                } else {
-                    alert("⚠️ Error al registrar: " + texto);
-                }
-            } catch (err) {
-                alert("❌ Error de conexión: " + err.message);
-            }
-        });
-    </script>
-</body>
+    </body>
 </html>

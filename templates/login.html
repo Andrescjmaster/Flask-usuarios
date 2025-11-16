@@ -58,14 +58,8 @@
             background-color: #0056b3;
         }
 
-        .btn-face {
-            background-color: #28a745;
-        }
-
-        .btn-face:hover {
-            background-color: #1e7e34;
-        }
-
+        /* ❌ Eliminada la regla .btn-face */
+        
         p {
             margin-top: 20px;
         }
@@ -95,18 +89,10 @@
             <p class="error">{{ error }}</p>
         {% endif %}
 
-        <!-- Formulario principal -->
         <form action="{{ url_for('login') }}" method="POST">
             <input type="email" name="correo" placeholder="Correo electrónico" required>
             <input type="password" name="contraseña" placeholder="Contraseña" required>
             <button type="submit" class="btn-login">Ingresar</button>
-        </form>
-
-        <p>o</p>
-
-        <!-- Botón de reconocimiento facial -->
-        <form action="{{ url_for('login_face_page') }}">
-            <button type="submit" class="btn-face">Ingresar con reconocimiento facial</button>
         </form>
 
         <p>¿No tienes cuenta? <a href="{{ url_for('register') }}">Crear cuenta</a></p>
