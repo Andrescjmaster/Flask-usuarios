@@ -1,0 +1,154 @@
+/* ======================================
+    ARCHIVO: register.css 
+    OBJETIVO: Estilos del formulario de Registro (Mismo look and feel que login).
+    ======================================
+*/
+
+:root {
+    --card-bg: rgba(255, 255, 255, 0.85); 
+    --input-bg: rgba(255, 255, 255, 0.95); 
+    --primary-color: #28a745; /* Verde para el botón principal (Registrarse) */
+    --secondary-color: #007bff; /* Azul para el botón opcional (Cámara) */
+    --tertiary-color: #6c757d; /* Gris para el botón de Volver */
+    --card-color: #e0e0e0; 
+}
+
+/* ------------------------------------
+    1. ESTILOS DEL CUERPO (FONDO Y CENTRADO)
+------------------------------------ */
+body {
+    /* CLAVE: Aplica la imagen de fondo y la estira (fondologinregister.png) */
+    background-image: url('../img/fondologinregister.png');
+    background-size: 100% 100%; 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; 
+    
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; 
+    margin: 0;
+}
+
+/* ------------------------------------
+    2. ESTILOS DE LA TARJETA (REGISTER CARD)
+    🚨 Usamos la clase 'container' de tu HTML para la tarjeta.
+------------------------------------ */
+.container {
+    /* Fondo de tarjeta "Glassmorphism" */
+    background-color: var(--card-bg); 
+    
+    /* Efecto "blur" (desenfoque) */
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px); 
+
+    /* Bordes y Sombra */
+    padding: 40px; /* Aumentamos el padding para el look moderno */
+    border-radius: 20px; 
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.3); 
+    
+    width: 90%;
+    max-width: 420px; /* Mantenemos el ancho de tu HTML */
+    text-align: center;
+    color: #333;
+    z-index: 10; 
+    
+    /* Quitamos el hover del container, ya que no se ajusta al diseño moderno */
+    transition: none; 
+}
+.container:hover {
+    transform: none;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.3); 
+}
+
+h2 {
+    margin-bottom: 30px;
+    color: #000; 
+    font-weight: 600;
+}
+
+/* ------------------------------------
+    3. ESTILOS DE INPUTS Y BOTONES
+------------------------------------ */
+input {
+    width: 90%; /* Mantenemos el ancho de tu HTML */
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px; /* Modernizado de 50px a 10px */
+    border: none;
+    background-color: var(--card-color); 
+    transition: background-color 0.3s;
+}
+
+input:focus {
+    outline: none;
+    background-color: white; 
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+button {
+    width: 100%;
+    padding: 14px; 
+    border-radius: 12px; /* Modernizado de 50px a 12px */
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: white;
+    margin-top: 15px;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+/* Botón principal: Registrarse */
+button[type="submit"] {
+    background: var(--primary-color); /* Verde */
+}
+button[type="submit"]:hover {
+    background: #1e7e34;
+    transform: translateY(-1px);
+}
+
+/* Botón de la cámara: 'abrirCamara' */
+.camara-btn, #capturar {
+    background: var(--secondary-color); /* Azul */
+}
+.camara-btn:hover, #capturar:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
+/* Botón de Volver: 'volver-btn' */
+.volver-btn {
+    background: var(--tertiary-color); /* Gris */
+    margin-top: 10px;
+}
+.volver-btn:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* ------------------------------------
+    4. CÁMARA Y ENLACES
+------------------------------------ */
+.extra {
+    text-align: center;
+    margin-top: 25px; /* Más espacio */
+}
+
+.extra a {
+    color: var(--primary-color); 
+    text-decoration: none;
+    font-weight: 600;
+}
+
+video, canvas {
+    width: 100%;
+    max-width: 350px; /* Un tamaño más razonable para el video/canvas */
+    display: block;
+    margin: 10px auto; /* Centrar */
+    border-radius: 15px;
+    border: 3px solid var(--secondary-color); /* Un borde que combine con el diseño */
+}
+.hidden { display: none; }

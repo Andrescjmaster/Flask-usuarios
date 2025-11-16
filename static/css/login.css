@@ -1,0 +1,138 @@
+/* ======================================
+    ARCHIVO: login.css 
+    OBJETIVO: Estilos del formulario de Iniciar Sesión/Registro (Moderno y con fondo).
+    ======================================
+*/
+
+:root {
+    --card-bg: rgba(255, 255, 255, 0.85); /* Fondo de la tarjeta semi-transparente */
+    --input-bg: rgba(255, 255, 255, 0.95); /* Fondo de los inputs */
+    --primary-color: #007bff; /* Azul de Ingresar */
+    --secondary-color: #28a745; /* Verde de Reconocimiento Facial */
+    --card-color: #e0e0e0; /* Color base para la tarjeta (gris claro) */
+}
+
+/* ------------------------------------
+    1. ESTILOS DEL CUERPO (FONDO Y CENTRADO)
+------------------------------------ */
+body {
+    /* CLAVE: Aplica la imagen de fondo */
+    background-image: url('../img/fondologinregister.png');
+    
+    /* 🚨 CORRECCIÓN CLAVE: Estira la imagen para cubrir el 100% del ancho y alto */
+    background-size: 100% 100%; 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; 
+    
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; 
+    margin: 0;
+}
+
+/* ------------------------------------
+    2. ESTILOS DE LA TARJETA (LOGIN CARD)
+------------------------------------ */
+.login-container {
+    /* Fondo de tarjeta "Glassmorphism" (semi-transparente) */
+    background-color: var(--card-bg); 
+    
+    /* Efecto "blur" (desenfoque) */
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px); 
+
+    /* Bordes y Sombra */
+    padding: 40px;
+    border-radius: 20px; 
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.3); 
+    
+    width: 90%;
+    max-width: 400px; 
+    text-align: center;
+    color: #333;
+    z-index: 10; 
+}
+
+h2 {
+    margin-bottom: 30px;
+    color: #000; 
+    font-weight: 600;
+}
+
+/* ------------------------------------
+    3. ESTILOS DE INPUTS Y BOTONES
+------------------------------------ */
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px; 
+    border: none;
+    background-color: var(--card-color); 
+    transition: background-color 0.3s;
+}
+
+input:focus {
+    outline: none;
+    background-color: white; 
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+
+button {
+    width: 100%;
+    padding: 14px; 
+    border-radius: 12px; 
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: white;
+    margin-top: 15px;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.btn-login {
+    background-color: #008cff; 
+}
+.btn-login:hover {
+    background-color: #007bff;
+    transform: translateY(-1px);
+}
+
+.btn-face {
+    background-color: #38c172; 
+}
+.btn-face:hover {
+    background-color: #28a745;
+    transform: translateY(-1px);
+}
+
+/* ------------------------------------
+    4. ENLACES Y TEXTO
+------------------------------------ */
+p {
+    margin-top: 25px;
+    font-size: 1rem;
+}
+
+a {
+    color: #008cff;
+    text-decoration: none;
+    font-weight: 600;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+.error {
+    color: red;
+    margin-bottom: 10px;
+    font-size: 14px;
+}

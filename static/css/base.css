@@ -1,0 +1,206 @@
+/*
+    Archivo base.css
+    Estilos generales de la aplicación
+*/
+
+:root {
+    --color-primary: #FF47B4; /* Rosa/Fucsia (Neón principal) */
+    --color-secondary: #00F0FF; /* Cian (Neón secundario) */
+    --color-dark: #120A1F; /* Fondo ultra oscuro (Púrpura muy oscuro) */
+    --color-light: #F0F0F0; /* Blanco suave */
+    --color-warning: #FFD700; /* Amarillo para iconos importantes */
+}
+
+/* ----------------------------------------------------------------------------------- */
+/* 1. Estilos Globales */
+/* ----------------------------------------------------------------------------------- */
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    /* Dejamos el padding-top bajo, el JS y home.css manejan el resto */
+    padding-top: 50px; 
+}
+
+a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+a:hover {
+    color: var(--color-primary);
+}
+
+/* ----------------------------------------------------------------------------------- */
+/* 2. Barra de Navegación (Header) */
+/* ----------------------------------------------------------------------------------- */
+
+#main-navbar {
+    background-color: #000000; /* Fondo negro puro para contraste máximo */
+    border-bottom: 2px solid var(--color-primary); /* Línea neón en la parte inferior */
+    box-shadow: 0 0 10px rgba(255, 71, 180, 0.5); /* Sombra neón */
+}
+
+/* 🚨 NUEVOS ESTILOS PARA EL LOGO IMAGEN */
+.navbar-logo {
+    height: 40px; /* Tamaño del logo en la barra */
+    width: auto;
+    /* Efecto de brillo para que tenga la misma "presencia" que el texto anterior */
+    filter: drop-shadow(0 0 5px var(--color-primary)); 
+}
+
+/* Estilo para el nombre de la marca 'Mi ADN' (ya no se usa, pero lo dejamos) */
+.navbar-brand {
+    color: var(--color-light) !important;
+    font-size: 1.4rem;
+}
+
+/* Reducción del padding de los enlaces de navegación */
+.navbar-small-link {
+    padding: 0.3rem 0.8rem !important; /* Padding más pequeño */
+}
+
+/* Estilo de los enlaces de navegación */
+.nav-link {
+    color: var(--color-light) !important;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+/* Efecto hover neón en los enlaces */
+.nav-link:hover,
+.nav-link.active {
+    color: var(--color-secondary) !important; /* Texto cian en hover */
+    text-shadow: 0 0 8px var(--color-secondary); /* Sombra neón cian */
+    background-color: rgba(0, 240, 255, 0.1); /* Fondo sutil para destacar */
+}
+
+/* Enlace activo (Rutas en las que se encuentra el usuario) */
+.nav-link.active {
+    color: var(--color-primary) !important;
+    text-shadow: 0 0 8px var(--color-primary);
+}
+
+/* Estilo para el ícono de la mancuerna (ya no se usa, pero lo dejamos) */
+.navbar-brand i {
+    color: var(--color-primary) !important; 
+    text-shadow: 0 0 5px var(--color-primary);
+}
+
+/* ----------------------------------------------------------------------------------- */
+/* 3. Footer */
+/* ----------------------------------------------------------------------------------- */
+
+#main-footer {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #000000;
+    color: rgba(255, 255, 255, 0.6);
+    border-top: 1px solid rgba(255, 71, 180, 0.2);
+}
+
+/* ----------------------------------------------------------------------------------- */
+/* 4. Utilidades y componentes reutilizables */
+/* ----------------------------------------------------------------------------------- */
+
+.card {
+    background-color: #1a0f2b; /* Fondo oscuro sutil para tarjetas */
+    border: 1px solid rgba(255, 71, 180, 0.2);
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.form-control, .btn {
+    border-radius: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #FF6BBF;
+    border-color: #FF6BBF;
+    box-shadow: 0 0 10px var(--color-primary);
+}
+
+/* ----------------------------------------------------------------------------------- */
+/* 🚨 NUEVOS ESTILOS para Login y Registro (Formularios) */
+/* ----------------------------------------------------------------------------------- */
+
+.login-container {
+    /* Ocupa todo el espacio disponible menos el footer (y el padding del body) */
+    min-height: calc(100vh - 100px); 
+    padding: 2rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    /* Fondo de tarjeta translúcido con efecto glassmorphism */
+    background-color: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(10px); 
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    width: 100%;
+    max-width: 400px; /* Tamaño máximo de la tarjeta */
+    color: var(--color-light);
+}
+
+.login-card h2 {
+    color: var(--color-light);
+    font-weight: 700;
+}
+
+.login-input {
+    /* Estilo de input que coincida con la tarjeta clara */
+    background-color: rgba(255, 255, 255, 0.85); 
+    border: none;
+    color: #333; /* Texto oscuro en el input claro */
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.login-input::placeholder {
+    color: #666;
+}
+
+.login-input:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(0, 240, 255, 0.25); /* Sombra neón cian */
+    border-color: var(--color-secondary);
+}
+
+/* Botones de acción específicos (Colores de las capturas) */
+.btn-blue {
+    background-color: #007bff; 
+    border-color: #007bff;
+    font-weight: bold;
+}
+
+.btn-green {
+    background-color: #28a745; 
+    border-color: #28a745;
+    font-weight: bold;
+}
+
+.link-cyan {
+    color: var(--color-secondary) !important;
+    font-weight: bold;
+    text-decoration: none;
+    transition: text-shadow 0.3s ease;
+}
+
+.link-cyan:hover {
+    text-shadow: 0 0 5px var(--color-secondary);
+}
