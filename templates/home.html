@@ -5,7 +5,6 @@
 {% block content %}
 <div class="home-container">
 
-    <!-- Sección 1: Hero. Usamos un atributo data-image para almacenar la URL -->
     <section id="hero" class="left-align" data-image-url="{{ url_for('static', filename='img/fondo1.png') }}">
         <div class="overlay"></div>
         <div class="content">
@@ -15,7 +14,6 @@
         </div>
     </section>
 
-    <!-- Sección 2: Info -->
     <section id="info" class="info right-align" data-image-url="{{ url_for('static', filename='img/fondo2.png') }}">
         <div class="overlay"></div>
         <div class="content">
@@ -24,7 +22,6 @@
         </div>
     </section>
 
-    <!-- Sección 3: Features -->
     <section id="features" class="features center-align" data-image-url="{{ url_for('static', filename='img/fondo3.png') }}">
         <div class="overlay-dark"></div>
         <div class="content">
@@ -33,7 +30,6 @@
         </div>
 
         <div class="cards">
-            <!-- Las tarjetas (cards) SÍ mantienen el style con la imagen de fondo de la tarjeta -->
             <div class="card" style="background-image: url('{{ url_for('static', filename='img/estructura1.png') }}');">
                 <div class="card-hover">
                     <h3>Estructura Corporal</h3>
@@ -57,7 +53,6 @@
         </div>
     </section>
 
-    <!-- Sección 4: About Us -->
     <section id="about" class="about center-align" data-image-url="{{ url_for('static', filename='img/fondo4.png') }}">
         <div class="overlay"></div>
         <div class="content">
@@ -66,7 +61,6 @@
         </div>
     </section>
 
-    <!-- Sección 5: Contacto -->
     <section id="contact" class="contact left-align" data-image-url="{{ url_for('static', filename='img/fondo5.png') }}">
         <div class="overlay"></div>
         <div class="content">
@@ -80,7 +74,6 @@
         </div>
     </section>
 
-    <!-- Pie de página -->
     <footer>
         <p>© 2025 Mi ADN Fitness - Todos los derechos reservados</p> 
     </footer>
