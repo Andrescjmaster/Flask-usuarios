@@ -7,30 +7,66 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    
     {% block head_extra %}{% endblock %}
 
     <style>
-        .navbar-logo { width: 40px; height: 40px; object-fit: contain; margin-right: 8px; }
-        .recon-btn { border-radius: 10px; font-weight: 600; padding: 7px 14px; }
-        .recon-btn:hover { transform: translateY(-1px); }
-        .main-content { padding-top: calc(var(--navbar-height, 70px) + 12px); min-height: calc(100vh - 120px); }
-        footer { background: transparent; color: #fff; }
-        body { background-color: #0b0b0b; }
-        .navbar-username { color: #fff; margin-left: 10px; font-weight: 600; }
-        /* Forzar navbar links en blanco (importante para evitar herencia de bootstrap) */
+        /* --- Estilos internos (Optimización) --- */
+        
+        /* Layout General */
+        body { 
+            background-color: #0b0b0b; 
+            /* Importante para la animación de fondo en home.html */
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed; /* Mantiene el fondo fijo al hacer scroll */
+        }
+        
+        /* Navbar */
+        .navbar-logo { 
+            width: 40px; 
+            height: 40px; 
+            object-fit: contain; 
+            margin-right: 8px; 
+        }
+        
+        .navbar-username { 
+            color: #fff; 
+            margin-left: 10px; 
+            font-weight: 600; 
+        }
+
+        /* Fuerza los colores de los enlaces de la navbar en blanco */
         #main-navbar .nav-link, #main-navbar .navbar-brand, #main-navbar .navbar-username {
             color: #ffffff !important;
         }
-        /* inversor del icono toggler si aplica */
-        .navbar-toggler-icon { filter: invert(1) contrast(1.2) !important; }
+        
+        /* Inversor del icono toggler para que sea visible en fondo oscuro */
+        .navbar-toggler-icon { 
+            filter: invert(1) contrast(1.2) !important; 
+        }
+        
+        /* Contenido Principal y Footer */
+        .main-content { 
+            /* Se establece paddingTop por JavaScript, pero este es el fallback/base */
+            padding-top: calc(var(--navbar-height, 70px) + 12px); 
+            min-height: calc(100vh - 120px); 
+        }
+        
+        footer { 
+            background: transparent; 
+            color: #fff; 
+        }
     </style>
 </head>
 <body class="bg-dark">
 
     <nav class="navbar navbar-expand-lg fixed-top" id="main-navbar">
         <div class="container-fluid">
+            
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
                 <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Mi ADN Logo" class="navbar-logo">
                 <span class="fw-bold ms-1">Mi ADN</span>
@@ -47,20 +83,6 @@
                 <ul class="navbar-nav align-items-center me-3">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('calculadora') }}">Calculadora</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('rutinas') }}">Rutinas</a></li>
-                </ul>
-
-                <!-- Botón: apunta a la ruta intermedia "registro_rostro_nav" -->
-                <ul class="navbar-nav align-items-center me-3">
-                    <li class="nav-item">
-                        <a class="btn btn-success recon-btn d-flex align-items-center me-2" href="{{ url_for('registro_rostro_nav') }}">
-                            <i class="fas fa-user-check me-2"></i>
-                            {% if session.get('correo') %}
-                                Registrar / Gestionar rostro
-                            {% else %}
-                                Reconocimiento Facial
-                            {% endif %}
-                        </a>
-                    </li>
                 </ul>
 
                 <ul class="navbar-nav align-items-center">
@@ -96,6 +118,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Script para ajustar el padding del contenido principal (evita solapamiento con navbar fixed)
         document.addEventListener('DOMContentLoaded', function() {
             const navbar = document.getElementById('main-navbar');
             const mainContent = document.querySelector('.main-content');
