@@ -1,84 +1,55 @@
 import os
 import psycopg
-import numpy as np
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-# ❌ Eliminado: from facial_utils import obtener_embedding, comparar_embeddings
+# from facial_utils import obtener_embedding, comparar_embeddings # ❌ ELIMINADO
+# import numpy as np # ❌ ELIMINADO (solo se usaba para el campo rostro)
 
-# 🔥 Carga las variables del archivo .env al entorno
+# 🔥 IMPORTANTE: Carga las variables de entorno, incluyendo DATABASE_URL
 from dotenv import load_dotenv
 load_dotenv() 
 
-# ==============================================================
-# ⚙️ CONFIGURACIÓN GLOBAL (DEEPFACE - ELIMINADA)
-# ==============================================================
-# ❌ Eliminadas todas las variables de entorno de DeepFace
-# os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-# os.environ["DETECTOR_BACKEND"] = "retinaface"
-# os.environ["BACKEND"] = "torch"
-# os.environ["DISABLE_TF"] = "1"
-# os.environ["FORCE_RELOAD_BACKENDS"] = "1"
+# ============================================================== 
+# ⚙️ CONFIGURACIÓN GLOBAL (DeepFace - ELIMINADA)
+# ============================================================== 
+# ❌ Se eliminaron todas las configuraciones de os.environ para DeepFace/TensorFlow/Torch.
+# El código inicia mucho más rápido y sin dependencias problemáticas.
 
-# ❌ Eliminado: print("🧠 DeepFace optimizado para PyTorch + RetinaFace")
-
-# ==============================================================
+# ============================================================== 
 # ⚙️ CONFIGURACIÓN FLASK
-# ==============================================================
+# ============================================================== 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "clave_super_segura")
 
-# ==============================================================
-# 🗄️ CONEXIÓN A LA BASE DE DATOS (psycopg moderno)
-# ==============================================================
+# ============================================================== 
+# 🗄️ CONEXIÓN A LA BASE DE DATOS DE RENDER
+# ============================================================== 
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection():
-    """
-    Crea una conexión PostgreSQL. Prioriza DATABASE_URL (Render), 
-    y añade el parámetro sslmode=require si no está en la URL.
-    """
-    db_url = os.getenv("DATABASE_URL")
-    
-    if db_url:
-        try:
-            # Añadimos 'sslmode=require' si no está explícito en la URL de Render.
-            if 'sslmode' not in db_url.lower():
-                db_url += '?sslmode=require'
-            
-            return psycopg.connect(db_url)
-        except Exception as e:
-            # Si falla la conexión remota, mostramos el error y lanzamos la excepción.
-            print("❌ Error al conectar con DATABASE_URL (Render):", e)
-            raise 
-
-    # 🔹 Fallback local (si DATABASE_URL no está definida)
+    if not DATABASE_URL:
+        raise ValueError("❌ DATABASE_URL no está definida en el entorno.")
     try:
-        print("⚠️ DATABASE_URL no definida. Intentando conectar localmente...")
-        return psycopg.connect(
-            dbname=os.getenv("DB_NAME", "fitness"),
-            user=os.getenv("DB_USER", "postgres"),
-            password=os.getenv("DB_PASSWORD", "tu_clave"), # ⚠️ Cambia por tu contraseña
-            host=os.getenv("DB_HOST", "localhost"),
-            port=os.getenv("DB_PORT", "5432")
-        )
+        conn = psycopg.connect(DATABASE_URL)
+        return conn
     except Exception as e:
-        print("❌ No se pudo conectar a PostgreSQL local:", e)
+        print("❌ Error de conexión a PostgreSQL:", e)
         raise
 
-# ==============================================================
+# ============================================================== 
 # 🧾 FUNCIONES DE BASE DE DATOS
-# ==============================================================
+# ============================================================== 
 def crear_tabla():
     try:
         with get_connection() as conn:
             with conn.cursor() as cursor:
-                # La columna 'rostro BYTEA' se mantiene en la tabla por ahora,
-                # pero ya no se usará. Se puede eliminar después de limpiar datos.
+                # ❗ IMPORTANTE: Eliminamos el campo 'rostro' de la tabla, ya no se usa.
                 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS usuarios (
                         id SERIAL PRIMARY KEY,
                         nombre VARCHAR(100) NOT NULL,
                         correo VARCHAR(100) UNIQUE NOT NULL,
-                        contraseña VARCHAR(100) NOT NULL,
-                        rostro BYTEA 
+                        contraseña VARCHAR(100) NOT NULL
+                        /* ❌ Eliminado: rostro BYTEA */
                     )
                 """)
             conn.commit()
@@ -98,10 +69,10 @@ def obtener_todos_usuarios():
             cursor.execute("SELECT * FROM usuarios ORDER BY id ASC")
             return cursor.fetchall()
 
-def agregar_usuario(nombre, correo, contraseña): # 💡 Se eliminó el parámetro 'rostro=None'
+# 🧼 Función modificada: ya no acepta ni procesa el argumento 'rostro'
+def agregar_usuario(nombre, correo, contraseña):
     with get_connection() as conn:
         with conn.cursor() as cursor:
-            # 💡 Se eliminó la lógica de insertar el rostro. Ahora solo se registran datos básicos.
             cursor.execute("""
                 INSERT INTO usuarios (nombre, correo, contraseña)
                 VALUES (%s, %s, %s)
@@ -122,10 +93,9 @@ def eliminar_usuario(id_usuario):
             cursor.execute("DELETE FROM usuarios WHERE id=%s", (id_usuario,))
         conn.commit()
 
-
-# ==============================================================
-# 🔧 INICIALIZACIÓN
-# ==============================================================
+# ============================================================== 
+# 🔧 INICIALIZACIÓN DE LA BD Y ADMIN
+# ============================================================== 
 try:
     crear_tabla()
 except Exception as e:
@@ -133,14 +103,15 @@ except Exception as e:
 
 try:
     if not obtener_usuario("andresfelipeaguasaco@gmail.com"):
+        # ❗ Llama a la versión limpia de agregar_usuario
         agregar_usuario("Administrador", "andresfelipeaguasaco@gmail.com", "123456789")
         print("👤 Usuario administrador creado.")
 except Exception as e:
     print("⚠️ Error creando admin:", e)
-
-# ==============================================================
+    
+# ============================================================== 
 # 🌐 RUTAS PRINCIPALES
-# ==============================================================
+# ============================================================== 
 @app.route('/')
 def root():
     if "usuario" in session:
@@ -151,11 +122,12 @@ def root():
 def home():
     if "usuario" not in session:
         return redirect(url_for('login'))
+    # Asumimos que home.html ya está limpio
     return render_template('home.html', usuario=session['usuario'])
 
-# ==============================================================
+# ============================================================== 
 # 🔐 LOGIN TRADICIONAL
-# ==============================================================
+# ============================================================== 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -167,37 +139,44 @@ def login():
             session['correo'] = usuario[2]
             return redirect(url_for('home'))
         else:
-            return "❌ Usuario o contraseña incorrectos. <a href='/login'>Intentar de nuevo</a>"
+            return render_template('login.html', error="Usuario o contraseña incorrectos.")
+            # return "❌ Usuario o contraseña incorrectos. <a href='/login'>Intentar de nuevo</a>"
+    # Asumimos que login.html ya está limpio
     return render_template('login.html')
 
-# ==============================================================
-# ❌ LOGIN FACIAL (ELIMINADO)
-# ==============================================================
-# ❌ Eliminada la ruta /login_face (GET y POST)
+# ============================================================== 
+# ❌ LOGIN FACIAL (RUTAS ELIMINADAS)
+# ============================================================== 
+# ❌ Se eliminaron las rutas /login_face y /login_face_page
+# ❌ Se eliminó la ruta /registro_rostro_nav
 
-# ==============================================================
+# ============================================================== 
 # 🧾 REGISTRO DE USUARIOS
-# ==============================================================
+# ============================================================== 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        # 💡 Se eliminó la lógica de registro facial (if data:...)
+        # ❌ Se eliminó toda la lógica JSON/fetch/facial_utils
         
-        # registro tradicional
+        # Lógica de registro tradicional (Formulario HTML estándar)
         nombre = request.form['nombre']
         correo = request.form['correo']
         contraseña = request.form['contraseña']
         try:
+            # ❗ Llama a la versión limpia de agregar_usuario
             agregar_usuario(nombre, correo, contraseña)
+            # Podrías agregar un mensaje de éxito con Flash aquí
             return redirect(url_for('login'))
         except Exception:
-            return "⚠️ Este correo ya está registrado. <a href='/register'>Intenta con otro</a>"
+            return render_template('register.html', error="Este correo ya está registrado. Intenta con otro.")
+            # return "⚠️ Este correo ya está registrado. <a href='/register'>Intenta con otro</a>"
+            
+    # Asumimos que register.html ya está limpio
     return render_template('register.html')
 
-
-# ==============================================================
+# ============================================================== 
 # 🧩 FUNCIONALIDADES ADICIONALES
-# ==============================================================
+# ============================================================== 
 @app.route('/calculadora')
 def calculadora():
     if "usuario" not in session:
@@ -216,22 +195,11 @@ def rutinas():
         return redirect(url_for('login'))
     return render_template("rutinas.html", usuario=session["usuario"])
 
-# ❌ Eliminada la ruta /registro_rostro
-# @app.route("/registro_rostro")
-# def registro_rostro():
-#     if "usuario" not in session:
-#         return redirect(url_for("login"))
-#     return render_template("registro_rostro.html", usuario=session["usuario"])
+# ❌ Se eliminaron las rutas /registro_rostro y /api/registrar_rostro
 
-
-# ==============================================================
-# ❌ API PARA REGISTRAR ROSTRO (ELIMINADA)
-# ==============================================================
-# ❌ Eliminada la ruta /api/registrar_rostro
-
-# ==============================================================
+# ============================================================== 
 # 🔐 PANEL ADMIN
-# ==============================================================
+# ============================================================== 
 ADMIN_EMAIL = "andresfelipeaguasaco@gmail.com"
 
 @app.route('/admin/usuarios')
@@ -256,6 +224,7 @@ def admin_modificar(id_usuario):
         with conn.cursor() as cursor:
             cursor.execute("SELECT * FROM usuarios WHERE id = %s", (id_usuario,))
             usuario = cursor.fetchone()
+    # Asumimos que admin_modificar.html ya está limpio
     return render_template("admin_modificar.html", usuario=usuario)
 
 @app.route('/admin/eliminar/<int:id_usuario>')
@@ -265,9 +234,9 @@ def admin_eliminar(id_usuario):
     eliminar_usuario(id_usuario)
     return redirect(url_for('admin_usuarios'))
 
-# ==============================================================
+# ============================================================== 
 # 🚪 LOGOUT Y HEALTHCHECK
-# ==============================================================
+# ============================================================== 
 @app.route('/logout')
 def logout():
     session.pop("usuario", None)
@@ -278,9 +247,16 @@ def logout():
 def health():
     return {"status": "ok"}, 200
 
-# ==============================================================
+# ============================================================== 
+# 🗜️ CONTEXT PROCESSOR PARA INYECTAR VARIABLES GLOBALES
+# ============================================================== 
+@app.context_processor
+def inject_global_vars():
+    return dict(ADMIN_EMAIL=ADMIN_EMAIL, session=session)
+
+# ============================================================== 
 # 🚀 MAIN
-# ==============================================================
+# ============================================================== 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
