@@ -1,60 +1,84 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Mi ADN{% endblock %}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}Mi ADN Fitness{% endblock %}</title>
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    {% block head_extra %}{% endblock %}
 
-    <!-- Tu hoja de estilos -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-    <!-- Favicon opcional -->
-    <link rel="icon" href="{{ url_for('static', filename='icon.png') }}">
+    <style>
+        .navbar-logo { width: 40px; height: 40px; object-fit: contain; margin-right: 8px; }
+        .recon-btn { border-radius: 10px; font-weight: 600; padding: 7px 14px; }
+        .recon-btn:hover { transform: translateY(-1px); }
+        .main-content { padding-top: calc(var(--navbar-height, 70px) + 12px); min-height: calc(100vh - 120px); }
+        footer { background: transparent; color: #fff; }
+        body { background-color: #0b0b0b; }
+        .navbar-username { color: #fff; margin-left: 10px; font-weight: 600; }
+        /* Forzar navbar links en blanco (importante para evitar herencia de bootstrap) */
+        #main-navbar .nav-link, #main-navbar .navbar-brand, #main-navbar .navbar-username {
+            color: #ffffff !important;
+        }
+        /* inversor del icono toggler si aplica */
+        .navbar-toggler-icon { filter: invert(1) contrast(1.2) !important; }
+    </style>
 </head>
-<body class="bg-light">
+<body class="bg-dark">
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg fixed-top" id="main-navbar">
         <div class="container-fluid">
-            <!-- 🔧 Corregido: el logo ahora apunta a 'dashboard' -->
-            <a class="navbar-brand fw-bold text-light" href="{{ url_for('home') }}">🏋️ Mi ADN</a>
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Mi ADN Logo" class="navbar-logo">
+                <span class="fw-bold ms-1">Mi ADN</span>
+                {% if session.get('usuario') %}
+                    <span class="navbar-username">· {{ session.get('usuario') }}</span>
+                {% endif %}
+            </a>
 
-            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    {% if session.get("usuario") %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('calculadora') }}">Calculadora</a>
-                        </li>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center me-3">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('calculadora') }}">Calculadora</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('rutinas') }}">Rutinas</a></li>
+                </ul>
 
-                        <!-- NUEVO BOTÓN DE RUTINAS -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('rutinas') }}">Rutinas</a>
-                        </li>
+                <!-- Botón: apunta a la ruta intermedia "registro_rostro_nav" -->
+                <ul class="navbar-nav align-items-center me-3">
+                    <li class="nav-item">
+                        <a class="btn btn-success recon-btn d-flex align-items-center me-2" href="{{ url_for('registro_rostro_nav') }}">
+                            <i class="fas fa-user-check me-2"></i>
+                            {% if session.get('correo') %}
+                                Registrar / Gestionar rostro
+                            {% else %}
+                                Reconocimiento Facial
+                            {% endif %}
+                        </a>
+                    </li>
+                </ul>
 
-                        <!-- SOLO ADMIN -->
-                        {% if session.get("correo") == "andresfelipeaguasaco@gmail.com" %}
-                        <li class="nav-item">
-                            <a class="nav-link text-warning fw-bold" href="{{ url_for('admin_usuarios') }}">⚙️ Panel Admin</a>
-                        </li>
+                <ul class="navbar-nav align-items-center">
+                    {% if session.get('correo') %}
+                        {% if session.get('correo') == ADMIN_EMAIL %}
+                            <li class="nav-item me-2">
+                                <a class="nav-link btn btn-primary panel-admin-btn text-white" href="{{ url_for('admin_usuarios') }}">
+                                    <i class="fas fa-cog me-1"></i> Panel Admin
+                                </a>
+                            </li>
                         {% endif %}
-
-                        <li class="nav-item">
-                            <a class="nav-link text-danger" href="{{ url_for('logout') }}">Cerrar sesión</a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link logout-link" href="{{ url_for('logout') }}">Cerrar sesión</a></li>
                     {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">Iniciar sesión</a>
+                        <li class="nav-item me-2">
+                            <a class="nav-link btn btn-outline-light login-btn" href="{{ url_for('login') }}">Iniciar Sesión</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register') }}">Registrarse</a>
+                        <li class="nav-item d-lg-block">
+                            <a class="nav-link btn btn-outline-success" href="{{ url_for('register') }}">Registrarse</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -62,17 +86,30 @@
         </div>
     </nav>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="container mt-4">
+    <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- FOOTER opcional -->
-    <footer class="text-center py-3 mt-5 text-muted border-top">
-        <small>© {{ 2025 }} Mi ADN Fitness - Todos los derechos reservados</small>
+    <footer class="text-center py-3 mt-5">
+        <small class="text-white">© 2025 Mi ADN Fitness - Todos los derechos reservados</small>
     </footer>
 
-    <!-- Scripts Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navbar = document.getElementById('main-navbar');
+            const mainContent = document.querySelector('.main-content');
+            if (navbar && mainContent) {
+                function adjustContentPadding() {
+                    const navbarHeight = navbar.offsetHeight;
+                    document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
+                    mainContent.style.paddingTop = `calc(${navbarHeight}px + 12px)`;
+                }
+                adjustContentPadding();
+                window.addEventListener('resize', adjustContentPadding);
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
