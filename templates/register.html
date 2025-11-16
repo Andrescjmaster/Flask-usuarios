@@ -3,32 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-</head>
+    <title>Registro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+    </head>
 <body>
+    <div class="container">
+        <h2>Crear cuenta</h2>
 
-    <div class="login-container">
-        <h2>Iniciar Sesión</h2>
+        <div id="formularioSeccion">
+            <form id="registroForm">
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
+                <input type="email" id="correo" name="correo" placeholder="Correo electrónico" required>
+                <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" required>
 
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
+                <button type="button" class="camara-btn" id="abrirCamara">📸 Tomar foto (opcional)</button>
+                <button type="submit">Registrarse</button>
+            </form>
 
-        <form action="{{ url_for('login') }}" method="POST">
-            <input type="email" name="correo" placeholder="Correo electrónico" required>
-            <input type="password" name="contraseña" placeholder="Contraseña" required>
-            <button type="submit" class="btn-login">Ingresar</button>
-        </form>
+            <div class="extra">
+                <p>¿Ya tienes cuenta? <a href="/login">Iniciar sesión</a></p>
+            </div>
+        </div>
 
-        <p>o</p>
-
-        <form action="{{ url_for('login_face_page') }}">
-            <button type="submit" class="btn-face">Reconocimiento facial</button>
-        </form>
-
-        <p>¿No tienes cuenta? <a href="{{ url_for('register') }}">Crear cuenta</a></p>
+        <div id="camaraSeccion" class="hidden">
+            <video id="camara" autoplay playsinline></video>
+            <canvas id="fotoCanvas" class="hidden"></canvas>
+            <button type="button" id="capturar">✅ Capturar Rostro</button>
+            <button type="button" class="volver-btn" id="volver">🔙 Volver</button>
+        </div>
     </div>
 
+    <script>
+        const video = document.getElementById('camara');
+        const canvas = document.getElementById('fotoCanvas');
+        const ctx = canvas.getContext('2d');
+        let rostroBase64 = null;
+
+        const formularioSeccion = document.getElementById('formularioSeccion');
+        const camaraSeccion = document.getElementById('camaraSeccion');
+
+        // Abrir cámara
+        document.getElementById('abrirCamara').addEventListener('click', async () => {
+            formularioSeccion.classList.add('hidden');
+            camaraSeccion.classList.remove('hidden');
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                alert("⚠️ No se pudo acceder a la cámara: " + err.message);
+                formularioSeccion.classList.remove('hidden');
+                camaraSeccion.classList.add('hidden');
+            }
+        });
+
+        // Capturar rostro
+        document.getElementById('capturar').addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            rostroBase64 = canvas.toDataURL('image/jpeg');
+            alert("✅ Rostro capturado correctamente.");
+        });
+
+        // Volver al formulario
+        document.getElementById('volver').addEventListener('click', () => {
+            // Asegurarse de detener el stream de la cámara al volver
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+            
+            camaraSeccion.classList.add('hidden');
+            formularioSeccion.classList.remove('hidden');
+        });
+
+        // Enviar datos al backend
+        document.getElementById('registroForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const datos = {
+                nombre: document.getElementById('nombre').value,
+                correo: document.getElementById('correo').value,
+                contraseña: document.getElementById('contraseña').value,
+                rostro: rostroBase64
+            };
+
+            try {
+                const res = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+
+                const texto = await res.text();
+                if (res.ok) {
+                    alert("✅ Registro exitoso. Redirigiendo al login...");
+                    window.location.href = '/login';
+                } else {
+                    alert("⚠️ Error al registrar: " + texto);
+                }
+            } catch (err) {
+                alert("❌ Error de conexión: " + err.message);
+            }
+        });
+    </script>
 </body>
 </html>
