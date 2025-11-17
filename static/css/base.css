@@ -99,6 +99,30 @@ a:hover {
 }
 
 /* ----------------------------------------------------------------------------------- */
+/* 🚨 ESTILOS ESPECÍFICOS: Nombre de Usuario y Panel Admin */
+/* ----------------------------------------------------------------------------------- */
+
+/* 1. Estilo para el nombre de usuario (Color verde/cian brillante) */
+.text-user-color {
+    color: #17e089; /* Verde brillante */
+    text-shadow: 0 0 5px rgba(23, 224, 137, 0.5);
+}
+
+/* 2. Estilo para el botón de Panel Admin (Rojo/Vino) */
+.panel-admin-btn {
+    background-color: #8B0000 !important; /* Rojo oscuro/Vino */
+    border-color: #8B0000 !important;
+    font-weight: bold;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+.panel-admin-btn:hover {
+    background-color: #C70039 !important; /* Rojo más brillante al pasar el ratón */
+    border-color: #C70039 !important;
+    box-shadow: 0 0 10px rgba(139, 0, 0, 0.7);
+}
+
+
+/* ----------------------------------------------------------------------------------- */
 /* 3. Footer */
 /* ----------------------------------------------------------------------------------- */
 
