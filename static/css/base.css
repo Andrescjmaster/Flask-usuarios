@@ -15,10 +15,10 @@
 /* 1. Estilos Globales */
 /* ----------------------------------------------------------------------------------- */
 
-/* **AJUSTE CLAVE:** Aumentamos el padding para compensar la altura real de la Navbar */
-html {
-    scroll-padding-top: 120px; /* Aumentado a 90px para mayor margen de seguridad */
-}
+/* Eliminamos scroll-padding-top ya que no estaba funcionando como se esperaba */
+/* html {
+    scroll-padding-top: 90px;
+} */
 
 body {
     font-family: 'Inter', sans-serif;
@@ -162,62 +162,65 @@ a:hover {
 /* ----------------------------------------------------------------------------------- */
 
 #about {
-    /* Mantenemos el padding-top en 0 aquí, ya que 'scroll-padding-top' maneja el desplazamiento */
-    padding-top: 0; 
+    /* **AJUSTE CLAVE:** Aumentar el padding-top para bajar la sección y padding-bottom para estética */
+    padding-top: 150px; 
+    padding-bottom: 50px; 
 }
 
 #about .content {
-    /* Mantenemos los ajustes de ancho para el texto */
-    max-width: 1000px; 
+    /* **AJUSTE CLAVE:** Aumentar el ancho máximo para el texto general */
+    max-width: 1100px; 
     margin: 0 auto; 
     padding: 0 40px; 
 }
 
 #about h2 {
     /* Ajustes del título */
-    font-size: 2.8rem; 
+    font-size: 3rem; 
     margin-bottom: 20px;
     white-space: nowrap; 
+    text-align: center; 
 }
 
 #about p {
-    font-size: 1.15rem; 
-    line-height: 1.6;
+    font-size: 1.25rem; /* Aumentar tamaño de la fuente del párrafo */
+    line-height: 1.7; 
     margin-bottom: 30px;
+    text-align: center; 
 }
 
 .about-list {
     list-style: none; 
     padding-left: 0; 
-    margin-top: 20px;
-    font-size: 1.1rem; 
+    margin-top: 40px; 
+    font-size: 1.2rem; /* Aumentar tamaño de la fuente de la lista */
 }
 
 .about-list li {
-    margin-bottom: 18px; 
-    padding-left: 45px; 
+    margin-bottom: 25px; 
+    padding-left: 55px; 
     position: relative;
     text-align: left; 
     padding-right: 20px; 
-    line-height: 1.5; 
+    line-height: 1.6; 
 }
 
 .about-list li strong {
     display: block; 
-    margin-bottom: 5px;
-    font-size: 1.25rem; 
+    margin-bottom: 8px; 
+    font-size: 1.4rem; /* Aumentar tamaño del título de cada punto */
     color: var(--color-light); 
 }
 
 .about-list li::before {
-    content: "\f058"; /* Icono de check (Font Awesome) */
+    content: "\f058"; 
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
-    color: var(--color-secondary); /* Color del check */
+    color: var(--color-secondary); 
     position: absolute;
     left: 0; 
-    top: 5px; 
-    font-size: 1.3rem; 
+    top: 8px; 
+    font-size: 1.5rem; 
 }
 
 
