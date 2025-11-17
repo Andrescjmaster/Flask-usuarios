@@ -200,22 +200,32 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
 /* ===== 7. AJUSTES ESPECÍFICOS PARA "¿QUIÉNES SOMOS?" (ABOUT) ===== */
 /* ========================================================== */
 
-/* Hacemos que el contenido de ABOUT ocupe solo la mitad de la sección */
-#about .content {
-    /* Sobreescribe el max-width de .content general para ser más específico */
-    max-width: 500px; 
-    /* Mueve el contenido hacia la izquierda, como se ve en tu imagen de referencia */
-    margin-left: 10%; 
-    margin-right: auto; 
-    text-align: left; 
-    padding: 80px 0; 
+#about {
+    /* 1. Usamos Flexbox para centrar el contenido (el div.content) dentro de la sección. */
+    display: flex;
+    justify-content: center; /* Centrado horizontalmente */
+    align-items: center;     /* Centrado verticalmente */
+    padding: 0 10px; /* Asegura un padding lateral mínimo para evitar desbordamiento */
 }
 
-/* Estilo para la lista de puntos clave */
+/* Estilos para el contenedor del texto (la nueva clase about-centered-column) */
+#about .content.about-centered-column {
+    /* 2. Sobreescribe el max-width de .content general para tener un bloque de texto compacto */
+    max-width: 600px; 
+    /* 3. Reestablecemos margen y alineación. Con el flexbox de la sección, margin: auto lo centra. */
+    margin: 0 auto;
+    text-align: center; /* Centra todo el texto dentro del bloque */
+    padding: 80px 40px; 
+}
+
 #about ul {
-    list-style: none; /* Elimina los puntos por defecto */
+    list-style: none;
     padding-left: 0;
     margin-top: 30px;
+    max-width: 500px; /* Limita el ancho de la lista para que no se extienda demasiado */
+    margin-left: auto; /* Centra la lista dentro del bloque de 600px */
+    margin-right: auto;
+    text-align: left; /* Mantiene el texto de la lista alineado a la izquierda para una mejor lectura */
 }
 
 #about ul li {
@@ -225,7 +235,7 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
 }
 
 #about ul li strong {
-    color: #8a2be2; /* Resalta el título de la lista */
+    color: #8a2be2; 
     display: block;
     margin-bottom: 5px;
 }
@@ -241,7 +251,7 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     .subtitle-hero { font-size: 1.2rem; } .content { padding: 80px 30px; } 
 
     /* About: Ajuste margen en pantallas más pequeñas */
-    #about .content { margin-left: 8%; }
+    #about .content { margin-left: auto; margin-right: auto; } /* Centrado total */
     #about ul li { font-size: 1.1rem; }
 }
 
@@ -255,7 +265,7 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     .contact .contact-link, .contact .contact-link i { font-size: 1.1rem; } 
 
     /* About: Ajuste margen y ancho del contenido */
-    #about .content { max-width: 450px; margin-left: 5%; }
+    #about .content.about-centered-column { max-width: 90%; }
 
     /* Ajuste de tamaño de imagen para tablets */
     .contact .image-text-group .image-item img {
@@ -276,13 +286,17 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     .left-align .content, .right-align .content { text-align: center; margin-left: auto; margin-right: auto; } 
 
     /* About: En móvil, el contenido debe centrarse y ocupar todo el ancho */
-    #about .content { 
-        max-width: none; 
+    #about .content.about-centered-column { 
+        max-width: 90%;
         margin-left: auto; 
         margin-right: auto; 
         text-align: center;
+        padding: 60px 20px;
     }
-    #about ul { text-align: left; } /* Mantiene la lista alineada a la izquierda dentro del bloque */
+    #about ul { 
+        text-align: left; /* Mantiene la lista alineada a la izquierda dentro del bloque */
+        max-width: none;
+    }
 
 
     /* Imágenes apiladas en móvil */
