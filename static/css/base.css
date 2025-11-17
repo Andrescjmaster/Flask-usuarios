@@ -15,6 +15,11 @@
 /* 1. Estilos Globales */
 /* ----------------------------------------------------------------------------------- */
 
+/* **SOLUCIÓN SCROLL FIX:** Asegura que el scroll a anclas (ej. #about) deje espacio para la Navbar fija */
+html {
+    scroll-padding-top: 70px; 
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: var(--color-dark);
@@ -43,11 +48,10 @@ a:hover {
     box-shadow: none; 
     padding: 15px 50px; 
     transition: all 0.3s ease;
-    /* **AJUSTE CLAVE 1: Posicionamiento y Capa** */
-    position: fixed; /* Mantenemos fijo para que el scroll funcione */
+    position: fixed; 
     width: 100%;
     top: 0;
-    z-index: 1050; /* Lo ponemos alto para que siempre esté arriba */
+    z-index: 1050; 
 }
 
 #main-navbar.scrolled {
@@ -158,19 +162,19 @@ a:hover {
 /* ----------------------------------------------------------------------------------- */
 
 #about {
-    /* **AJUSTE CLAVE 2: Empuja la sección debajo de la Navbar** */
-    padding-top: 100px; /* Suficiente espacio para que la Navbar no cubra el título */
+    /* Eliminamos el padding top aquí, ya que 'scroll-padding-top' lo maneja */
+    padding-top: 0; 
 }
 
 #about .content {
-    /* Ajustes de ancho para el texto (manteniendo los 1000px acordados) */
+    /* Mantenemos los ajustes de ancho para el texto */
     max-width: 1000px; 
     margin: 0 auto; 
     padding: 0 40px; 
 }
 
 #about h2 {
-    /* Ajustes del título (manteniendo 2.8rem y nowrap) */
+    /* Ajustes del título */
     font-size: 2.8rem; 
     margin-bottom: 20px;
     white-space: nowrap; 
