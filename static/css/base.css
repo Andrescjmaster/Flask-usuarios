@@ -152,6 +152,13 @@ a:hover {
 /* 🚨 ESTILOS ESPECÍFICOS PARA LA SECCIÓN "¿QUIÉNES SOMOS?" (#about) */
 /* ----------------------------------------------------------------------------------- */
 
+#about .content {
+    /* Ajusta el ancho máximo del contenido dentro de la sección About */
+    max-width: 800px; 
+    margin: 0 auto; /* Centra el contenido si la sección es más ancha */
+    padding: 0 20px; /* Asegura un padding horizontal mínimo */
+}
+
 .about-list {
     list-style: none; /* Elimina las viñetas por defecto si no las quieres */
     padding-left: 0; /* Elimina el padding izquierdo predeterminado de la lista */
@@ -160,9 +167,15 @@ a:hover {
 
 .about-list li {
     margin-bottom: 15px; /* Espacio entre cada elemento de la lista */
-    padding-left: 25px; /* Indentación para el texto */
+    padding-left: 30px; /* Aumenta el espacio para el icono */
     position: relative;
-    text-align: justify; /* Justifica el texto para mejor lectura */
+    text-align: left; /* **CORRECCIÓN CLAVE: Evita justificar para prevenir cortes extraños** */
+    padding-right: 10px; /* **CORRECCIÓN CLAVE: Asegura espacio al final de la línea** */
+}
+
+.about-list li strong {
+    display: block; /* Hace que el título ocupe su propia línea para mejor formato */
+    margin-bottom: 5px;
 }
 
 .about-list li::before {
@@ -217,7 +230,7 @@ a:hover {
 }
 
 /* ----------------------------------------------------------------------------------- */
-/* 🚨 NUEVOS ESTILOS para Login y Registro (Formularios) */
+/* 🚨 ESTILOS para Login y Registro (Formularios) */
 /* ----------------------------------------------------------------------------------- */
 
 .login-container {
@@ -287,4 +300,3 @@ a:hover {
 .link-cyan:hover {
     text-shadow: 0 0 5px var(--color-secondary);
 }
-```http://googleusercontent.com/image_generation_content/2
