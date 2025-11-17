@@ -153,29 +153,46 @@ a:hover {
 /* ----------------------------------------------------------------------------------- */
 
 #about .content {
-    /* Ajusta el ancho máximo del contenido dentro de la sección About */
-    max-width: 800px; 
-    margin: 0 auto; /* Centra el contenido si la sección es más ancha */
-    padding: 0 20px; /* Asegura un padding horizontal mínimo */
+    /* **AJUSTE CLAVE 1:** Aumenta el ancho máximo del contenido para que el texto se estire */
+    max-width: 1000px; /* Aumentado a 1000px para una mejor distribución */
+    margin: 0 auto; /* Centra el contenido */
+    padding: 0 40px; /* **AJUSTE CLAVE 2:** Aumenta el padding horizontal para alejarlo de los bordes */
+}
+
+#about h2 {
+    /* **AJUSTE CLAVE 3:** Reduce el tamaño de la fuente para forzar el título a una línea */
+    font-size: 2.8rem; 
+    margin-bottom: 20px;
+    white-space: nowrap; /* Asegura que no se rompa el título */
+}
+
+#about p {
+    font-size: 1.15rem; /* Tamaño de la fuente para el párrafo introductorio */
+    line-height: 1.6;
+    margin-bottom: 30px;
 }
 
 .about-list {
-    list-style: none; /* Elimina las viñetas por defecto si no las quieres */
+    list-style: none; /* Elimina las viñetas por defecto */
     padding-left: 0; /* Elimina el padding izquierdo predeterminado de la lista */
     margin-top: 20px;
+    font-size: 1.1rem; /* Aumenta ligeramente el tamaño de la fuente de la lista */
 }
 
 .about-list li {
-    margin-bottom: 15px; /* Espacio entre cada elemento de la lista */
-    padding-left: 30px; /* Aumenta el espacio para el icono */
+    margin-bottom: 18px; /* Espacio entre cada elemento de la lista (un poco más) */
+    padding-left: 45px; /* Aumenta el espacio para el icono y el texto */
     position: relative;
-    text-align: left; /* **CORRECCIÓN CLAVE: Evita justificar para prevenir cortes extraños** */
-    padding-right: 10px; /* **CORRECCIÓN CLAVE: Asegura espacio al final de la línea** */
+    text-align: left; 
+    padding-right: 20px; /* Aumenta el espacio al final de la línea */
+    line-height: 1.5; /* Ajusta la altura de línea para mejor legibilidad */
 }
 
 .about-list li strong {
-    display: block; /* Hace que el título ocupe su propia línea para mejor formato */
+    display: block; 
     margin-bottom: 5px;
+    font-size: 1.25rem; /* Aumenta el tamaño de la "sub-heading" de cada punto */
+    color: var(--color-light); 
 }
 
 .about-list li::before {
@@ -184,8 +201,9 @@ a:hover {
     font-weight: 900;
     color: var(--color-secondary); /* Color del check */
     position: absolute;
-    left: 0;
-    top: 0;
+    left: 0; 
+    top: 5px; /* Ajusta la posición vertical del icono */
+    font-size: 1.3rem; /* Aumenta el tamaño del icono */
 }
 
 
