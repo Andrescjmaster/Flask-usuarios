@@ -15,9 +15,9 @@
 /* 1. Estilos Globales */
 /* ----------------------------------------------------------------------------------- */
 
-/* **SOLUCIÓN SCROLL FIX:** Asegura que el scroll a anclas (ej. #about) deje espacio para la Navbar fija */
+/* **AJUSTE CLAVE:** Aumentamos el padding para compensar la altura real de la Navbar */
 html {
-    scroll-padding-top: 70px; 
+    scroll-padding-top: 90px; /* Aumentado a 90px para mayor margen de seguridad */
 }
 
 body {
@@ -162,7 +162,7 @@ a:hover {
 /* ----------------------------------------------------------------------------------- */
 
 #about {
-    /* Eliminamos el padding top aquí, ya que 'scroll-padding-top' lo maneja */
+    /* Mantenemos el padding-top en 0 aquí, ya que 'scroll-padding-top' maneja el desplazamiento */
     padding-top: 0; 
 }
 
