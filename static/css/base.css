@@ -43,6 +43,11 @@ a:hover {
     box-shadow: none; 
     padding: 15px 50px; 
     transition: all 0.3s ease;
+    /* **AJUSTE CLAVE 1: Posicionamiento y Capa** */
+    position: fixed; /* Mantenemos fijo para que el scroll funcione */
+    width: 100%;
+    top: 0;
+    z-index: 1050; /* Lo ponemos alto para que siempre esté arriba */
 }
 
 #main-navbar.scrolled {
@@ -152,46 +157,51 @@ a:hover {
 /* 🚨 ESTILOS ESPECÍFICOS PARA LA SECCIÓN "¿QUIÉNES SOMOS?" (#about) */
 /* ----------------------------------------------------------------------------------- */
 
+#about {
+    /* **AJUSTE CLAVE 2: Empuja la sección debajo de la Navbar** */
+    padding-top: 100px; /* Suficiente espacio para que la Navbar no cubra el título */
+}
+
 #about .content {
-    /* **AJUSTE CLAVE 1:** Aumenta el ancho máximo del contenido para que el texto se estire */
-    max-width: 1000px; /* Aumentado a 1000px para una mejor distribución */
-    margin: 0 auto; /* Centra el contenido */
-    padding: 0 40px; /* **AJUSTE CLAVE 2:** Aumenta el padding horizontal para alejarlo de los bordes */
+    /* Ajustes de ancho para el texto (manteniendo los 1000px acordados) */
+    max-width: 1000px; 
+    margin: 0 auto; 
+    padding: 0 40px; 
 }
 
 #about h2 {
-    /* **AJUSTE CLAVE 3:** Reduce el tamaño de la fuente para forzar el título a una línea */
+    /* Ajustes del título (manteniendo 2.8rem y nowrap) */
     font-size: 2.8rem; 
     margin-bottom: 20px;
-    white-space: nowrap; /* Asegura que no se rompa el título */
+    white-space: nowrap; 
 }
 
 #about p {
-    font-size: 1.15rem; /* Tamaño de la fuente para el párrafo introductorio */
+    font-size: 1.15rem; 
     line-height: 1.6;
     margin-bottom: 30px;
 }
 
 .about-list {
-    list-style: none; /* Elimina las viñetas por defecto */
-    padding-left: 0; /* Elimina el padding izquierdo predeterminado de la lista */
+    list-style: none; 
+    padding-left: 0; 
     margin-top: 20px;
-    font-size: 1.1rem; /* Aumenta ligeramente el tamaño de la fuente de la lista */
+    font-size: 1.1rem; 
 }
 
 .about-list li {
-    margin-bottom: 18px; /* Espacio entre cada elemento de la lista (un poco más) */
-    padding-left: 45px; /* Aumenta el espacio para el icono y el texto */
+    margin-bottom: 18px; 
+    padding-left: 45px; 
     position: relative;
     text-align: left; 
-    padding-right: 20px; /* Aumenta el espacio al final de la línea */
-    line-height: 1.5; /* Ajusta la altura de línea para mejor legibilidad */
+    padding-right: 20px; 
+    line-height: 1.5; 
 }
 
 .about-list li strong {
     display: block; 
     margin-bottom: 5px;
-    font-size: 1.25rem; /* Aumenta el tamaño de la "sub-heading" de cada punto */
+    font-size: 1.25rem; 
     color: var(--color-light); 
 }
 
@@ -202,8 +212,8 @@ a:hover {
     color: var(--color-secondary); /* Color del check */
     position: absolute;
     left: 0; 
-    top: 5px; /* Ajusta la posición vertical del icono */
-    font-size: 1.3rem; /* Aumenta el tamaño del icono */
+    top: 5px; 
+    font-size: 1.3rem; 
 }
 
 
