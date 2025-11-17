@@ -196,13 +196,53 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     margin-bottom: 0;
 }
 
+/* ========================================================== */
+/* ===== 7. AJUSTES ESPECÍFICOS PARA "¿QUIÉNES SOMOS?" (ABOUT) ===== */
+/* ========================================================== */
 
-/* ===== 6. MEDIA QUERIES (Responsive) ===== */
+/* Hacemos que el contenido de ABOUT ocupe solo la mitad de la sección */
+#about .content {
+    /* Sobreescribe el max-width de .content general para ser más específico */
+    max-width: 500px; 
+    /* Mueve el contenido hacia la izquierda, como se ve en tu imagen de referencia */
+    margin-left: 10%; 
+    margin-right: auto; 
+    text-align: left; 
+    padding: 80px 0; 
+}
+
+/* Estilo para la lista de puntos clave */
+#about ul {
+    list-style: none; /* Elimina los puntos por defecto */
+    padding-left: 0;
+    margin-top: 30px;
+}
+
+#about ul li {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+
+#about ul li strong {
+    color: #8a2be2; /* Resalta el título de la lista */
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* ========================================================== */
+
+
+/* ===== 8. MEDIA QUERIES (Responsive) ===== */
 
 /* Tablet Grande / Desktop Pequeño */
 @media (max-width: 1200px) { 
     h1 { font-size: 3.8rem; } h4 { font-size: 1.5rem; } h2 { font-size: 2.8rem; } p { font-size: 1.3rem; } 
     .subtitle-hero { font-size: 1.2rem; } .content { padding: 80px 30px; } 
+
+    /* About: Ajuste margen en pantallas más pequeñas */
+    #about .content { margin-left: 8%; }
+    #about ul li { font-size: 1.1rem; }
 }
 
 /* Tablet */
@@ -213,6 +253,9 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     .card { width: 280px; height: 180px; } .card-hover h3 { font-size: 1.5rem; } .card-hover p { font-size: 1rem; } 
     .contact .socials { gap: 10px; } 
     .contact .contact-link, .contact .contact-link i { font-size: 1.1rem; } 
+
+    /* About: Ajuste margen y ancho del contenido */
+    #about .content { max-width: 450px; margin-left: 5%; }
 
     /* Ajuste de tamaño de imagen para tablets */
     .contact .image-text-group .image-item img {
@@ -231,6 +274,16 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     .card-hover h3 { font-size: 1.3rem; } .card-hover p { font-size: 0.9rem; } 
     .contact .socials { align-items: center; } 
     .left-align .content, .right-align .content { text-align: center; margin-left: auto; margin-right: auto; } 
+
+    /* About: En móvil, el contenido debe centrarse y ocupar todo el ancho */
+    #about .content { 
+        max-width: none; 
+        margin-left: auto; 
+        margin-right: auto; 
+        text-align: center;
+    }
+    #about ul { text-align: left; } /* Mantiene la lista alineada a la izquierda dentro del bloque */
+
 
     /* Imágenes apiladas en móvil */
     .contact .image-text-group {
