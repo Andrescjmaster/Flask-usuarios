@@ -1,14 +1,14 @@
 /*
-    Archivo base.css
-    Estilos generales de la aplicación
+    Archivo base.css
+    Estilos generales de la aplicación
 */
 
 :root {
-    --color-primary: #FF47B4; /* Rosa/Fucsia (Neón principal) */
-    --color-secondary: #00F0FF; /* Cian (Neón secundario) */
-    --color-dark: #120A1F; /* Fondo ultra oscuro (Púrpura muy oscuro) */
-    --color-light: #F0F0F0; /* Blanco suave */
-    --color-warning: #FFD700; /* Amarillo para iconos importantes */
+    --color-primary: #FF47B4; /* Rosa/Fucsia (Neón principal) */
+    --color-secondary: #00F0FF; /* Cian (Neón secundario) */
+    --color-dark: #120A1F; /* Fondo ultra oscuro (Púrpura muy oscuro) */
+    --color-light: #F0F0F0; /* Blanco suave */
+    --color-warning: #FFD700; /* Amarillo para iconos importantes */
 }
 
 /* ----------------------------------------------------------------------------------- */
@@ -16,78 +16,86 @@
 /* ----------------------------------------------------------------------------------- */
 
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--color-dark);
-    color: var(--color-light);
-    /* Dejamos el padding-top bajo, el JS y home.css manejan el resto */
-    padding-top: 50px; 
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    /* El padding-top lo maneja el JS ahora, pero lo dejamos como fallback */
+    padding-top: 50px; 
 }
 
 a {
-    color: var(--color-secondary);
-    text-decoration: none;
-    transition: color 0.3s ease, text-shadow 0.3s ease;
+    color: var(--color-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
 a:hover {
-    color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 /* ----------------------------------------------------------------------------------- */
-/* 2. Barra de Navegación (Header) */
+/* 2. Barra de Navegación (Header) (CORREGIDA) */
 /* ----------------------------------------------------------------------------------- */
 
 #main-navbar {
-    background-color: #000000; /* Fondo negro puro para contraste máximo */
-    border-bottom: 2px solid var(--color-primary); /* Línea neón en la parte inferior */
-    box-shadow: 0 0 10px rgba(255, 71, 180, 0.5); /* Sombra neón */
+    /* 🌟 CORRECCIÓN: Fondo transparente por defecto */
+    background-color: transparent !important; 
+    border-bottom: none; 
+    box-shadow: none; 
+    padding: 15px 50px; 
+    transition: all 0.3s ease;
 }
 
-/* 🚨 NUEVOS ESTILOS PARA EL LOGO IMAGEN */
+/* 🌟 NUEVO: Estilo al hacer scroll */
+#main-navbar.scrolled {
+    background-color: rgba(0, 0, 0, 0.95) !important; /* Fondo oscuro al hacer scroll */
+    border-bottom: 2px solid var(--color-primary); /* Restauramos el borde neón */
+    box-shadow: 0 0 10px rgba(255, 71, 180, 0.5); /* Restauramos la sombra */
+}
+
+/* 🚨 AJUSTE DE COLOR: Los enlaces deben ser blancos, ya que el fondo es transparente */
+#main-navbar .nav-link, 
+#main-navbar .navbar-brand, 
+#main-navbar .navbar-username {
+    color: #ffffff !important;
+}
+
 .navbar-logo {
-    height: 40px; /* Tamaño del logo en la barra */
+    height: 40px; 
     width: auto;
-    /* Efecto de brillo para que tenga la misma "presencia" que el texto anterior */
     filter: drop-shadow(0 0 5px var(--color-primary)); 
 }
 
-/* Estilo para el nombre de la marca 'Mi ADN' (ya no se usa, pero lo dejamos) */
 .navbar-brand {
-    color: var(--color-light) !important;
-    font-size: 1.4rem;
+    color: var(--color-light) !important;
+    font-size: 1.4rem;
 }
 
 /* Reducción del padding de los enlaces de navegación */
 .navbar-small-link {
-    padding: 0.3rem 0.8rem !important; /* Padding más pequeño */
+    padding: 0.3rem 0.8rem !important;
 }
 
 /* Estilo de los enlaces de navegación */
 .nav-link {
-    color: var(--color-light) !important;
-    font-weight: 500;
-    border-radius: 0.5rem;
-    transition: all 0.3s ease;
+    color: var(--color-light) !important;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
 }
 
 /* Efecto hover neón en los enlaces */
 .nav-link:hover,
 .nav-link.active {
-    color: var(--color-secondary) !important; /* Texto cian en hover */
-    text-shadow: 0 0 8px var(--color-secondary); /* Sombra neón cian */
-    background-color: rgba(0, 240, 255, 0.1); /* Fondo sutil para destacar */
+    color: var(--color-secondary) !important; 
+    text-shadow: 0 0 8px var(--color-secondary); 
+    background-color: rgba(0, 240, 255, 0.1); 
 }
 
 /* Enlace activo (Rutas en las que se encuentra el usuario) */
 .nav-link.active {
-    color: var(--color-primary) !important;
-    text-shadow: 0 0 8px var(--color-primary);
-}
-
-/* Estilo para el ícono de la mancuerna (ya no se usa, pero lo dejamos) */
-.navbar-brand i {
-    color: var(--color-primary) !important; 
-    text-shadow: 0 0 5px var(--color-primary);
+    color: var(--color-primary) !important;
+    text-shadow: 0 0 8px var(--color-primary);
 }
 
 /* ----------------------------------------------------------------------------------- */
@@ -95,11 +103,11 @@ a:hover {
 /* ----------------------------------------------------------------------------------- */
 
 #main-footer {
-    text-align: center;
-    padding: 20px 0;
-    background-color: #000000;
-    color: rgba(255, 255, 255, 0.6);
-    border-top: 1px solid rgba(255, 71, 180, 0.2);
+    text-align: center;
+    padding: 20px 0;
+    background-color: #000000;
+    color: rgba(255, 255, 255, 0.6);
+    border-top: 1px solid rgba(255, 71, 180, 0.2);
 }
 
 /* ----------------------------------------------------------------------------------- */
@@ -107,27 +115,27 @@ a:hover {
 /* ----------------------------------------------------------------------------------- */
 
 .card {
-    background-color: #1a0f2b; /* Fondo oscuro sutil para tarjetas */
-    border: 1px solid rgba(255, 71, 180, 0.2);
-    border-radius: 1rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    background-color: #1a0f2b; 
+    border: 1px solid rgba(255, 71, 180, 0.2);
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 .form-control, .btn {
-    border-radius: 0.5rem;
+    border-radius: 0.5rem;
 }
 
 .btn-primary {
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
-    transition: all 0.3s ease;
-    font-weight: bold;
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    transition: all 0.3s ease;
+    font-weight: bold;
 }
 
 .btn-primary:hover {
-    background-color: #FF6BBF;
-    border-color: #FF6BBF;
-    box-shadow: 0 0 10px var(--color-primary);
+    background-color: #FF6BBF;
+    border-color: #FF6BBF;
+    box-shadow: 0 0 10px var(--color-primary);
 }
 
 /* ----------------------------------------------------------------------------------- */
@@ -135,7 +143,6 @@ a:hover {
 /* ----------------------------------------------------------------------------------- */
 
 .login-container {
-    /* Ocupa todo el espacio disponible menos el footer (y el padding del body) */
     min-height: calc(100vh - 100px); 
     padding: 2rem 0;
     display: flex;
@@ -144,14 +151,13 @@ a:hover {
 }
 
 .login-card {
-    /* Fondo de tarjeta translúcido con efecto glassmorphism */
     background-color: rgba(255, 255, 255, 0.15); 
     backdrop-filter: blur(10px); 
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     width: 100%;
-    max-width: 400px; /* Tamaño máximo de la tarjeta */
+    max-width: 400px; 
     color: var(--color-light);
 }
 
@@ -161,10 +167,9 @@ a:hover {
 }
 
 .login-input {
-    /* Estilo de input que coincida con la tarjeta clara */
     background-color: rgba(255, 255, 255, 0.85); 
     border: none;
-    color: #333; /* Texto oscuro en el input claro */
+    color: #333; 
     font-weight: 500;
     padding: 10px 15px;
     border-radius: 8px;
@@ -177,7 +182,7 @@ a:hover {
 
 .login-input:focus {
     background-color: #fff;
-    box-shadow: 0 0 0 0.25rem rgba(0, 240, 255, 0.25); /* Sombra neón cian */
+    box-shadow: 0 0 0 0.25rem rgba(0, 240, 255, 0.25); 
     border-color: var(--color-secondary);
 }
 

@@ -14,15 +14,14 @@
     {% block head_extra %}{% endblock %}
 
     <style>
-        /* --- Estilos internos (Optimización) --- */
+        /* --- Estilos internos --- */
         
         /* Layout General */
         body { 
             background-color: #0b0b0b; 
-            /* Importante para la animación de fondo en home.html */
             background-repeat: no-repeat;
             background-size: cover;
-            background-attachment: fixed; /* Mantiene el fondo fijo al hacer scroll */
+            background-attachment: fixed;
         }
         
         /* Navbar */
@@ -33,17 +32,19 @@
             margin-right: 8px; 
         }
         
+        /* 🌟 NUEVO: Estilo para el nombre de usuario */
         .navbar-username { 
             color: #fff; 
             margin-left: 10px; 
             font-weight: 600; 
+            font-size: 1rem; 
+            padding: 0.3rem 0.8rem;
+        }
+        .navbar-user-display {
+            display: flex;
+            align-items: center;
         }
 
-        /* Fuerza los colores de los enlaces de la navbar en blanco */
-        #main-navbar .nav-link, #main-navbar .navbar-brand, #main-navbar .navbar-username {
-            color: #ffffff !important;
-        }
-        
         /* Inversor del icono toggler para que sea visible en fondo oscuro */
         .navbar-toggler-icon { 
             filter: invert(1) contrast(1.2) !important; 
@@ -51,7 +52,7 @@
         
         /* Contenido Principal y Footer */
         .main-content { 
-            /* Se establece paddingTop por JavaScript, pero este es el fallback/base */
+            /* El padding se ajusta por JS, pero si es el home se anula */
             padding-top: calc(var(--navbar-height, 70px) + 12px); 
             min-height: calc(100vh - 120px); 
         }
@@ -62,7 +63,7 @@
         }
     </style>
 </head>
-<body class="bg-dark">
+<body class="bg-dark {% if request.endpoint == 'home' %}home-page{% endif %}">
 
     <nav class="navbar navbar-expand-lg fixed-top" id="main-navbar">
         <div class="container-fluid">
@@ -70,40 +71,60 @@
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
                 <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Mi ADN Logo" class="navbar-logo">
                 <span class="fw-bold ms-1">Mi ADN</span>
-                {% if session.get('usuario') %}
-                    <span class="navbar-username">· {{ session.get('usuario') }}</span>
-                {% endif %}
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <div class="d-flex order-lg-3">
+                {% if session.get('correo') %}
+                    <div class="navbar-user-display d-none d-lg-flex me-3">
+                        <span class="navbar-username">{{ session.get('usuario') }}</span>
+                    </div>
+                    <a class="nav-link btn btn-sm btn-danger logout-btn text-white me-2" href="{{ url_for('logout') }}" title="Cerrar sesión">
+                        <span class="d-none d-lg-inline">Cerrar Sesión</span>
+                        <i class="fas fa-sign-out-alt d-lg-none"></i>
+                    </a>
+                {% else %}
+                    <a class="nav-link btn btn-sm btn-outline-light login-btn text-white me-2" href="{{ url_for('login') }}">
+                        <span class="d-none d-lg-inline">Iniciar Sesión</span>
+                        <i class="fas fa-sign-in-alt d-lg-none"></i>
+                    </a>
+                {% endif %}
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
 
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+
+            <div class="collapse navbar-collapse justify-content-end order-lg-2" id="navbarNav">
                 <ul class="navbar-nav align-items-center me-3">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}#about">¿Quiénes somos?</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}#features">Explora tu ADN</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('calculadora') }}">Calculadora</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('rutinas') }}">Rutinas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}#contact">Contáctanos</a></li>
                 </ul>
 
-                <ul class="navbar-nav align-items-center">
+                <ul class="navbar-nav align-items-center d-lg-none"> 
                     {% if session.get('correo') %}
                         {% if session.get('correo') == ADMIN_EMAIL %}
                             <li class="nav-item me-2">
-                                <a class="nav-link btn btn-primary panel-admin-btn text-white" href="{{ url_for('admin_usuarios') }}">
+                                <a class="nav-link btn btn-primary panel-admin-btn text-white mt-2" href="{{ url_for('admin_usuarios') }}">
                                     <i class="fas fa-cog me-1"></i> Panel Admin
                                 </a>
                             </li>
                         {% endif %}
-                        <li class="nav-item"><a class="nav-link logout-link" href="{{ url_for('logout') }}">Cerrar sesión</a></li>
-                    {% else %}
-                        <li class="nav-item me-2">
-                            <a class="nav-link btn btn-outline-light login-btn" href="{{ url_for('login') }}">Iniciar Sesión</a>
-                        </li>
-                        <li class="nav-item d-lg-block">
-                            <a class="nav-link btn btn-outline-success" href="{{ url_for('register') }}">Registrarse</a>
-                        </li>
+                        {% else %}
+                        <li class="nav-item d-block d-lg-none"><a class="nav-link btn btn-outline-light login-btn mt-2" href="{{ url_for('login') }}">Iniciar Sesión</a></li>
+                        <li class="nav-item d-block d-lg-none"><a class="nav-link btn btn-outline-success mt-2 mb-2" href="{{ url_for('register') }}">Registrarse</a></li>
                     {% endif %}
                 </ul>
+
+                {% if session.get('correo') == ADMIN_EMAIL %}
+                    <a class="nav-link btn btn-primary panel-admin-btn text-white d-none d-lg-block" href="{{ url_for('admin_usuarios') }}">
+                        <i class="fas fa-cog me-1"></i> Panel Admin
+                    </a>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -118,15 +139,34 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Script para ajustar el padding del contenido principal (evita solapamiento con navbar fixed)
         document.addEventListener('DOMContentLoaded', function() {
             const navbar = document.getElementById('main-navbar');
             const mainContent = document.querySelector('.main-content');
+            
+            // 🌟 SCRIPT: Cambia el estilo de la Navbar al hacer scroll (de transparente a sólido)
+            function updateNavbarStyle() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            }
+            window.addEventListener('scroll', updateNavbarStyle);
+            updateNavbarStyle();
+
+            // Ajuste del padding del contenido principal
             if (navbar && mainContent) {
                 function adjustContentPadding() {
                     const navbarHeight = navbar.offsetHeight;
                     document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
-                    mainContent.style.paddingTop = `calc(${navbarHeight}px + 12px)`;
+                    
+                    // Si estamos en la página de inicio, el padding es 0 para que la sección #hero use toda la pantalla.
+                    // Si no, aplica el padding normal.
+                    if (document.body.classList.contains('home-page')) {
+                        mainContent.style.paddingTop = `0`; 
+                    } else {
+                        mainContent.style.paddingTop = `calc(${navbarHeight}px + 12px)`;
+                    }
                 }
                 adjustContentPadding();
                 window.addEventListener('resize', adjustContentPadding);

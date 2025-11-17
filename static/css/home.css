@@ -25,7 +25,7 @@ main.container-fluid {
     box-sizing: border-box; 
     width: 100%;
     max-width: 100%;
-    padding: 0 !important; 
+    padding: 0 !important; /* 🌟 CLAVE: Asegura que el contenido del home empiece desde arriba */
     background: transparent !important; 
 }
 
