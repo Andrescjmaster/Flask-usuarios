@@ -135,7 +135,7 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
 /* Clase universal para todas las líneas de contacto */
 .contact .contact-link { 
     color: white; 
-    font-size: 1.2rem; /* **AJUSTE** Tamaño de letra reducido y uniforme */
+    font-size: 1.2rem; /* Tamaño de letra uniforme */
     font-weight: 500;
     margin: 0; 
     transition: color 0.3s ease; 
@@ -145,47 +145,54 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
 }
 
 .contact .contact-link:hover { 
-    color: #8a2be2; /* Mantener color de hover */
+    color: #8a2be2; 
 }
 
 .contact .contact-link i {
-    font-size: 1.2rem; /* **AJUSTE** Tamaño del ícono igual al del texto */
+    font-size: 1.2rem; /* Tamaño del ícono igual al del texto */
     margin-right: 10px;
     width: 25px; /* Ancho fijo para alinear los íconos */
     text-align: center;
 }
 
-/* --- Nuevos Estilos para Imágenes y Texto --- */
+/* --- Nuevos Estilos para Imágenes y Texto (AJUSTES CLAVE) --- */
 .contact .image-text-group {
     display: flex; 
-    justify-content: center; 
+    justify-content: space-around; /* Distribución uniforme del espacio entre imágenes */
     flex-wrap: wrap; 
-    gap: 30px; 
+    gap: 20px; 
     margin-top: 40px; 
     width: 100%;
+    max-width: 600px; /* Limita el ancho total del grupo para centrarlas mejor */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .contact .image-text-group .image-item {
     display: flex;
     flex-direction: column; 
     align-items: center; 
-    width: 45%; 
-    max-width: 300px; 
+    width: 140px; /* Tamaño del contenedor base, ajustado para el círculo */
     text-align: center;
 }
 
 .contact .image-text-group .image-item img {
-    max-width: 100%; 
-    height: auto; 
-    border-radius: 10px; 
-    margin-bottom: 15px; 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
+    /* *** AJUSTES PARA HACER LA IMAGEN CIRCULAR Y PEQUEÑA *** */
+    width: 140px; /* Tamaño del círculo (puedes ajustarlo) */
+    height: 140px; /* Mismo tamaño para asegurar el círculo */
+    border-radius: 50%; /* CLAVE: Hace la imagen redonda */
+    object-fit: cover; /* Asegura que la imagen llena el círculo sin distorsionarse */
+    /* ****************************************************** */
+    
+    margin-bottom: 10px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Sombra mejorada */
+    border: 3px solid #8a2be2; /* Borde alrededor del círculo (opcional) */
 }
 
 .contact .image-text-group .image-item p {
     color: #ffffff; 
-    font-size: 1rem; /* Tamaño de la fuente para el texto de la imagen */
-    line-height: 1.5;
+    font-size: 1rem; 
+    line-height: 1.3;
     margin-bottom: 0;
 }
 
@@ -206,6 +213,12 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     .card { width: 280px; height: 180px; } .card-hover h3 { font-size: 1.5rem; } .card-hover p { font-size: 1rem; } 
     .contact .socials { gap: 10px; } 
     .contact .contact-link, .contact .contact-link i { font-size: 1.1rem; } 
+
+    /* Ajuste de tamaño de imagen para tablets */
+    .contact .image-text-group .image-item img {
+        width: 120px; 
+        height: 120px; 
+    }
 }
 
 /* Móvil Horizontal / Tablet Pequeña */
@@ -223,10 +236,16 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     .contact .image-text-group {
         flex-direction: column; 
         align-items: center; 
+        max-width: none; /* Quitamos el max-width para que se centre bien al apilar */
     }
     .contact .image-text-group .image-item {
         width: 80%; 
         max-width: 350px; 
+    }
+    /* Ajuste de tamaño de imagen para móviles pequeños */
+    .contact .image-text-group .image-item img {
+        width: 100px; 
+        height: 100px; 
     }
 }
 
