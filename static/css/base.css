@@ -38,7 +38,6 @@ a:hover {
 /* ----------------------------------------------------------------------------------- */
 
 #main-navbar {
-    /* 🌟 CORRECCIÓN: Fondo transparente por defecto */
     background-color: transparent !important; 
     border-bottom: none; 
     box-shadow: none; 
@@ -46,14 +45,12 @@ a:hover {
     transition: all 0.3s ease;
 }
 
-/* 🌟 NUEVO: Estilo al hacer scroll */
 #main-navbar.scrolled {
-    background-color: rgba(0, 0, 0, 0.95) !important; /* Fondo oscuro al hacer scroll */
-    border-bottom: 2px solid var(--color-primary); /* Restauramos el borde neón */
-    box-shadow: 0 0 10px rgba(255, 71, 180, 0.5); /* Restauramos la sombra */
+    background-color: rgba(0, 0, 0, 0.95) !important; 
+    border-bottom: 2px solid var(--color-primary); 
+    box-shadow: 0 0 10px rgba(255, 71, 180, 0.5); 
 }
 
-/* 🚨 AJUSTE DE COLOR: Los enlaces deben ser blancos, ya que el fondo es transparente */
 #main-navbar .nav-link, 
 #main-navbar .navbar-brand, 
 #main-navbar .navbar-username {
@@ -71,17 +68,13 @@ a:hover {
     font-size: 1.4rem;
 }
 
-/* Reducción del padding de los enlaces de navegación */
-.navbar-small-link {
-    padding: 0.3rem 0.8rem !important;
-}
-
 /* Estilo de los enlaces de navegación */
 .nav-link {
     color: var(--color-light) !important;
     font-weight: 500;
     border-radius: 0.5rem;
     transition: all 0.3s ease;
+    padding: 0.5rem 1rem !important; /* Asegura el mismo tamaño que los demás nav-links */
 }
 
 /* Efecto hover neón en los enlaces */
@@ -99,7 +92,7 @@ a:hover {
 }
 
 /* ----------------------------------------------------------------------------------- */
-/* 🚨 ESTILOS ESPECÍFICOS: Nombre de Usuario y Panel Admin */
+/* 🚨 ESTILOS ESPECÍFICOS PARA LA NAVBAR (BOTONES DE SESIÓN Y ADMIN) */
 /* ----------------------------------------------------------------------------------- */
 
 /* 1. Estilo para el nombre de usuario (Color verde/cian brillante) */
@@ -107,18 +100,79 @@ a:hover {
     color: #17e089; /* Verde brillante */
     text-shadow: 0 0 5px rgba(23, 224, 137, 0.5);
 }
+.navbar-user-display {
+    margin-right: 15px !important; 
+}
 
-/* 2. Estilo para el botón de Panel Admin (Rojo/Vino) */
+/* 2. Botón "Iniciar Sesión" (Azul pastel) */
+.login-btn {
+    background-color: #87CEEB !important; /* Azul pastel */
+    border-color: #87CEEB !important;
+    color: #fff !important;
+    font-weight: bold;
+    padding: 0.5rem 1rem !important; /* Mismo tamaño que los nav-links */
+    margin-right: 0 !important; /* Elimina margen extra si lo tiene */
+}
+.login-btn:hover {
+    background-color: #6495ED !important; /* Un azul un poco más oscuro al pasar el ratón */
+    border-color: #6495ED !important;
+    box-shadow: 0 0 10px rgba(135, 206, 235, 0.7);
+}
+
+/* 3. Botón "Cerrar Sesión" (Rojo) */
+.logout-btn {
+    background-color: #dc3545 !important; /* Rojo */
+    border-color: #dc3545 !important;
+    color: #fff !important;
+    font-weight: bold;
+    padding: 0.5rem 1rem !important; /* Mismo tamaño que los nav-links */
+}
+.logout-btn:hover {
+    background-color: #c82333 !important; /* Rojo más oscuro al pasar el ratón */
+    border-color: #bd2130 !important;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.7);
+}
+
+
+/* 4. Botón de Panel Admin (Rojo/Vino) */
 .panel-admin-btn {
     background-color: #8B0000 !important; /* Rojo oscuro/Vino */
     border-color: #8B0000 !important;
     font-weight: bold;
     transition: background-color 0.3s, box-shadow 0.3s;
+    padding: 0.5rem 1rem !important; /* Mismo tamaño que los nav-links */
 }
 .panel-admin-btn:hover {
     background-color: #C70039 !important; /* Rojo más brillante al pasar el ratón */
     border-color: #C70039 !important;
     box-shadow: 0 0 10px rgba(139, 0, 0, 0.7);
+}
+
+/* ----------------------------------------------------------------------------------- */
+/* 🚨 ESTILOS ESPECÍFICOS PARA LA SECCIÓN "¿QUIÉNES SOMOS?" (#about) */
+/* ----------------------------------------------------------------------------------- */
+
+.about-list {
+    list-style: none; /* Elimina las viñetas por defecto si no las quieres */
+    padding-left: 0; /* Elimina el padding izquierdo predeterminado de la lista */
+    margin-top: 20px;
+}
+
+.about-list li {
+    margin-bottom: 15px; /* Espacio entre cada elemento de la lista */
+    padding-left: 25px; /* Indentación para el texto */
+    position: relative;
+    text-align: justify; /* Justifica el texto para mejor lectura */
+}
+
+.about-list li::before {
+    content: "\f058"; /* Icono de check (Font Awesome) */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--color-secondary); /* Color del check */
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 
@@ -233,3 +287,4 @@ a:hover {
 .link-cyan:hover {
     text-shadow: 0 0 5px var(--color-secondary);
 }
+```http://googleusercontent.com/image_generation_content/2
