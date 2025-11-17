@@ -17,7 +17,7 @@
 
 /* **AJUSTE CLAVE:** Aumentamos el padding para compensar la altura real de la Navbar */
 html {
-    scroll-padding-top: 90px; /* Aumentado a 90px para mayor margen de seguridad */
+    scroll-padding-top: 120px; /* Aumentado a 90px para mayor margen de seguridad */
 }
 
 body {
