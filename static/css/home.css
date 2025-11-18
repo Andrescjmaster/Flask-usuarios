@@ -32,14 +32,15 @@ body {
     position: relative;
     background-color: transparent; 
     color: white;
-    /* 🌟 SOLUCIÓN CLAVE 1: Usar `min-height: auto` para que la sección crezca si el contenido lo requiere.
-       Si quieres que *siempre* ocupe al menos la pantalla y luego crezca, usa `min-height: 100vh;` */
-    min-height: 100vh; /* Mantener 100vh para que se vea a pantalla completa si el contenido cabe */
+    /* min-height: 100vh; se mantiene para que ocupe la pantalla completa si el contenido cabe.
+       Si el contenido es más largo, la sección crecerá para mostrarlo todo. */
+    min-height: 100vh; 
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centrado vertical por defecto */
-    /* 🌟 Ajustar padding lateral de la sección */
-    padding: 80px 40px; /* Un padding vertical y horizontal generoso */
+    /* 🌟 AJUSTE: Usar `flex-start` para que el contenido empiece arriba, luego ajustamos con padding.
+       Esto da más control sobre el espacio superior. */
+    justify-content: flex-start; 
+    padding: 0 40px; 
     scroll-snap-align: start; 
     scroll-snap-stop: always;
     margin: 0;
@@ -49,14 +50,14 @@ body {
 /* Ajuste crucial para la primera sección (Hero) */
 .home-container section:first-of-type {
     margin-top: 0 !important;
-    padding-top: 0 !important; /* Asegurar que no haya padding extra arriba */
+    padding-top: 0 !important; 
     min-height: 100vh; 
-    justify-content: center; 
+    justify-content: center; /* En la primera sección, centramos el contenido verticalmente */
 }
 
 /* Ajuste para la sección de Contacto (no usa scroll-snap-align) */
 .contact {
-    min-height: 90vh; /* Se mantiene para que tenga un buen tamaño */
+    min-height: 90vh; 
     scroll-snap-align: none; 
 }
 
@@ -76,35 +77,35 @@ body {
 .content {
     position: relative;
     z-index: 20;
-    /* 🌟 SOLUCIÓN CLAVE 2: Reducir aún más el `max-width` general del contenido. */
-    max-width: 650px; /* Reducido de 700px para que el texto sea más compacto */
-    margin: 0 auto; /* Centrar el bloque de contenido por defecto */
-    /* 🌟 SOLUCIÓN CLAVE 3: Reducir el padding interno del `.content` para maximizar el espacio del texto */
-    padding: 60px 30px; /* Reducido para dar más espacio al texto en la altura */
+    /* 🌟 AJUSTE: Ancho general del contenido, un poco más amplio. */
+    max-width: 800px; /* Vuelto a 800px para dar más espacio a las líneas de texto */
+    margin: 0 auto; 
+    /* 🌟 AJUSTE: Más padding superior para separar del navbar, y un padding inferior generoso */
+    padding: 120px 40px 100px; /* Top, Left/Right, Bottom */
     box-sizing: border-box; 
     width: 100%; 
 }
 
-/* Alineaciones de contenido (Ahora estas clases ajustarán la posición del bloque ya centrado) */
+/* Alineaciones de contenido */
 .left-align .content { 
     text-align: left; 
     align-items: flex-start; 
-    margin-left: 5%; /* Mueve el bloque hacia la izquierda */
+    margin-left: 5%; 
     margin-right: auto; 
-    max-width: 500px; /* Columna lateral más delgada para estas secciones */
+    max-width: 600px; /* Ajuste para el contenido lateral */
 }
 .right-align .content { 
     text-align: right; 
     align-items: flex-end; 
-    margin-right: 5%; /* Mueve el bloque hacia la derecha */
+    margin-right: 5%; 
     margin-left: auto; 
-    max-width: 500px; /* Columna lateral más delgada para estas secciones */
+    max-width: 600px; /* Ajuste para el contenido lateral */
 }
 .center-align .content { 
     text-align: center; 
     align-items: center; 
-    margin: 0 auto; /* Asegura el centrado */
-    max-width: 650px; /* Consistencia con el .content general */
+    margin: 0 auto; 
+    max-width: 800px; /* Consistencia con el .content general */
 }
 
 
@@ -119,7 +120,6 @@ h2 {
 }
 h4 { font-size: 1.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 10px; line-height: 1.2;}
 .subtitle-hero { font-size: 1.3rem; font-weight: 300; line-height: 1.6; margin-top: 20px; margin-bottom: 30px;}
-/* 🌟 SOLUCIÓN CLAVE 4: Reducir ligeramente el tamaño del párrafo base para que ocupe menos altura */
 p { font-size: 1.3rem; line-height: 1.7; margin-bottom: 20px;}
 
 
@@ -134,7 +134,6 @@ p { font-size: 1.3rem; line-height: 1.7; margin-bottom: 20px;}
     padding-top: 30px; 
     width: 100%; 
 }
-/* ... Estilos de Card y Card-hover se mantienen ... */
 .card { width: 320px; height: 220px; background-size: cover; background-position: center; border-radius: 15px; overflow: hidden; position: relative; cursor: pointer; transition: transform 0.3s ease; }
 .card:hover { transform: scale(1.08); }
 .card-hover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); opacity: 0; color: #fff; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.3s ease; text-align: center; }
@@ -222,40 +221,41 @@ p { font-size: 1.3rem; line-height: 1.7; margin-bottom: 20px;}
     display: flex;
     justify-content: center; 
     align-items: center;      
-    /* 🌟 SOLUCIÓN CLAVE 5: Aumentar el padding vertical de la sección #about para dar más espacio */
-    padding: 100px 40px; 
-    /* Eliminar min-height: 100vh si el contenido es demasiado largo y queremos que la sección crezca */
-    /* Si queremos que SIEMPRE ocupe al menos 100vh y luego crezca, mantenemos 100vh */
+    /* 🌟 AJUSTE: Padding horizontal más amplio en la sección, y padding vertical para controlar el espacio */
+    padding: 100px 80px; /* Aumentado a 80px a los lados para dar más "aire" */
     min-height: 100vh; 
 }
 
 /* Estilos para el contenedor del texto (about-centered-column) */
 #about .content.about-centered-column {
-    /* 🌟 SOLUCIÓN CLAVE 6: Ancho máximo muy reducido para que el texto sea muy compacto y visible */
-    max-width: 450px; /* Reducido a 450px para forzar un bloque de texto estrecho y alto */
+    /* 🌟 SOLUCIÓN CLAVE 1: Ampliar el ancho del contenedor de texto para que los ítems de la lista se extiendan. */
+    max-width: 800px; /* Aumentado a 800px para usar el espacio lateral. */
     margin: 0 auto;
     text-align: center; 
-    /* Padding interno ajustado */
-    padding: 60px 30px; 
+    /* 🌟 SOLUCIÓN CLAVE 2: Ajustar padding interno del content para controlar el espacio superior e inferior */
+    padding: 80px 40px; /* Reducido el padding superior/inferior para el espacio vacío, y el lateral. */
+    box-sizing: border-box; /* Asegurar que el padding no añada al ancho total */
 }
 
 /* Estilo para la lista */
 #about ul {
     list-style: none;
     padding-left: 0;
-    margin-top: 30px;
-    max-width: 400px; /* Reducir también el max-width de la lista */
+    /* 🌟 SOLUCIÓN CLAVE 3: Ajustar el margen superior de la lista para controlar el espacio con el párrafo anterior. */
+    margin-top: 40px; /* Más espacio entre el párrafo introductorio y la lista. */
+    /* 🌟 SOLUCIÓN CLAVE 4: Ampliar el ancho de la lista para que los ítems se distribuyan en menos líneas. */
+    max-width: 700px; /* Aumentado de 400px a 700px para que las líneas sean más largas */
     margin-left: auto; 
     margin-right: auto;
     text-align: left; 
-    padding: 0 10px; 
+    padding: 0; /* No necesitamos padding lateral aquí, ya el .content tiene. */
 }
 
-/* 🌟 SOLUCIÓN CLAVE 7: Reducir tamaño de fuente en elementos de lista */
 #about ul li {
-    font-size: 1.1rem; /* Reducido de 1.2rem */
-    line-height: 1.7; /* Ligeramente reducido */
-    margin-bottom: 15px; /* Ajustado */
+    font-size: 1.2rem; /* Mantener un buen tamaño de fuente */
+    line-height: 1.7; /* Altura de línea para legibilidad */
+    /* 🌟 SOLUCIÓN CLAVE 5: Más espacio entre cada ítem de la lista. */
+    margin-bottom: 25px; /* Más espacio entre cada punto */
 }
 
 #about ul li strong {
@@ -271,25 +271,27 @@ p { font-size: 1.3rem; line-height: 1.7; margin-bottom: 20px;}
 
 /* Tablet Grande / Desktop Pequeño */
 @media (max-width: 1200px) { 
-    h1 { font-size: 3.8rem; } h4 { font-size: 1.5rem; } h2 { font-size: 2.8rem; } p { font-size: 1.2rem; } /* Párrafos más pequeños */
-    .subtitle-hero { font-size: 1.2rem; } .content { padding: 70px 30px; } 
+    h1 { font-size: 3.8rem; } h4 { font-size: 1.5rem; } h2 { font-size: 2.8rem; } p { font-size: 1.2rem; } 
+    .subtitle-hero { font-size: 1.2rem; } .content { padding: 90px 30px 80px; } /* Ajuste de padding general */
 
     .left-align .content, .right-align .content { 
         margin-left: 3%; 
         margin-right: 3%; 
-        max-width: 450px; /* Consistencia con el ancho About */
+        max-width: 550px; /* Ajuste para el contenido lateral */
     }
     .left-align .content { margin-right: auto; }
     .right-align .content { margin-left: auto; }
     
     /* About: Centrado total */
+    #about { padding: 80px 60px; } /* Ajustar padding de la sección about */
     #about .content.about-centered-column { 
         margin-left: auto; 
         margin-right: auto; 
-        max-width: 450px; 
-        padding: 80px 30px;
+        max-width: 700px; /* Mantener el ancho amplio para la lista */
+        padding: 60px 30px; /* Ajuste de padding interno */
     }
-    #about ul li { font-size: 1rem; line-height: 1.6;} /* Ajuste de fuente de lista en tablet */
+    #about ul { max-width: 600px; } /* Ajuste de ancho de lista en tablet grande */
+    #about ul li { font-size: 1.1rem; line-height: 1.6;} 
 }
 
 /* Tablet */
@@ -297,14 +299,16 @@ p { font-size: 1.3rem; line-height: 1.7; margin-bottom: 20px;}
     h1 { font-size: 3.2rem; margin-bottom: 15px; } h4 { font-size: 1.3rem; } h2 { font-size: 2.4rem; } p { font-size: 1.1rem; } 
     .subtitle-hero { font-size: 1.1rem; } 
     
+    /* Centrar contenido lateral en tablet */
     .left-align .content, .right-align .content { margin-left: auto; margin-right: auto; text-align: center; } 
     .card { width: 280px; height: 180px; } .card-hover h3 { font-size: 1.5rem; } .card-hover p { font-size: 1rem; } 
     .contact .socials { gap: 10px; } 
     .contact .contact-link, .contact .contact-link i { font-size: 1.1rem; } 
 
     /* About: Centrado y ancho en tablet */
-    #about .content.about-centered-column { max-width: 85%; padding: 70px 25px; } /* Más ancho en pantallas medianas */
-    #about ul { max-width: 90%; }
+    #about { padding: 60px 40px; } /* Ajuste de padding de la sección about */
+    #about .content.about-centered-column { max-width: 90%; padding: 50px 20px; } /* Más ancho en pantallas medianas */
+    #about ul { max-width: 95%; } /* Permitir que la lista ocupe casi todo el ancho disponible */
 
     .contact .image-text-group .image-item img {
         width: 120px; 
@@ -324,15 +328,16 @@ p { font-size: 1.3rem; line-height: 1.7; margin-bottom: 20px;}
     .left-align .content, .right-align .content { text-align: center; margin-left: auto; margin-right: auto; } 
 
     /* About: En móvil, el contenido se centra */
+    #about { padding: 40px 20px; }
     #about .content.about-centered-column { 
-        max-width: 90%;
+        max-width: 95%;
         margin: auto; 
         text-align: center;
-        padding: 50px 20px;
+        padding: 40px 15px;
     }
     #about ul { 
         text-align: left; 
-        max-width: 95%; /* Permitir que la lista sea un poco más ancha en móvil */
+        max-width: 100%; /* Que ocupe todo el ancho disponible en móvil */
         padding: 0; 
     }
 
@@ -340,11 +345,11 @@ p { font-size: 1.3rem; line-height: 1.7; margin-bottom: 20px;}
         flex-direction: column; 
         align-items: center; 
         max-width: none; 
-        gap: 20px; /* Reducir el gap en móvil */
+        gap: 20px; 
     }
     .contact .image-text-group .image-item {
-        width: 90%; /* Que ocupe más ancho si es una columna */
-        max-width: 300px; /* Limitar el tamaño para que no sea enorme */
+        width: 90%; 
+        max-width: 300px; 
     }
     .contact .image-text-group .image-item img {
         width: 100px; 
