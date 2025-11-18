@@ -32,11 +32,14 @@ body {
     position: relative;
     background-color: transparent; 
     color: white;
-    min-height: 100vh; 
+    /* 🌟 SOLUCIÓN CLAVE 1: Usar `min-height: auto` para que la sección crezca si el contenido lo requiere.
+       Si quieres que *siempre* ocupe al menos la pantalla y luego crezca, usa `min-height: 100vh;` */
+    min-height: 100vh; /* Mantener 100vh para que se vea a pantalla completa si el contenido cabe */
     display: flex;
     flex-direction: column;
     justify-content: center; /* Centrado vertical por defecto */
-    padding: 0 40px; 
+    /* 🌟 Ajustar padding lateral de la sección */
+    padding: 80px 40px; /* Un padding vertical y horizontal generoso */
     scroll-snap-align: start; 
     scroll-snap-stop: always;
     margin: 0;
@@ -46,15 +49,14 @@ body {
 /* Ajuste crucial para la primera sección (Hero) */
 .home-container section:first-of-type {
     margin-top: 0 !important;
-    padding-top: 0 !important;
+    padding-top: 0 !important; /* Asegurar que no haya padding extra arriba */
     min-height: 100vh; 
     justify-content: center; 
 }
 
 /* Ajuste para la sección de Contacto (no usa scroll-snap-align) */
 .contact {
-    /* 🌟 CORRECCIÓN 1: Aumentar la altura mínima de contacto para más espacio vertical */
-    min-height: 90vh; 
+    min-height: 90vh; /* Se mantiene para que tenga un buen tamaño */
     scroll-snap-align: none; 
 }
 
@@ -74,42 +76,41 @@ body {
 .content {
     position: relative;
     z-index: 20;
-    /* 🌟 CORRECCIÓN 2: Reducir el ancho máximo del contenedor de contenido a 700px (para "alejar la perspectiva") */
-    max-width: 700px; 
-    margin: 0; 
-    padding: 100px 40px; 
+    /* 🌟 SOLUCIÓN CLAVE 2: Reducir aún más el `max-width` general del contenido. */
+    max-width: 650px; /* Reducido de 700px para que el texto sea más compacto */
+    margin: 0 auto; /* Centrar el bloque de contenido por defecto */
+    /* 🌟 SOLUCIÓN CLAVE 3: Reducir el padding interno del `.content` para maximizar el espacio del texto */
+    padding: 60px 30px; /* Reducido para dar más espacio al texto en la altura */
     box-sizing: border-box; 
     width: 100%; 
 }
 
-/* Alineaciones de contenido */
-/* Ajuste de alineación lateral para que la columna sea más delgada y legible */
+/* Alineaciones de contenido (Ahora estas clases ajustarán la posición del bloque ya centrado) */
 .left-align .content { 
     text-align: left; 
     align-items: flex-start; 
-    margin-left: 5%; 
+    margin-left: 5%; /* Mueve el bloque hacia la izquierda */
     margin-right: auto; 
-    max-width: 550px; /* Columna lateral más delgada */
+    max-width: 500px; /* Columna lateral más delgada para estas secciones */
 }
 .right-align .content { 
     text-align: right; 
     align-items: flex-end; 
-    margin-right: 5%; 
+    margin-right: 5%; /* Mueve el bloque hacia la derecha */
     margin-left: auto; 
-    max-width: 550px; /* Columna lateral más delgada */
+    max-width: 500px; /* Columna lateral más delgada para estas secciones */
 }
 .center-align .content { 
     text-align: center; 
     align-items: center; 
-    margin: 0 auto; 
-    max-width: 700px;
+    margin: 0 auto; /* Asegura el centrado */
+    max-width: 650px; /* Consistencia con el .content general */
 }
 
 
 /* ===== 3. ESTILOS DE TIPOGRAFÍA GENERAL ===== */
 
 h1 { font-size: 4.5rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; line-height: 1.1; }
-/* Espaciado del título h2 */
 h2 { 
     font-size: 3.5rem; 
     margin-bottom: 30px; 
@@ -118,7 +119,8 @@ h2 {
 }
 h4 { font-size: 1.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 10px; line-height: 1.2;}
 .subtitle-hero { font-size: 1.3rem; font-weight: 300; line-height: 1.6; margin-top: 20px; margin-bottom: 30px;}
-p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
+/* 🌟 SOLUCIÓN CLAVE 4: Reducir ligeramente el tamaño del párrafo base para que ocupe menos altura */
+p { font-size: 1.3rem; line-height: 1.7; margin-bottom: 20px;}
 
 
 /* ===== 4. ESTILOS DE FEATURES (Cards) ===== */
@@ -146,7 +148,6 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
 .contact .socials { 
     display: flex; 
     flex-direction: column; 
-    /* 🌟 CORRECCIÓN 3: Más espacio entre los enlaces de contacto */
     gap: 15px; 
     align-items: flex-start; 
 }
@@ -154,7 +155,6 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     align-items: center;
 }
 
-/* ... Estilos de contact-link se mantienen ... */
 .contact .contact-link { 
     color: white; 
     font-size: 1.2rem; 
@@ -177,20 +177,18 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     text-align: center;
 }
 
-/* --- Estilos para Imágenes y Texto de Contacto --- */
 .contact .image-text-group {
     display: flex; 
     justify-content: space-around; 
     flex-wrap: wrap; 
-    gap: 30px; /* Más espacio entre las imágenes de perfil */
-    margin-top: 50px; /* Más espacio entre redes sociales e imágenes */
+    gap: 30px; 
+    margin-top: 50px; 
     width: 100%;
     max-width: 600px; 
     margin-left: auto;
     margin-right: auto;
 }
 
-/* ... Estilos de image-item y img se mantienen ... */
 .contact .image-text-group .image-item {
     display: flex;
     flex-direction: column; 
@@ -224,17 +222,21 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     display: flex;
     justify-content: center; 
     align-items: center;      
-    padding: 0 40px; 
+    /* 🌟 SOLUCIÓN CLAVE 5: Aumentar el padding vertical de la sección #about para dar más espacio */
+    padding: 100px 40px; 
+    /* Eliminar min-height: 100vh si el contenido es demasiado largo y queremos que la sección crezca */
+    /* Si queremos que SIEMPRE ocupe al menos 100vh y luego crezca, mantenemos 100vh */
+    min-height: 100vh; 
 }
 
 /* Estilos para el contenedor del texto (about-centered-column) */
 #about .content.about-centered-column {
-    /* 🌟 CORRECCIÓN 4: Ancho máximo muy reducido (500px) para garantizar que queda en el centro entre las figuras. */
-    max-width: 500px; 
+    /* 🌟 SOLUCIÓN CLAVE 6: Ancho máximo muy reducido para que el texto sea muy compacto y visible */
+    max-width: 450px; /* Reducido a 450px para forzar un bloque de texto estrecho y alto */
     margin: 0 auto;
     text-align: center; 
-    /* Aumentamos el padding superior e inferior */
-    padding: 120px 40px; 
+    /* Padding interno ajustado */
+    padding: 60px 30px; 
 }
 
 /* Estilo para la lista */
@@ -242,19 +244,18 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     list-style: none;
     padding-left: 0;
     margin-top: 30px;
-    max-width: 500px; 
+    max-width: 400px; /* Reducir también el max-width de la lista */
     margin-left: auto; 
     margin-right: auto;
     text-align: left; 
-    /* Agregamos padding lateral a la lista para evitar que se pegue a los bordes del bloque de 500px */
     padding: 0 10px; 
 }
 
+/* 🌟 SOLUCIÓN CLAVE 7: Reducir tamaño de fuente en elementos de lista */
 #about ul li {
-    font-size: 1.2rem;
-    line-height: 1.8;
-    /* Más espacio entre items de lista */
-    margin-bottom: 20px; 
+    font-size: 1.1rem; /* Reducido de 1.2rem */
+    line-height: 1.7; /* Ligeramente reducido */
+    margin-bottom: 15px; /* Ajustado */
 }
 
 #about ul li strong {
@@ -270,13 +271,13 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
 
 /* Tablet Grande / Desktop Pequeño */
 @media (max-width: 1200px) { 
-    h1 { font-size: 3.8rem; } h4 { font-size: 1.5rem; } h2 { font-size: 2.8rem; } p { font-size: 1.3rem; } 
-    .subtitle-hero { font-size: 1.2rem; } .content { padding: 80px 30px; } 
+    h1 { font-size: 3.8rem; } h4 { font-size: 1.5rem; } h2 { font-size: 2.8rem; } p { font-size: 1.2rem; } /* Párrafos más pequeños */
+    .subtitle-hero { font-size: 1.2rem; } .content { padding: 70px 30px; } 
 
     .left-align .content, .right-align .content { 
         margin-left: 3%; 
         margin-right: 3%; 
-        max-width: 500px; /* Consistencia con el ancho About */
+        max-width: 450px; /* Consistencia con el ancho About */
     }
     .left-align .content { margin-right: auto; }
     .right-align .content { margin-left: auto; }
@@ -285,15 +286,15 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     #about .content.about-centered-column { 
         margin-left: auto; 
         margin-right: auto; 
-        max-width: 500px; /* Ancho consistente */
-        padding: 100px 40px;
+        max-width: 450px; 
+        padding: 80px 30px;
     }
-    #about ul li { font-size: 1.1rem; }
+    #about ul li { font-size: 1rem; line-height: 1.6;} /* Ajuste de fuente de lista en tablet */
 }
 
 /* Tablet */
 @media (max-width: 992px) { 
-    h1 { font-size: 3.2rem; margin-bottom: 15px; } h4 { font-size: 1.3rem; } h2 { font-size: 2.4rem; } p { font-size: 1.2rem; } 
+    h1 { font-size: 3.2rem; margin-bottom: 15px; } h4 { font-size: 1.3rem; } h2 { font-size: 2.4rem; } p { font-size: 1.1rem; } 
     .subtitle-hero { font-size: 1.1rem; } 
     
     .left-align .content, .right-align .content { margin-left: auto; margin-right: auto; text-align: center; } 
@@ -302,7 +303,8 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     .contact .contact-link, .contact .contact-link i { font-size: 1.1rem; } 
 
     /* About: Centrado y ancho en tablet */
-    #about .content.about-centered-column { max-width: 90%; padding: 80px 30px; }
+    #about .content.about-centered-column { max-width: 85%; padding: 70px 25px; } /* Más ancho en pantallas medianas */
+    #about ul { max-width: 90%; }
 
     .contact .image-text-group .image-item img {
         width: 120px; 
@@ -312,8 +314,8 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
 
 /* Móvil Horizontal / Tablet Pequeña */
 @media (max-width: 768px) { 
-    h1 { font-size: 2.5rem; letter-spacing: 1px; } h4 { font-size: 1.1rem; } h2 { font-size: 2rem; } p { font-size: 1.1rem; line-height: 1.6; } 
-    .subtitle-hero { font-size: 1rem; } .content { padding: 60px 20px; } 
+    h1 { font-size: 2.5rem; letter-spacing: 1px; } h4 { font-size: 1.1rem; } h2 { font-size: 2rem; } p { font-size: 1rem; line-height: 1.6; } 
+    .subtitle-hero { font-size: 1rem; } .content { padding: 50px 20px; } 
     
     .features .cards { flex-direction: column; align-items: center; gap: 20px; } 
     .card { width: 90%; max-width: 350px; height: 180px; } 
@@ -326,11 +328,11 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
         max-width: 90%;
         margin: auto; 
         text-align: center;
-        padding: 60px 20px;
+        padding: 50px 20px;
     }
     #about ul { 
         text-align: left; 
-        max-width: 90%; 
+        max-width: 95%; /* Permitir que la lista sea un poco más ancha en móvil */
         padding: 0; 
     }
 
@@ -338,10 +340,11 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
         flex-direction: column; 
         align-items: center; 
         max-width: none; 
+        gap: 20px; /* Reducir el gap en móvil */
     }
     .contact .image-text-group .image-item {
-        width: 80%; 
-        max-width: 350px; 
+        width: 90%; /* Que ocupe más ancho si es una columna */
+        max-width: 300px; /* Limitar el tamaño para que no sea enorme */
     }
     .contact .image-text-group .image-item img {
         width: 100px; 
@@ -351,10 +354,12 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
 
 /* Móvil Vertical */
 @media (max-width: 480px) { 
-    h1 { font-size: 2rem; margin-bottom: 10px; } h4 { font-size: 0.9rem; } h2 { font-size: 1.6rem; } p { font-size: 1rem; } 
-    .subtitle-hero { font-size: 0.9rem; } .content { padding: 40px 15px; } 
+    h1 { font-size: 1.8rem; margin-bottom: 8px; } h4 { font-size: 0.8rem; } h2 { font-size: 1.5rem; margin-bottom: 20px;} p { font-size: 0.95rem; } 
+    .subtitle-hero { font-size: 0.85rem; } .content { padding: 30px 10px; } 
     
-    .card { width: 100%; height: 160px; } 
+    .card { width: 100%; height: 150px; } 
     
-    .contact .contact-link, .contact .contact-link i { font-size: 1rem; } 
+    .contact .contact-link, .contact .contact-link i { font-size: 0.95rem; } 
+    .contact .image-text-group .image-item { width: 100%; max-width: 250px; }
+    .contact .image-text-group .image-item img { width: 80px; height: 80px; }
 }
