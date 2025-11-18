@@ -70,40 +70,45 @@
 
     <section id="contact" class="contact left-align" data-image-url="{{ url_for('static', filename='img/fondo5.png') }}">
         <div class="overlay"></div>
-        <div class="content">
-            <h2>CONTÁCTANOS</h2>
-            <div class="socials">
-                <a href="https://www.instagram.com/ADN_1325" target="_blank" class="contact-link">
-                    <i class="fab fa-instagram"></i> @ADN_1325
-                </a>
-
-                <a href="https://www.facebook.com/ADN_1325" target="_blank" class="contact-link">
-                    <i class="fab fa-facebook-f"></i> @ADN_1325
-                </a>
-
-                <a href="tel:+573214319033" class="contact-link">
-                    <i class="fas fa-phone-alt"></i> +57 321 4319033
-                </a>
-
-                <a href="tel:+573228766062" class="contact-link">
-                    <i class="fas fa-phone-alt"></i> +57 322 8766062
-                </a>
-
-                <a href="mailto:ADN1325@gmail.com" class="contact-link">
-                    <i class="fas fa-envelope"></i> ADN1325@gmail.com
-                </a>
-            </div>
-
-            <div class="image-text-group">
-                <div class="image-item">
-                    <img src="{{ url_for('static', filename='img/Diseñador.png') }}" alt="Análisis Bioméch.">
-                    <p>DESARROLLADOR WEB</p>
-                </div>
-                <div class="image-item">
-                    <img src="{{ url_for('static', filename='img/Diseñadora.png') }}" alt="ADN Nutrición">
-                    <p>DISEÑADORA DIGITAL Y GRÁFICA</p>
+        <div class="content contact-container"> <div class="contact-info-block">
+                <h2>CONTÁCTANOS</h2>
+                <div class="socials">
+                    <a href="https://www.instagram.com/ADN_1325" target="_blank" class="contact-link">
+                        <i class="fab fa-instagram"></i> <span>@ADN_1325</span>
+                    </a>
+                    <a href="https://www.facebook.com/ADN_1325" target="_blank" class="contact-link">
+                        <i class="fab fa-facebook-f"></i> <span>@ADN_1325</span>
+                    </a>
+                    <a href="tel:+573214319033" class="contact-link">
+                        <i class="fas fa-phone-alt"></i> <span>+57 321 4319033</span>
+                    </a>
+                    <a href="tel:+573228766062" class="contact-link">
+                        <i class="fas fa-phone-alt"></i> <span>+57 322 8766062</span>
+                    </a>
+                    <a href="mailto:ADN1325@gmail.com" class="contact-link">
+                        <i class="fas fa-envelope"></i> <span>ADN1325@gmail.com</span>
+                    </a>
                 </div>
             </div>
+
+            <div class="team-block">
+                <h3 class="team-title">NUESTRO EQUIPO</h3>
+                <div class="image-text-group">
+                    <div class="image-item">
+                        <div class="img-wrapper">
+                            <img src="{{ url_for('static', filename='img/Diseñador.png') }}" alt="Desarrollador">
+                        </div>
+                        <p class="role">DESARROLLADOR<br>WEB</p>
+                    </div>
+                    <div class="image-item">
+                        <div class="img-wrapper">
+                            <img src="{{ url_for('static', filename='img/Diseñadora.png') }}" alt="Diseñadora">
+                        </div>
+                        <p class="role">DISEÑADORA DIGITAL<br>Y GRÁFICA</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 

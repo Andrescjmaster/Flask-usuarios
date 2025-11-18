@@ -1,6 +1,6 @@
 /* ======================================
     ARCHIVO: home.css 
-    OBJETIVO: Estilos visuales específicos de la página de inicio.
+    SOLUCIÓN DEFINITIVA DE ALINEACIÓN Y SCROLL
     ======================================
 */
 
@@ -17,7 +17,7 @@ body {
     background-position: center center;
     background-attachment: fixed;
     scroll-snap-type: y mandatory; 
-    transition: background-image 0.5s ease-in-out; 
+    /* La transición del fondo se maneja en base.html para evitar parpadeo */
 }
 
 /* Contenedores principales */
@@ -32,14 +32,11 @@ body {
     position: relative;
     background-color: transparent; 
     color: white;
-    /* min-height: 100vh; se mantiene para que ocupe la pantalla completa si el contenido cabe.
-       Si el contenido es más largo, la sección crecerá para mostrarlo todo. */
     min-height: 100vh; 
     display: flex;
     flex-direction: column;
-    /* 🌟 AJUSTE: Usar `flex-start` para que el contenido empiece arriba, luego ajustamos con padding.
-       Esto da más control sobre el espacio superior. */
-    justify-content: flex-start; 
+    /* ✅ CRÍTICO: Centrar verticalmente TODO el contenido. */
+    justify-content: center; 
     padding: 0 40px; 
     scroll-snap-align: start; 
     scroll-snap-stop: always;
@@ -47,15 +44,15 @@ body {
     z-index: 10; 
 }
 
-/* Ajuste crucial para la primera sección (Hero) */
+/* Ajuste para la primera sección (Hero) */
 .home-container section:first-of-type {
     margin-top: 0 !important;
     padding-top: 0 !important; 
     min-height: 100vh; 
-    justify-content: center; /* En la primera sección, centramos el contenido verticalmente */
+    justify-content: center; 
 }
 
-/* Ajuste para la sección de Contacto (no usa scroll-snap-align) */
+/* Ajuste para la sección de Contacto */
 .contact {
     min-height: 90vh; 
     scroll-snap-align: none; 
@@ -77,11 +74,10 @@ body {
 .content {
     position: relative;
     z-index: 20;
-    /* 🌟 AJUSTE: Ancho general del contenido, un poco más amplio. */
-    max-width: 800px; /* Vuelto a 800px para dar más espacio a las líneas de texto */
+    max-width: 800px; 
     margin: 0 auto; 
-    /* 🌟 AJUSTE: Más padding superior para separar del navbar, y un padding inferior generoso */
-    padding: 120px 40px 100px; /* Top, Left/Right, Bottom */
+    /* Padding general para el contenido */
+    padding: 60px 40px;
     box-sizing: border-box; 
     width: 100%; 
 }
@@ -89,23 +85,20 @@ body {
 /* Alineaciones de contenido */
 .left-align .content { 
     text-align: left; 
-    align-items: flex-start; 
     margin-left: 5%; 
     margin-right: auto; 
-    max-width: 600px; /* Ajuste para el contenido lateral */
+    max-width: 600px; 
 }
 .right-align .content { 
     text-align: right; 
-    align-items: flex-end; 
     margin-right: 5%; 
     margin-left: auto; 
-    max-width: 600px; /* Ajuste para el contenido lateral */
+    max-width: 600px; 
 }
 .center-align .content { 
     text-align: center; 
-    align-items: center; 
     margin: 0 auto; 
-    max-width: 800px; /* Consistencia con el .content general */
+    max-width: 800px; 
 }
 
 
@@ -118,12 +111,36 @@ h2 {
     line-height: 1.2;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
 }
+h3 { font-size: 1.5rem; } 
 h4 { font-size: 1.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 10px; line-height: 1.2;}
 .subtitle-hero { font-size: 1.3rem; font-weight: 300; line-height: 1.6; margin-top: 20px; margin-bottom: 30px;}
 p { font-size: 1.3rem; line-height: 1.7; margin-bottom: 20px;}
 
 
-/* ===== 4. ESTILOS DE FEATURES (Cards) ===== */
+/* ===== 4. SECCIÓN ESPECÍFICA: HERO (#hero) ===== */
+
+#hero .content {
+    padding-top: 0;
+    padding-bottom: 0;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100%; 
+}
+#hero.left-align .content {
+    align-items: flex-start;
+}
+
+
+/* ===== 5. SECCIÓN ESPECÍFICA: FEATURES (#features) ===== */
+
+#features .content {
+    /* Ajuste fino para que el título y las tarjetas convivan bien */
+    padding-top: 60px; 
+    padding-bottom: 30px; 
+}
+
 .features .cards { 
     display: flex; 
     justify-content: center; 
@@ -142,184 +159,261 @@ p { font-size: 1.3rem; line-height: 1.7; margin-bottom: 20px;}
 .card-hover p { font-size: 1.1rem; line-height: 1.5; }
 
 
-/* ===== 5. ESTILOS DE CONTACTO (Ajustes de espaciado y alineación) ===== */
+/* ========================================================== */
+/* ===== 6. SECCIÓN ESPECÍFICA: ABOUT (#about) - CORREGIDO ===== */
+/* ========================================================== */
 
-.contact .socials { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 15px; 
-    align-items: flex-start; 
-}
-.center-align .contact .socials {
-    align-items: center;
+#about {
+    justify-content: center;
+    align-items: center;        
+    padding: 0 40px; 
 }
 
-.contact .contact-link { 
-    color: white; 
-    font-size: 1.2rem; 
-    font-weight: 500;
-    margin: 0; 
-    transition: color 0.3s ease; 
-    text-decoration: none;
-    display: flex; 
-    align-items: center;
+#about .content.about-centered-column {
+    max-width: 800px; 
+    margin: 0 auto;
+    text-align: center; 
+    /* ✅ CORRECCIÓN DE ESPACIO VACÍO: Reducimos el padding vertical a 0 */
+    padding: 0 40px; 
+    box-sizing: border-box; 
 }
 
-.contact .contact-link:hover { 
-    color: #8a2be2; 
-}
-
-.contact .contact-link i {
-    font-size: 1.2rem; 
-    margin-right: 10px;
-    width: 25px; 
-    text-align: center;
-}
-
-.contact .image-text-group {
-    display: flex; 
-    justify-content: space-around; 
-    flex-wrap: wrap; 
-    gap: 30px; 
-    margin-top: 50px; 
-    width: 100%;
-    max-width: 600px; 
+.about-points {
+    margin-top: 30px;
+    text-align: left; 
+    max-width: 90%; 
     margin-left: auto;
     margin-right: auto;
 }
 
-.contact .image-text-group .image-item {
-    display: flex;
-    flex-direction: column; 
-    align-items: center; 
-    width: 140px; 
-    text-align: center;
+.about-item {
+    margin-bottom: 30px;
 }
 
-.contact .image-text-group .image-item img {
-    width: 140px; 
-    height: 140px; 
-    border-radius: 50%; 
-    object-fit: cover; 
-    margin-bottom: 10px; 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); 
-    border: 3px solid #8a2be2; 
-}
-
-.contact .image-text-group .image-item p {
-    color: #ffffff; 
-    font-size: 1rem; 
-    line-height: 1.3;
-    margin-bottom: 0;
-}
-
-/* ========================================================== */
-/* ===== 7. AJUSTES ESPECÍFICOS PARA "¿QUIÉNES SOMOS?" (ABOUT) ===== */
-/* ========================================================== */
-
-#about {
-    display: flex;
-    justify-content: center; 
-    align-items: center;      
-    /* 🌟 AJUSTE: Padding horizontal más amplio en la sección, y padding vertical para controlar el espacio */
-    padding: 100px 80px; /* Aumentado a 80px a los lados para dar más "aire" */
-    min-height: 100vh; 
-}
-
-/* Estilos para el contenedor del texto (about-centered-column) */
-#about .content.about-centered-column {
-    /* 🌟 SOLUCIÓN CLAVE 1: Ampliar el ancho del contenedor de texto para que los ítems de la lista se extiendan. */
-    max-width: 800px; /* Aumentado a 800px para usar el espacio lateral. */
-    margin: 0 auto;
-    text-align: center; 
-    /* 🌟 SOLUCIÓN CLAVE 2: Ajustar padding interno del content para controlar el espacio superior e inferior */
-    padding: 80px 40px; /* Reducido el padding superior/inferior para el espacio vacío, y el lateral. */
-    box-sizing: border-box; /* Asegurar que el padding no añada al ancho total */
-}
-
-/* Estilo para la lista */
-#about ul {
-    list-style: none;
-    padding-left: 0;
-    /* 🌟 SOLUCIÓN CLAVE 3: Ajustar el margen superior de la lista para controlar el espacio con el párrafo anterior. */
-    margin-top: 40px; /* Más espacio entre el párrafo introductorio y la lista. */
-    /* 🌟 SOLUCIÓN CLAVE 4: Ampliar el ancho de la lista para que los ítems se distribuyan en menos líneas. */
-    max-width: 700px; /* Aumentado de 400px a 700px para que las líneas sean más largas */
-    margin-left: auto; 
-    margin-right: auto;
-    text-align: left; 
-    padding: 0; /* No necesitamos padding lateral aquí, ya el .content tiene. */
-}
-
-#about ul li {
-    font-size: 1.2rem; /* Mantener un buen tamaño de fuente */
-    line-height: 1.7; /* Altura de línea para legibilidad */
-    /* 🌟 SOLUCIÓN CLAVE 5: Más espacio entre cada ítem de la lista. */
-    margin-bottom: 25px; /* Más espacio entre cada punto */
-}
-
-#about ul li strong {
+.about-item h3 {
     color: #8a2be2; 
-    display: block;
+    font-size: 1.5rem;
     margin-bottom: 5px;
+    padding-left: 25px; 
+    position: relative;
 }
 
+.about-item p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+
 /* ========================================================== */
+/* ===== 7. SECCIÓN ESPECÍFICA: CONTACT (#contact) - MEJORADO ===== */
+/* ========================================================== */
+
+/* Contenedor principal de la sección de contacto usa Grid para dos columnas */
+.contact-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas iguales */
+    gap: 50px; 
+    align-items: center; 
+    max-width: 1000px; 
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --- Columna Izquierda: Información de Contacto --- */
+.contact-info-block {
+    text-align: left;
+}
+
+.contact-info-block h2 {
+    font-size: 3.5rem;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    /* Borde decorativo neón */
+    border-bottom: 3px solid #8a2be2;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.contact .socials {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+}
+
+.contact .contact-link {
+    color: white;
+    font-size: 1.3rem; 
+    font-weight: 400;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.contact .contact-link i {
+    font-size: 1.6rem;
+    width: 40px; 
+    color: #00F0FF; /* Color neón diferente */
+    text-align: center;
+    margin-right: 15px;
+    transition: transform 0.3s ease;
+}
+
+.contact .contact-link:hover {
+    color: #8a2be2; /* Cambio de color al pasar el mouse */
+    transform: translateX(10px); 
+}
+
+.contact .contact-link:hover i {
+    transform: scale(1.2);
+    color: #8a2be2;
+}
+
+
+/* --- Columna Derecha: Equipo --- */
+.team-block {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05); /* Fondo sutil */
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid rgba(138, 43, 226, 0.3); 
+    backdrop-filter: blur(5px);
+}
+
+.team-title {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    color: #fff;
+    letter-spacing: 2px;
+    font-weight: 600;
+}
+
+.contact .image-text-group {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.contact .image-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 140px;
+}
+
+/* Envoltura para la imagen para efectos de borde */
+.img-wrapper {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    padding: 3px; 
+    background: linear-gradient(45deg, #8a2be2, #00F0FF); /* Borde degradado */
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.contact .image-item img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #000; 
+}
+
+.contact .image-item:hover .img-wrapper {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.6);
+}
+
+.contact .image-item .role {
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
 
 /* ===== 8. MEDIA QUERIES (Responsive) ===== */
 
-/* Tablet Grande / Desktop Pequeño */
 @media (max-width: 1200px) { 
     h1 { font-size: 3.8rem; } h4 { font-size: 1.5rem; } h2 { font-size: 2.8rem; } p { font-size: 1.2rem; } 
-    .subtitle-hero { font-size: 1.2rem; } .content { padding: 90px 30px 80px; } /* Ajuste de padding general */
+    .subtitle-hero { font-size: 1.2rem; } 
+    .content { padding: 60px 30px; } 
 
     .left-align .content, .right-align .content { 
         margin-left: 3%; 
         margin-right: 3%; 
-        max-width: 550px; /* Ajuste para el contenido lateral */
+        max-width: 550px; 
     }
     .left-align .content { margin-right: auto; }
     .right-align .content { margin-left: auto; }
     
-    /* About: Centrado total */
-    #about { padding: 80px 60px; } /* Ajustar padding de la sección about */
+    #about { padding: 0 60px; } 
     #about .content.about-centered-column { 
         margin-left: auto; 
         margin-right: auto; 
-        max-width: 700px; /* Mantener el ancho amplio para la lista */
-        padding: 60px 30px; /* Ajuste de padding interno */
+        max-width: 700px; 
+        padding: 0 30px; /* Corregido */
     }
-    #about ul { max-width: 600px; } /* Ajuste de ancho de lista en tablet grande */
-    #about ul li { font-size: 1.1rem; line-height: 1.6;} 
+    .about-item h3 { font-size: 1.3rem; }
+    .about-item p { font-size: 1rem; }
+    
+    .contact-container {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
-/* Tablet */
 @media (max-width: 992px) { 
     h1 { font-size: 3.2rem; margin-bottom: 15px; } h4 { font-size: 1.3rem; } h2 { font-size: 2.4rem; } p { font-size: 1.1rem; } 
     .subtitle-hero { font-size: 1.1rem; } 
+    .content { padding: 50px 20px; } 
     
-    /* Centrar contenido lateral en tablet */
     .left-align .content, .right-align .content { margin-left: auto; margin-right: auto; text-align: center; } 
     .card { width: 280px; height: 180px; } .card-hover h3 { font-size: 1.5rem; } .card-hover p { font-size: 1rem; } 
-    .contact .socials { gap: 10px; } 
-    .contact .contact-link, .contact .contact-link i { font-size: 1.1rem; } 
 
-    /* About: Centrado y ancho en tablet */
-    #about { padding: 60px 40px; } /* Ajuste de padding de la sección about */
-    #about .content.about-centered-column { max-width: 90%; padding: 50px 20px; } /* Más ancho en pantallas medianas */
-    #about ul { max-width: 95%; } /* Permitir que la lista ocupe casi todo el ancho disponible */
-
-    .contact .image-text-group .image-item img {
-        width: 120px; 
-        height: 120px; 
+    #about { padding: 0 40px; } 
+    #about .content.about-centered-column { 
+        max-width: 90%; 
+        padding: 0 20px; /* Corregido */
+    }
+    .about-points { max-width: 95%; text-align: center; }
+    .about-item { text-align: center; } 
+    
+    /* Contacto a una sola columna en móvil */
+    .contact-container {
+        grid-template-columns: 1fr; 
+        justify-items: center;
+        align-items: center;
+        text-align: center;
+    }
+    .contact-info-block {
+        text-align: center;
+    }
+    .contact .socials {
+        align-items: center; 
+    }
+    .contact .contact-link {
+        justify-content: center; /* Centrar links en móvil */
+    }
+    .contact .image-text-group {
+        justify-content: center; 
+    }
+    .contact .image-text-group .image-item .img-wrapper {
+        width: 100px;
+        height: 100px;
+    }
+    .contact .image-text-group .image-item {
+        width: 120px;
     }
 }
 
-/* Móvil Horizontal / Tablet Pequeña */
 @media (max-width: 768px) { 
     h1 { font-size: 2.5rem; letter-spacing: 1px; } h4 { font-size: 1.1rem; } h2 { font-size: 2rem; } p { font-size: 1rem; line-height: 1.6; } 
-    .subtitle-hero { font-size: 1rem; } .content { padding: 50px 20px; } 
+    .subtitle-hero { font-size: 1rem; } 
+    .content { padding: 40px 20px; } 
     
     .features .cards { flex-direction: column; align-items: center; gap: 20px; } 
     .card { width: 90%; max-width: 350px; height: 180px; } 
@@ -327,44 +421,35 @@ p { font-size: 1.3rem; line-height: 1.7; margin-bottom: 20px;}
     .contact .socials { align-items: center; } 
     .left-align .content, .right-align .content { text-align: center; margin-left: auto; margin-right: auto; } 
 
-    /* About: En móvil, el contenido se centra */
-    #about { padding: 40px 20px; }
+    #about { padding: 0 20px; }
     #about .content.about-centered-column { 
         max-width: 95%;
         margin: auto; 
         text-align: center;
-        padding: 40px 15px;
+        padding: 0 15px; /* Corregido */
     }
-    #about ul { 
-        text-align: left; 
-        max-width: 100%; /* Que ocupe todo el ancho disponible en móvil */
-        padding: 0; 
-    }
-
+    .about-points { text-align: center; }
+    .about-item { text-align: center; }
+    .about-item h3 { padding-left: 0; } 
+    
     .contact .image-text-group {
-        flex-direction: column; 
-        align-items: center; 
-        max-width: none; 
-        gap: 20px; 
+        flex-direction: row; /* Mantenemos las fotos lado a lado si es posible */ 
+        justify-content: center;
+        gap: 20px;
     }
     .contact .image-text-group .image-item {
-        width: 90%; 
-        max-width: 300px; 
-    }
-    .contact .image-text-group .image-item img {
         width: 100px; 
-        height: 100px; 
     }
 }
 
-/* Móvil Vertical */
 @media (max-width: 480px) { 
     h1 { font-size: 1.8rem; margin-bottom: 8px; } h4 { font-size: 0.8rem; } h2 { font-size: 1.5rem; margin-bottom: 20px;} p { font-size: 0.95rem; } 
-    .subtitle-hero { font-size: 0.85rem; } .content { padding: 30px 10px; } 
+    .subtitle-hero { font-size: 0.85rem; } 
+    .content { padding: 30px 10px; } 
     
     .card { width: 100%; height: 150px; } 
     
     .contact .contact-link, .contact .contact-link i { font-size: 0.95rem; } 
-    .contact .image-text-group .image-item { width: 100%; max-width: 250px; }
-    .contact .image-text-group .image-item img { width: 80px; height: 80px; }
+    .contact .image-text-group .image-item .img-wrapper { width: 80px; height: 80px; }
+    .contact .image-text-group .image-item { width: 90px; }
 }

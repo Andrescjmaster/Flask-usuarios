@@ -9,138 +9,70 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}?v={{ range(1, 10000) | random }}"> 
     
     {% block head_extra %}{% endblock %}
 
     <style>
-        /* --- Estilos internos --- */
+        /* --- ESTILOS CRÍTICOS DE EMERGENCIA (Se aplican sí o sí) --- */
         
-        /* Layout General */
         body { 
             background-color: #0b0b0b; 
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-attachment: fixed;
-            /* CORRECCIÓN CLAVE 1: Scroll Padding para que los anclas no queden bajo el navbar */
-            scroll-padding-top: var(--navbar-height, 90px); 
-        }
-        
-        /* Navbar */
-        .navbar-logo { 
-            width: 40px; 
-            height: 40px; 
-            object-fit: contain; 
-            margin-right: 8px; 
-        }
-        
-        /* Estilo para el nombre de usuario */
-        .navbar-username { 
-            color: #fff; 
-            margin-left: 10px; 
-            font-weight: 600; 
-            font-size: 1rem; 
-            padding: 0.3rem 0.8rem;
-        }
-        .navbar-user-display {
-            display: flex;
-            align-items: center;
-        }
-
-        /* Inversor del icono toggler para que sea visible en fondo oscuro */
-        .navbar-toggler-icon { 
-            filter: invert(1) contrast(1.2) !important; 
-        }
-        
-        /* Contenido Principal y Footer */
-        .main-content { 
-            padding-top: calc(var(--navbar-height, 70px) + 12px); 
-            min-height: calc(100vh - 120px); 
-        }
-        
-        footer { 
-            background: transparent; 
-            color: #fff; 
-        }
-
-        /* Estilos para Dropdown Neón */
-        .dropdown-menu {
-            background-color: rgba(18, 10, 31, 0.95) !important; 
-            border: 1px solid var(--color-primary, #FF47B4);
-            box-shadow: 0 0 10px rgba(255, 71, 180, 0.3);
-            padding: 0;
-            margin-top: 5px; 
-            border-radius: 0.5rem;
-        }
-
-        .dropdown-item {
-            color: var(--color-light, #F0F0F0) !important;
-            padding: 10px 20px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .dropdown-item:hover,
-        .dropdown-item:focus {
-            background-color: rgba(0, 240, 255, 0.1) !important;
-            color: var(--color-secondary, #00F0FF) !important;
-            text-shadow: 0 0 5px var(--color-secondary, #00F0FF);
-        }
-
-        /* La línea de separación (divider) se mantiene, aunque se eliminará la que está debajo de "Home" */
-        .dropdown-divider {
-            border-top: 1px solid rgba(255, 71, 180, 0.5);
             margin: 0;
-        }
-
-        /* 🚨 CORRECCIÓN CLAVE 2: Estilos para centrar el contenido y mejorar la legibilidad */
-        /* Aseguramos un ancho limitado para el texto en secciones grandes */
-        .home-container .content {
-            max-width: 800px; /* Limita el ancho del texto */
-            margin: 0 auto;  /* Centra el texto */
-            padding: 0 15px; /* Padding horizontal para evitar bordes */
-            text-align: center; /* Centra el texto por defecto */
+            padding: 0;
+            /* Transición suave del fondo */
+            transition: background-image 0.5s ease-in-out !important; 
         }
         
-        /* Ajuste de alineación según la clase de la sección */
-        .home-container .left-align .content {
-             margin-left: 0; /* Deshace el centrado */
-             margin-right: auto;
-             text-align: left;
-             max-width: 600px; /* Más limitado para alineación lateral */
-        }
-        .home-container .right-align .content {
-             margin-left: auto;
-             margin-right: 0; /* Deshace el centrado */
-             text-align: right;
-             max-width: 600px; /* Más limitado para alineación lateral */
-        }
-        .home-container .center-align .content,
-        .home-container .about .content {
-             margin-left: auto; 
-             margin-right: auto;
-             text-align: center;
-        }
-        
-        /* Estilo específico para la lista en ¿Quiénes Somos? */
-        .home-container .about-list {
-            text-align: left; /* Asegura que la lista se alinee a la izquierda dentro de su contenedor centrado */
-            margin: 20px auto;
-            max-width: 600px; 
-            list-style-type: none; /* Quitamos el bullet por defecto, usaremos CSS si se desea */
-            padding-left: 0;
-        }
-        .home-container .about-list li {
-            margin-bottom: 10px;
+        /* CORRECCIÓN DEFINITIVA DEL ESPACIO SUPERIOR */
+        /* Por defecto, el main-content NO tiene padding arriba */
+        .main-content { 
+            padding-top: 0 !important; 
+            min-height: 100vh; 
         }
 
+        /* Solo si NO es la home page, añadimos espacio para el navbar */
+        body:not(.home-page) .main-content {
+             padding-top: 100px !important; /* Ajusta este valor si el navbar es más alto */
+        }
+        
+        /* Forzar que las secciones de la Home ocupen toda la pantalla y se centren */
+        .home-container section {
+            min-height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important; /* ESTO CENTRA VERTICALMENTE */
+            padding: 0 40px !important;
+        }
+
+        /* Navbar flotante */
+        #main-navbar { 
+            position: fixed; 
+            width: 100%; 
+            top: 0; 
+            z-index: 1050; 
+            background: transparent;
+            transition: background 0.3s;
+        }
+        #main-navbar.scrolled {
+            background-color: rgba(0,0,0,0.9);
+        }
+
+        /* ... Otros estilos de Navbar (Logo, textos) ... */
+        .navbar-logo { width: 40px; margin-right: 8px; }
+        .navbar-username, .nav-link, .navbar-brand { color: #fff !important; }
+        
+        /* Dropdown Styles */
+        .dropdown-menu { background-color: rgba(18, 10, 31, 0.95); border: 1px solid #FF47B4; }
+        .dropdown-item { color: #F0F0F0; }
+        .dropdown-item:hover { background-color: rgba(0, 240, 255, 0.1); color: #00F0FF; }
     </style>
 </head>
 <body class="bg-dark {% if request.endpoint == 'home' %}home-page{% endif %}">
 
-    <nav class="navbar navbar-expand-lg fixed-top" id="main-navbar">
+    <nav class="navbar navbar-expand-lg" id="main-navbar">
         <div class="container-fluid">
-            
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
                 <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Mi ADN Logo" class="navbar-logo">
                 <span class="fw-bold ms-1">Mi ADN</span>
@@ -151,38 +83,23 @@
                     <div class="navbar-user-display d-none d-lg-flex me-3">
                         <span class="navbar-username">{{ session.get('usuario') }}</span>
                     </div>
-                    
                     {% if session.get('correo') == ADMIN_EMAIL %}
-                        <a class="nav-link btn btn-sm btn-primary panel-admin-btn text-white me-2" href="{{ url_for('admin_usuarios') }}">
-                            <span class="d-none d-lg-inline">Panel Admin</span>
-                            <i class="fas fa-cog d-lg-none"></i>
-                        </a>
+                        <a class="nav-link btn btn-sm btn-primary panel-admin-btn text-white me-2" href="{{ url_for('admin_usuarios') }}">Panel Admin</a>
                     {% endif %}
-                    <a class="nav-link btn btn-sm btn-danger logout-btn text-white me-2" href="{{ url_for('logout') }}" title="Cerrar sesión">
-                        <span class="d-none d-lg-inline">Cerrar Sesión</span>
-                        <i class="fas fa-sign-out-alt d-lg-none"></i>
-                    </a>
+                    <a class="nav-link btn btn-sm btn-danger logout-btn text-white me-2" href="{{ url_for('logout') }}">Cerrar Sesión</a>
                 {% else %}
-                    <a class="nav-link btn btn-sm btn-outline-light login-btn text-white me-2" href="{{ url_for('login') }}">
-                        <span class="d-none d-lg-inline">Iniciar Sesión</span>
-                        <i class="fas fa-sign-in-alt d-lg-none"></i>
-                    </a>
+                    <a class="nav-link btn btn-sm btn-outline-light login-btn text-white me-2" href="{{ url_for('login') }}">Iniciar Sesión</a>
                 {% endif %}
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
                 </button>
             </div>
 
-
             <div class="collapse navbar-collapse justify-content-end order-lg-2" id="navbarNav">
                 <ul class="navbar-nav align-items-center me-3">
-                    
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDescubre" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Descubre
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownDescubre">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">Descubre</a>
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ url_for('home') }}">HOME</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('home') }}#info">¿QUÉ ES ADN?</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('home') }}#features">EXPLORA TU ADN</a></li>
@@ -190,15 +107,8 @@
                             <li><a class="dropdown-item" href="{{ url_for('home') }}#contact">CONTÁCTANOS</a></li>
                         </ul>
                     </li>
-
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('calculadora') }}">Calculadora</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('rutinas') }}">Rutinas</a></li>
-
-                    <ul class="navbar-nav align-items-center d-lg-none"> 
-                        {% if not session.get('correo') %}
-                            <li class="nav-item d-block d-lg-none"><a class="nav-link btn btn-outline-success mt-2 mb-2" href="{{ url_for('register') }}">Registrarse</a></li>
-                        {% endif %}
-                    </ul>
                 </ul>
             </div>
         </div>
@@ -213,38 +123,15 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Script simple solo para el color del navbar al hacer scroll
+        window.addEventListener('scroll', function() {
             const navbar = document.getElementById('main-navbar');
-            const mainContent = document.querySelector('.main-content');
-            
-            // 🌟 SCRIPT: Cambia el estilo de la Navbar al hacer scroll (de transparente a sólido)
-            function updateNavbarStyle() {
-                if (window.scrollY > 50) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
-                }
-            }
-            window.addEventListener('scroll', updateNavbarStyle);
-            updateNavbarStyle();
-
-            // Ajuste del padding del contenido principal y variable CSS
-            if (navbar && mainContent) {
-                function adjustContentPadding() {
-                    const navbarHeight = navbar.offsetHeight;
-                    // Actualiza la variable CSS --navbar-height (fundamental para scroll-padding-top)
-                    document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
-                    
-                    // Si estamos en la página de inicio, el padding es 0 para que la sección #hero use toda la pantalla.
-                    if (document.body.classList.contains('home-page')) {
-                        mainContent.style.paddingTop = `0`; 
-                    } else {
-                        mainContent.style.paddingTop = `calc(${navbarHeight}px + 12px)`;
-                    }
-                }
-                adjustContentPadding();
-                window.addEventListener('resize', adjustContentPadding);
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
             }
         });
     </script>
