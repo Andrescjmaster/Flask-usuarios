@@ -22,6 +22,8 @@
             background-repeat: no-repeat;
             background-size: cover;
             background-attachment: fixed;
+            /* 🚨 AJUSTE CLAVE 1: Configuración de Scroll Padding global para anclas */
+            scroll-padding-top: var(--navbar-height, 90px);
         }
         
         /* Navbar */
@@ -61,6 +63,37 @@
             background: transparent; 
             color: #fff; 
         }
+
+        /* 🚨 AJUSTE CLAVE 2: Dropdown Styles para el tema Neón */
+        .dropdown-menu {
+            /* Fondo oscuro semitransparente para el menú desplegable */
+            background-color: rgba(18, 10, 31, 0.95) !important; 
+            border: 1px solid var(--color-primary, #FF47B4); /* Borde neón */
+            box-shadow: 0 0 10px rgba(255, 71, 180, 0.3);
+            padding: 0;
+            margin-top: 5px; 
+            border-radius: 0.5rem;
+        }
+
+        .dropdown-item {
+            color: var(--color-light, #F0F0F0) !important;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover,
+        .dropdown-item:focus {
+            /* Efecto neón al pasar el ratón */
+            background-color: rgba(0, 240, 255, 0.1) !important;
+            color: var(--color-secondary, #00F0FF) !important;
+            text-shadow: 0 0 5px var(--color-secondary, #00F0FF);
+        }
+
+        .dropdown-divider {
+            border-top: 1px solid rgba(255, 71, 180, 0.5); /* Separador neón */
+            margin: 0;
+        }
     </style>
 </head>
 <body class="bg-dark {% if request.endpoint == 'home' %}home-page{% endif %}">
@@ -78,6 +111,12 @@
                     <div class="navbar-user-display d-none d-lg-flex me-3">
                         <span class="navbar-username">{{ session.get('usuario') }}</span>
                     </div>
+                    {% if session.get('correo') == ADMIN_EMAIL %}
+                        <a class="nav-link btn btn-sm btn-primary panel-admin-btn text-white me-2" href="{{ url_for('admin_usuarios') }}">
+                            <span class="d-none d-lg-inline">Panel Admin</span>
+                            <i class="fas fa-cog d-lg-none"></i>
+                        </a>
+                    {% endif %}
                     <a class="nav-link btn btn-sm btn-danger logout-btn text-white me-2" href="{{ url_for('logout') }}" title="Cerrar sesión">
                         <span class="d-none d-lg-inline">Cerrar Sesión</span>
                         <i class="fas fa-sign-out-alt d-lg-none"></i>
@@ -89,7 +128,7 @@
                     </a>
                 {% endif %}
                 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
             </div>
@@ -97,29 +136,42 @@
 
             <div class="collapse navbar-collapse justify-content-end order-lg-2" id="navbarNav">
                 <ul class="navbar-nav align-items-center me-3">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}#about">¿Quiénes somos?</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}#features">Explora tu ADN</a></li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDescubre" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Descubre
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownDescubre">
+                            <li><a class="dropdown-item" href="{{ url_for('home') }}#info">¿QUÉ ES ADN?</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('home') }}#features">EXPLORA TU ADN</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('home') }}#about">¿QUIÉNES SOMOS?</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('home') }}#contact">CONTÁCTANOS</a></li>
+                        </ul>
+                    </li>
+
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('calculadora') }}">Calculadora</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('rutinas') }}">Rutinas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}#contact">Contáctanos</a></li>
-                </ul>
 
-                <ul class="navbar-nav align-items-center d-lg-none"> 
-                    {% if session.get('correo') %}
-                        {% if session.get('correo') == ADMIN_EMAIL %}
-                            <li class="nav-item me-2">
-                                <a class="nav-link btn btn-primary panel-admin-btn text-white mt-2" href="{{ url_for('admin_usuarios') }}">
-                                    <i class="fas fa-cog me-1"></i> Panel Admin
-                                </a>
-                            </li>
+                    <ul class="navbar-nav align-items-center d-lg-none"> 
+                        {% if session.get('correo') %}
+                            {% if session.get('correo') == ADMIN_EMAIL %}
+                                <li class="nav-item me-2">
+                                    <a class="nav-link btn btn-primary panel-admin-btn text-white mt-2" href="{{ url_for('admin_usuarios') }}">
+                                        <i class="fas fa-cog me-1"></i> Panel Admin
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% else %}
+                            <li class="nav-item d-block d-lg-none"><a class="nav-link btn btn-outline-light login-btn mt-2" href="{{ url_for('login') }}">Iniciar Sesión</a></li>
+                            <li class="nav-item d-block d-lg-none"><a class="nav-link btn btn-outline-success mt-2 mb-2" href="{{ url_for('register') }}">Registrarse</a></li>
                         {% endif %}
-                        {% else %}
-                        <li class="nav-item d-block d-lg-none"><a class="nav-link btn btn-outline-light login-btn mt-2" href="{{ url_for('login') }}">Iniciar Sesión</a></li>
-                        <li class="nav-item d-block d-lg-none"><a class="nav-link btn btn-outline-success mt-2 mb-2" href="{{ url_for('register') }}">Registrarse</a></li>
-                    {% endif %}
+                    </ul>
                 </ul>
-
+                
                 {% if session.get('correo') == ADMIN_EMAIL %}
                     <a class="nav-link btn btn-primary panel-admin-btn text-white d-none d-lg-block" href="{{ url_for('admin_usuarios') }}">
                         <i class="fas fa-cog me-1"></i> Panel Admin
@@ -154,14 +206,14 @@
             window.addEventListener('scroll', updateNavbarStyle);
             updateNavbarStyle();
 
-            // Ajuste del padding del contenido principal
+            // Ajuste del padding del contenido principal y variable CSS
             if (navbar && mainContent) {
                 function adjustContentPadding() {
                     const navbarHeight = navbar.offsetHeight;
+                    // Actualiza la variable CSS --navbar-height (usada para scroll-padding-top)
                     document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
                     
                     // Si estamos en la página de inicio, el padding es 0 para que la sección #hero use toda la pantalla.
-                    // Si no, aplica el padding normal.
                     if (document.body.classList.contains('home-page')) {
                         mainContent.style.paddingTop = `0`; 
                     } else {
