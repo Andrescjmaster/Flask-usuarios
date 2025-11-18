@@ -1,140 +1,160 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>{% block title %}Mi ADN Fitness{% endblock %}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}Mi ADN Fitness{% endblock %}</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}?v={{ range(1, 10000) | random }}"> 
-    
-    {% block head_extra %}{% endblock %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}?v={{ range(1, 10000) | random }}"> 
+    
+    {% block head_extra %}{% endblock %}
 
-    <style>
-        /* --- ESTILOS CRÍTICOS DE EMERGENCIA (Se aplican sí o sí) --- */
+    <style>
+        /* --- ESTILOS CRÍTICOS DE EMERGENCIA (Se aplican sí o sí) --- */
+        
+        body { 
+            background-color: #0b0b0b; 
+            margin: 0;
+            padding: 0;
+            /* Transición suave del fondo */
+            transition: background-image 0.5s ease-in-out !important; 
+        }
+        
+        /* CORRECCIÓN DEFINITIVA DEL ESPACIO SUPERIOR */
+        /* Por defecto, el main-content NO tiene padding arriba */
+        .main-content { 
+            padding-top: 0 !important; 
+            min-height: 100vh; 
+        }
+
+        /* Solo si NO es la home page, añadimos espacio para el navbar */
+        body:not(.home-page) .main-content {
+             padding-top: 100px !important; /* Ajusta este valor si el navbar es más alto */
+        }
+        
+        /* Forzar que las secciones de la Home ocupen toda la pantalla y se centren */
+        .home-container section {
+            min-height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important; /* ESTO CENTRA VERTICALMENTE */
+            padding: 0 40px !important;
+        }
+
+        /* Navbar flotante */
+        #main-navbar { 
+            position: fixed; 
+            width: 100%; 
+            top: 0; 
+            z-index: 1050; 
+            background: transparent;
+            transition: background 0.3s;
+        }
+        #main-navbar.scrolled {
+            background-color: rgba(0,0,0,0.9);
+        }
+
+        /* ✅ SOLUCIÓN FINAL: Aseguramos la alineación de todos los elementos a la derecha */
+        /* Contenedor de todos los elementos a la derecha (Nombre + Botones) */
+        .d-flex.order-lg-3 {
+            align-items: center !important; /* Fuerza la alineación central de todos los hijos */
+        }
         
-        body { 
-            background-color: #0b0b0b; 
-            margin: 0;
-            padding: 0;
-            /* Transición suave del fondo */
-            transition: background-image 0.5s ease-in-out !important; 
+        /* Estilos específicos para el elemento que contiene el nombre de usuario.
+           Ahora usa la clase 'nav-link' para heredar la altura correcta. */
+        .navbar-username-link {
+            /* Asegura que no haya padding vertical inesperado que lo empuje */
+            padding-top: 0.5rem !important; 
+            padding-bottom: 0.5rem !important;
+            
+            /* Asegura que el texto no se vea como un botón, solo como un enlace simple */
+            font-weight: 500; 
+            margin-right: 0 !important; /* Quitamos el margen 'me-2' del botón anterior */
         }
-        
-        /* CORRECCIÓN DEFINITIVA DEL ESPACIO SUPERIOR */
-        /* Por defecto, el main-content NO tiene padding arriba */
-        .main-content { 
-            padding-top: 0 !important; 
-            min-height: 100vh; 
-        }
-
-        /* Solo si NO es la home page, añadimos espacio para el navbar */
-        body:not(.home-page) .main-content {
-             padding-top: 100px !important; /* Ajusta este valor si el navbar es más alto */
-        }
-        
-        /* Forzar que las secciones de la Home ocupen toda la pantalla y se centren */
-        .home-container section {
-            min-height: 100vh !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important; /* ESTO CENTRA VERTICALMENTE */
-            padding: 0 40px !important;
-        }
-
-        /* Navbar flotante */
-        #main-navbar { 
-            position: fixed; 
-            width: 100%; 
-            top: 0; 
-            z-index: 1050; 
-            background: transparent;
-            transition: background 0.3s;
-        }
-        #main-navbar.scrolled {
-            background-color: rgba(0,0,0,0.9);
-        }
-
-        /* ... Otros estilos de Navbar (Logo, textos) ... */
-        .navbar-logo { width: 40px; margin-right: 8px; }
-        .navbar-username, .nav-link, .navbar-brand { color: #fff !important; }
-        
-        /* Dropdown Styles */
-        .dropdown-menu { background-color: rgba(18, 10, 31, 0.95); border: 1px solid #FF47B4; }
-        .dropdown-item { color: #F0F0F0; }
-        .dropdown-item:hover { background-color: rgba(0, 240, 255, 0.1); color: #00F0FF; }
-    </style>
+        /* FIN SOLUCIÓN ALINEACIÓN */
+        
+        /* ... Otros estilos de Navbar (Logo, textos) ... */
+        .navbar-logo { width: 40px; margin-right: 8px; }
+        .navbar-username, .nav-link, .navbar-brand { color: #fff !important; }
+        
+        /* Dropdown Styles */
+        .dropdown-menu { background-color: rgba(18, 10, 31, 0.95); border: 1px solid #FF47B4; }
+        .dropdown-item { color: #F0F0F0; }
+        .dropdown-item:hover { background-color: rgba(0, 240, 255, 0.1); color: #00F0FF; }
+    </style>
 </head>
 <body class="bg-dark {% if request.endpoint == 'home' %}home-page{% endif %}">
 
-    <nav class="navbar navbar-expand-lg" id="main-navbar">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
-                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Mi ADN Logo" class="navbar-logo">
-                <span class="fw-bold ms-1">Mi ADN</span>
-            </a>
+    <nav class="navbar navbar-expand-lg" id="main-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Mi ADN Logo" class="navbar-logo">
+                <span class="fw-bold ms-1">Mi ADN</span>
+            </a>
 
-            <div class="d-flex order-lg-3">
-                {% if session.get('correo') %}
-                    <div class="navbar-user-display d-none d-lg-flex me-3">
-                        <span class="navbar-username">{{ session.get('usuario') }}</span>
-                    </div>
-                    {% if session.get('correo') == ADMIN_EMAIL %}
-                        <a class="nav-link btn btn-sm btn-primary panel-admin-btn text-white me-2" href="{{ url_for('admin_usuarios') }}">Panel Admin</a>
-                    {% endif %}
-                    <a class="nav-link btn btn-sm btn-danger logout-btn text-white me-2" href="{{ url_for('logout') }}">Cerrar Sesión</a>
-                {% else %}
-                    <a class="nav-link btn btn-sm btn-outline-light login-btn text-white me-2" href="{{ url_for('login') }}">Iniciar Sesión</a>
-                {% endif %}
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
-                </button>
-            </div>
+            <div class="d-flex order-lg-3">
+                {% if session.get('correo') %}
+                                        <a class="nav-link navbar-username-link d-none d-lg-flex align-items-center me-3" href="#">
+                        {{ session.get('usuario') }}
+                    </a>
+                    
+                    {% if session.get('correo') == ADMIN_EMAIL %}
+                        <a class="nav-link btn btn-sm btn-primary panel-admin-btn text-white me-2" href="{{ url_for('admin_usuarios') }}">Panel Admin</a>
+                    {% endif %}
+                    <a class="nav-link btn btn-sm btn-danger logout-btn text-white me-2" href="{{ url_for('logout') }}">Cerrar Sesión</a>
+                {% else %}
+                    <a class="nav-link btn btn-sm btn-outline-light login-btn text-white me-2" href="{{ url_for('login') }}">Iniciar Sesión</a>
+                {% endif %}
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+                </button>
+            </div>
 
-            <div class="collapse navbar-collapse justify-content-end order-lg-2" id="navbarNav">
-                <ul class="navbar-nav align-items-center me-3">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">Descubre</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('home') }}">HOME</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('home') }}#info">¿QUÉ ES ADN?</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('home') }}#features">EXPLORA TU ADN</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('home') }}#about">¿QUIÉNES SOMOS?</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('home') }}#contact">CONTÁCTANOS</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('calculadora') }}">Calculadora</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('rutinas') }}">Rutinas</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+            <div class="collapse navbar-collapse justify-content-end order-lg-2" id="navbarNav">
+                <ul class="navbar-nav align-items-center me-3">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">Descubre</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('home') }}">HOME</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('home') }}#info">¿QUÉ ES ADN?</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('home') }}#features">EXPLORA TU ADN</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('home') }}#about">¿QUIÉNES SOMOS?</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('home') }}#contact">CONTÁCTANOS</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('calculadora') }}">Calculadora</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('rutinas') }}">Estructura Corporal</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <main class="main-content">
-        {% block content %}{% endblock %}
-    </main>
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
 
-    <footer class="text-center py-3 mt-5">
-        <small class="text-white">© 2025 Mi ADN Fitness - Todos los derechos reservados</small>
-    </footer>
+    <footer class="text-center py-3 mt-5">
+        <small class="text-white">© 2025 Mi ADN Fitness - Todos los derechos reservados</small>
+    </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        // Script simple solo para el color del navbar al hacer scroll
-        window.addEventListener('scroll', function() {
-            const navbar = document.getElementById('main-navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-    </script>
-    {% block extra_js %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Script simple solo para el color del navbar al hacer scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('main-navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
