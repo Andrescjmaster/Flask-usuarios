@@ -5,10 +5,24 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ==============================================================
-#⚙️ CONFIGURACIÓN FLASK
+# ⚙️ CONFIGURACIÓN FLASK
 # ==============================================================
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "clave_super_segura")
+
+# 📌 DEFINICIÓN GLOBAL DEL ADMIN_EMAIL (CORRECCIÓN CLAVE)
+ADMIN_EMAIL = "andresfelipeaguasaco@gmail.com"
+
+# ==============================================================
+# 🗜️ CONTEXT PROCESSOR PARA INYECTAR VARIABLES GLOBALES
+# ==============================================================
+# Al definirlo aquí, ADMIN_EMAIL ya existe y se inyecta en todos los templates
+@app.context_processor
+def inject_global_vars():
+    # Inyectamos ADMIN_EMAIL para usarlo en base.html (Panel Admin)
+    # e inyectamos 'session' para tener acceso directo a 'session.correo', etc.
+    return dict(ADMIN_EMAIL=ADMIN_EMAIL, session=session)
+
 
 # ==============================================================
 # 🗄️ CONEXIÓN A LA BASE DE DATOS DE RENDER
@@ -89,8 +103,9 @@ except Exception as e:
     print("⚠️ Error al crear tabla:", e)
 
 try:
-    if not obtener_usuario("andresfelipeaguasaco@gmail.com"):
-        agregar_usuario("Administrador", "andresfelipeaguasaco@gmail.com", "123456789")
+    # Usamos la variable global ADMIN_EMAIL
+    if not obtener_usuario(ADMIN_EMAIL): 
+        agregar_usuario("Administrador", ADMIN_EMAIL, "123456789")
         print("👤 Usuario administrador creado.")
 except Exception as e:
     print("⚠️ Error creando admin:", e)
@@ -98,8 +113,6 @@ except Exception as e:
 # ==============================================================
 # 🌐 RUTAS PRINCIPALES
 # ==============================================================
-ADMIN_EMAIL = "andresfelipeaguasaco@gmail.com"
-
 @app.route('/')
 def root():
     # Redirige siempre a home.
@@ -107,8 +120,8 @@ def root():
 
 @app.route('/home')
 def home():
-    # Permite el acceso sin sesión.
-    return render_template('home.html', usuario=session.get('usuario'))
+    # Nota: Ya no necesitas pasar 'usuario' aquí. El context processor maneja 'session'.
+    return render_template('home.html') 
 
 # ==============================================================
 # 🔐 LOGIN TRADICIONAL
@@ -150,7 +163,8 @@ def register():
 def calculadora():
     if "usuario" not in session:
         return redirect(url_for('login'))
-    return render_template("calculadora.html", usuario=session['usuario'])
+    # Nota: Ya no necesitas pasar 'usuario' aquí. El context processor maneja 'session'.
+    return render_template("calculadora.html") 
 
 @app.route('/recomendaciones')
 def recomendaciones():
@@ -162,13 +176,15 @@ def recomendaciones():
 def rutinas():
     if "usuario" not in session:
         return redirect(url_for('login'))
-    return render_template("rutinas.html", usuario=session["usuario"])
+    # Nota: Ya no necesitas pasar 'usuario' aquí. El context processor maneja 'session'.
+    return render_template("rutinas.html") 
 
 # ==============================================================
 # 🔐 PANEL ADMIN (Protegido)
 # ==============================================================
 @app.route('/admin/usuarios')
 def admin_usuarios():
+    # Usamos ADMIN_EMAIL del ámbito global
     if "correo" not in session or session["correo"] != ADMIN_EMAIL:
         return "🚫 Acceso denegado"
     usuarios = obtener_todos_usuarios()
@@ -176,6 +192,7 @@ def admin_usuarios():
 
 @app.route('/admin/modificar/<int:id_usuario>', methods=['GET', 'POST'])
 def admin_modificar(id_usuario):
+    # Usamos ADMIN_EMAIL del ámbito global
     if "correo" not in session or session["correo"] != ADMIN_EMAIL:
         return "🚫 Acceso denegado"
     if request.method == 'POST':
@@ -193,6 +210,7 @@ def admin_modificar(id_usuario):
 
 @app.route('/admin/eliminar/<int:id_usuario>')
 def admin_eliminar(id_usuario):
+    # Usamos ADMIN_EMAIL del ámbito global
     if "correo" not in session or session["correo"] != ADMIN_EMAIL:
         return "🚫 Acceso denegado"
     eliminar_usuario(id_usuario)
@@ -210,13 +228,6 @@ def logout():
 @app.route('/health')
 def health():
     return {"status": "ok"}, 200
-
-# ==============================================================
-# 🗜️ CONTEXT PROCESSOR PARA INYECTAR VARIABLES GLOBALES
-# ==============================================================
-@app.context_processor
-def inject_global_vars():
-    return dict(ADMIN_EMAIL=ADMIN_EMAIL, session=session)
 
 # ==============================================================
 # 🚀 MAIN
