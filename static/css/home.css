@@ -21,14 +21,8 @@ body {
 }
 
 /* Contenedores principales */
-main.container-fluid { 
-    box-sizing: border-box; 
-    width: 100%;
-    max-width: 100%;
-    padding: 0 !important; /* 🌟 CLAVE: Asegura que el contenido del home empiece desde arriba */
-    background: transparent !important; 
-}
-
+/* NOTA: Estos estilos deberían ser parte del CSS global o interno de base.html para evitar conflicto. */
+/* Manteniendo solo los esenciales de home.css */
 .home-container { 
     padding: 0;
     margin: 0;
@@ -44,7 +38,8 @@ main.container-fluid {
     display: flex;
     flex-direction: column;
     justify-content: center; /* Centrado vertical por defecto */
-    padding: 0 10px; 
+    /* 🌟 CORRECCIÓN CLAVE 1: Padding lateral más generoso en la sección para no pegar el texto a los bordes */
+    padding: 0 40px; 
     scroll-snap-align: start; 
     scroll-snap-stop: always;
     margin: 0;
@@ -82,24 +77,52 @@ main.container-fluid {
     position: relative;
     z-index: 20;
     max-width: 800px; 
-    margin: 0 auto;
-    padding: 80px 40px; 
+    /* 🌟 CORRECCIÓN CLAVE 2: Eliminar margin: 0 auto; aquí para que las clases de alineación (left/right) funcionen */
+    margin: 0; 
+    /* 🌟 CORRECCIÓN CLAVE 3: Más padding vertical para separar el contenido de los bordes de la pantalla */
+    padding: 100px 40px; 
     box-sizing: border-box; 
     width: 100%; 
 }
 
 /* Alineaciones de contenido */
-.left-align .content { text-align: left; align-items: flex-start; margin-left: 10%; margin-right: auto; }
-.right-align .content { text-align: right; align-items: flex-end; margin-right: 10%; margin-left: auto; }
-.center-align .content { text-align: center; align-items: center; margin: 0 auto; }
+/* 🌟 CORRECCIÓN CLAVE 4: Reducir los márgenes laterales excesivos para centrar visualmente el texto */
+.left-align .content { 
+    text-align: left; 
+    align-items: flex-start; 
+    margin-left: 5%; /* Menos margen */
+    margin-right: auto; 
+    max-width: 600px; /* Reducir ancho para el diseño lateral */
+}
+.right-align .content { 
+    text-align: right; 
+    align-items: flex-end; 
+    margin-right: 5%; /* Menos margen */
+    margin-left: auto; 
+    max-width: 600px; /* Reducir ancho para el diseño lateral */
+}
+.center-align .content { 
+    text-align: center; 
+    align-items: center; 
+    /* Usar auto para centrar el bloque de contenido horizontalmente */
+    margin: 0 auto; 
+    max-width: 800px;
+}
 
 
 /* ===== 3. ESTILOS DE TIPOGRAFÍA GENERAL ===== */
 
 h1 { font-size: 4.5rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; line-height: 1.1; }
+/* 🌟 CORRECCIÓN CLAVE 5: Más margen inferior en h2 para separar el título del párrafo */
+h2 { 
+    font-size: 3.5rem; 
+    margin-bottom: 30px; /* Incrementado a 30px */
+    line-height: 1.2;
+    /* 🌟 Asegurar que el título sea visible sobre el fondo: */
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+}
 h4 { font-size: 1.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 10px; line-height: 1.2;}
 .subtitle-hero { font-size: 1.3rem; font-weight: 300; line-height: 1.6; margin-top: 20px; margin-bottom: 30px;}
-h2 { font-size: 3.5rem; margin-bottom: 15px; line-height: 1.2;}
 p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
 
 
@@ -130,6 +153,10 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     flex-direction: column; 
     gap: 10px; /* Reducido a 10px para un layout más compacto */
     align-items: flex-start; 
+}
+/* 🌟 CORRECCIÓN CLAVE 6: Asegurar que los sociales en Contacto se centren si es `center-align` */
+.center-align .contact .socials {
+    align-items: center;
 }
 
 /* Clase universal para todas las líneas de contacto */
@@ -201,32 +228,51 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
 /* ========================================================== */
 
 #about {
-    /* 1. Usamos Flexbox para centrar el contenido (el div.content) dentro de la sección. */
+    /* El display: flex ya está definido en .home-container section, pero lo reconfirmamos */
     display: flex;
-    justify-content: center; /* Centrado horizontalmente */
-    align-items: center;     /* Centrado verticalmente */
-    padding: 0 10px; /* Asegura un padding lateral mínimo para evitar desbordamiento */
+    justify-content: center; /* Centrado horizontalmente (CLAVE para la sección about) */
+    align-items: center;      /* Centrado verticalmente */
+    padding: 0 40px; /* Asegura un padding lateral mínimo */
 }
 
 /* Estilos para el contenedor del texto (la nueva clase about-centered-column) */
 #about .content.about-centered-column {
-    /* 2. Sobreescribe el max-width de .content general para tener un bloque de texto compacto */
-    max-width: 600px; 
-    /* 3. Reestablecemos margen y alineación. Con el flexbox de la sección, margin: auto lo centra. */
+    /* Sobreescribe el max-width de .content general para tener un bloque de texto compacto */
+    max-width: 650px; /* Ligeramente más amplio que antes (600px) */
+    /* Reestablecemos margen y alineación. margin: auto lo centra. */
     margin: 0 auto;
     text-align: center; /* Centra todo el texto dentro del bloque */
     padding: 80px 40px; 
 }
 
+/* 🌟 CORRECCIÓN CLAVE 7: Estilo para la lista */
 #about ul {
     list-style: none;
     padding-left: 0;
     margin-top: 30px;
-    max-width: 500px; /* Limita el ancho de la lista para que no se extienda demasiado */
-    margin-left: auto; /* Centra la lista dentro del bloque de 600px */
+    max-width: 500px; 
+    margin-left: auto; 
     margin-right: auto;
-    text-align: left; /* Mantiene el texto de la lista alineado a la izquierda para una mejor lectura */
+    text-align: left; /* Mantiene el texto de la lista alineado a la izquierda */
 }
+
+/* Estilos para los bullets personalizados (Si quieres usar los checks) */
+/* (Se asume que los checks se insertan directamente en el HTML como en el ejemplo anterior) */
+/* Si no estás usando los checks, puedes descomentar y usar esto: */
+/*
+#about ul li {
+    position: relative;
+    padding-left: 25px; 
+}
+#about ul li::before {
+    content: "\2713"; // Unicode checkmark
+    color: #8a2be2; 
+    font-weight: bold;
+    display: inline-block; 
+    width: 1em;
+    margin-left: -1em;
+}
+*/
 
 #about ul li {
     font-size: 1.2rem;
@@ -250,8 +296,16 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     h1 { font-size: 3.8rem; } h4 { font-size: 1.5rem; } h2 { font-size: 2.8rem; } p { font-size: 1.3rem; } 
     .subtitle-hero { font-size: 1.2rem; } .content { padding: 80px 30px; } 
 
-    /* About: Ajuste margen en pantallas más pequeñas */
-    #about .content { margin-left: auto; margin-right: auto; } /* Centrado total */
+    /* Ajuste de márgenes laterales para diseño left/right */
+    .left-align .content, .right-align .content { 
+        margin-left: 3%; 
+        margin-right: 3%; 
+    }
+    .left-align .content { margin-right: auto; }
+    .right-align .content { margin-left: auto; }
+    
+    /* About: Centrado total */
+    #about .content.about-centered-column { margin-left: auto; margin-right: auto; } 
     #about ul li { font-size: 1.1rem; }
 }
 
@@ -259,7 +313,8 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
 @media (max-width: 992px) { 
     h1 { font-size: 3.2rem; margin-bottom: 15px; } h4 { font-size: 1.3rem; } h2 { font-size: 2.4rem; } p { font-size: 1.2rem; } 
     .subtitle-hero { font-size: 1.1rem; } 
-    .left-align .content, .right-align .content { margin-left: 5%; margin-right: 5%; } 
+    /* En Tablet, es mejor centrar el texto en las secciones laterales */
+    .left-align .content, .right-align .content { margin-left: auto; margin-right: auto; text-align: center; } 
     .card { width: 280px; height: 180px; } .card-hover h3 { font-size: 1.5rem; } .card-hover p { font-size: 1rem; } 
     .contact .socials { gap: 10px; } 
     .contact .contact-link, .contact .contact-link i { font-size: 1.1rem; } 
@@ -282,6 +337,8 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     .features .cards { flex-direction: column; align-items: center; gap: 20px; } 
     .card { width: 90%; max-width: 350px; height: 180px; } 
     .card-hover h3 { font-size: 1.3rem; } .card-hover p { font-size: 0.9rem; } 
+    
+    /* 🌟 CORRECCIÓN CLAVE 8: En móvil, el contacto siempre debe centrarse si el content se centra */
     .contact .socials { align-items: center; } 
     .left-align .content, .right-align .content { text-align: center; margin-left: auto; margin-right: auto; } 
 
@@ -295,7 +352,7 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     }
     #about ul { 
         text-align: left; /* Mantiene la lista alineada a la izquierda dentro del bloque */
-        max-width: none;
+        max-width: 90%; /* Limita el ancho de la lista */
     }
 
 
@@ -303,7 +360,7 @@ p { font-size: 1.4rem; line-height: 1.7; margin-bottom: 20px;}
     .contact .image-text-group {
         flex-direction: column; 
         align-items: center; 
-        max-width: none; /* Quitamos el max-width para que se centre bien al apilar */
+        max-width: none; 
     }
     .contact .image-text-group .image-item {
         width: 80%; 
