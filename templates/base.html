@@ -22,7 +22,7 @@
             background-repeat: no-repeat;
             background-size: cover;
             background-attachment: fixed;
-            /* 🚨 CORRECCIÓN CLAVE 1: Scroll Padding para que los anclas no queden bajo el navbar */
+            /* CORRECCIÓN CLAVE 1: Scroll Padding para que los anclas no queden bajo el navbar */
             scroll-padding-top: var(--navbar-height, 90px); 
         }
         
@@ -34,7 +34,7 @@
             margin-right: 8px; 
         }
         
-        /* 🌟 Estilo para el nombre de usuario */
+        /* Estilo para el nombre de usuario */
         .navbar-username { 
             color: #fff; 
             margin-left: 10px; 
@@ -63,7 +63,7 @@
             color: #fff; 
         }
 
-        /* 🚨 Estilos para Dropdown Neón */
+        /* Estilos para Dropdown Neón */
         .dropdown-menu {
             background-color: rgba(18, 10, 31, 0.95) !important; 
             border: 1px solid var(--color-primary, #FF47B4);
@@ -87,10 +87,53 @@
             text-shadow: 0 0 5px var(--color-secondary, #00F0FF);
         }
 
+        /* La línea de separación (divider) se mantiene, aunque se eliminará la que está debajo de "Home" */
         .dropdown-divider {
             border-top: 1px solid rgba(255, 71, 180, 0.5);
             margin: 0;
         }
+
+        /* 🚨 CORRECCIÓN CLAVE 2: Estilos para centrar el contenido y mejorar la legibilidad */
+        /* Aseguramos un ancho limitado para el texto en secciones grandes */
+        .home-container .content {
+            max-width: 800px; /* Limita el ancho del texto */
+            margin: 0 auto;  /* Centra el texto */
+            padding: 0 15px; /* Padding horizontal para evitar bordes */
+            text-align: center; /* Centra el texto por defecto */
+        }
+        
+        /* Ajuste de alineación según la clase de la sección */
+        .home-container .left-align .content {
+             margin-left: 0; /* Deshace el centrado */
+             margin-right: auto;
+             text-align: left;
+             max-width: 600px; /* Más limitado para alineación lateral */
+        }
+        .home-container .right-align .content {
+             margin-left: auto;
+             margin-right: 0; /* Deshace el centrado */
+             text-align: right;
+             max-width: 600px; /* Más limitado para alineación lateral */
+        }
+        .home-container .center-align .content,
+        .home-container .about .content {
+             margin-left: auto; 
+             margin-right: auto;
+             text-align: center;
+        }
+        
+        /* Estilo específico para la lista en ¿Quiénes Somos? */
+        .home-container .about-list {
+            text-align: left; /* Asegura que la lista se alinee a la izquierda dentro de su contenedor centrado */
+            margin: 20px auto;
+            max-width: 600px; 
+            list-style-type: none; /* Quitamos el bullet por defecto, usaremos CSS si se desea */
+            padding-left: 0;
+        }
+        .home-container .about-list li {
+            margin-bottom: 10px;
+        }
+
     </style>
 </head>
 <body class="bg-dark {% if request.endpoint == 'home' %}home-page{% endif %}">
@@ -135,17 +178,12 @@
             <div class="collapse navbar-collapse justify-content-end order-lg-2" id="navbarNav">
                 <ul class="navbar-nav align-items-center me-3">
                     
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-                    </li>
-                    
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDescubre" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Descubre
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownDescubre">
-                            <li><a class="dropdown-item" href="{{ url_for('home') }}">Home (Página Principal)</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('home') }}">Home</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('home') }}#info">¿QUÉ ES ADN?</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('home') }}#features">EXPLORA TU ADN</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('home') }}#about">¿QUIÉNES SOMOS?</a></li>
@@ -157,8 +195,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('rutinas') }}">Rutinas</a></li>
 
                     <ul class="navbar-nav align-items-center d-lg-none"> 
-                        {% if session.get('correo') %}
-                            {% else %}
+                        {% if not session.get('correo') %}
                             <li class="nav-item d-block d-lg-none"><a class="nav-link btn btn-outline-success mt-2 mb-2" href="{{ url_for('register') }}">Registrarse</a></li>
                         {% endif %}
                     </ul>

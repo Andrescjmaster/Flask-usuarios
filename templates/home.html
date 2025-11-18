@@ -5,7 +5,7 @@
 {% block content %}
 <div class="home-container">
 
-    <section id="hero" class="left-align" data-image-url="{{ url_for('static', filename='img/fondo1.png') }}">
+    <section id="hero" class="hero left-align" data-image-url="{{ url_for('static', filename='img/fondo1.png') }}">
         <div class="overlay"></div>
         <div class="content">
             <h1>TRANSFORMA TU CÓDIGO</h1>
@@ -53,7 +53,7 @@
         </div>
     </section>
 
-    <section id="about" class="about" data-image-url="{{ url_for('static', filename='img/fondo4.png') }}">
+    <section id="about" class="about center-align" data-image-url="{{ url_for('static', filename='img/fondo4.png') }}">
         <div class="overlay"></div>
         
         <div class="content about-centered-column">
@@ -110,7 +110,6 @@
 </div>
 
 <script>
-    // ... [Tu script JS de cambio de fondo se mantiene sin cambios] ...
     document.addEventListener('DOMContentLoaded', () => {
         const sections = document.querySelectorAll('.home-container section');
         const body = document.body;
@@ -119,7 +118,7 @@
         const initialImage = sections[0].getAttribute('data-image-url');
         if (initialImage) {
             body.style.backgroundImage = `url('${initialImage}')`;
-            body.classList.add('smooth-scroll-animation'); // Inicia la animación en el body
+            body.classList.add('smooth-scroll-animation'); 
         }
         
         // Función para cambiar el fondo
@@ -132,7 +131,6 @@
 
             sections.forEach(section => {
                 const rect = section.getBoundingClientRect();
-                // Distancia vertical desde el centro de la sección hasta el centro de la ventana
                 const sectionCenter = rect.top + rect.height / 2;
                 const distance = Math.abs(sectionCenter - windowCenter);
 
@@ -144,52 +142,39 @@
 
             const newImageUrl = currentSection.getAttribute('data-image-url');
 
-            // Solo actualiza si la URL de la imagen ha cambiado para evitar re-renderizados
             if (newImageUrl && newImageUrl !== lastSectionUrl) {
-                // Previene la repetición del cambio rápido de fondo
                 if (!body.classList.contains('is-transitioning')) {
                     body.classList.add('is-transitioning');
                     
-                    // Aplicar una transición de fondo suave (si lo quieres)
                     body.style.transition = 'background-image 0.5s ease-in-out';
                     
-                    // Cambia la imagen
                     body.style.backgroundImage = `url('${newImageUrl}')`;
                     
-                    // Retrasa la remoción de la clase para permitir la transición
                     setTimeout(() => {
                         body.classList.remove('is-transitioning');
-                        body.style.transition = 'none'; // Vuelve a none
-                    }, 500); // 500ms = duración de la transición
+                        body.style.transition = 'none';
+                    }, 500);
 
                     lastSectionUrl = newImageUrl;
                 }
             }
         };
 
-        // Usa Intersection Observer para mayor eficiencia (mejor que solo scroll)
         const observerOptions = {
             root: null,
             rootMargin: '0px',
-            // El threshold de 0.5 significa que se dispara cuando el 50% de la sección es visible
             threshold: 0.5 
         };
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Llamar a la lógica de actualización cuando la sección está en el viewport
                     updateBackground();
                 }
             });
         }, observerOptions);
 
         sections.forEach(section => observer.observe(section));
-
-        // Fallback: Si el Intersection Observer no funciona perfecto con scroll-snap, 
-        // puedes usar el evento scroll, pero es más pesado.
-        // window.addEventListener('scroll', updateBackground);
-
     });
 </script>
 {% endblock %}
